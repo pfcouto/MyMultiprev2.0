@@ -8,36 +8,78 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
+import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyMultiPrevTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Android")
-                }
+            MaterialTheme {
+                MyMultiPrev()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun MyMultiPrev() {
+
+    val navController = rememberNavController()
+
+
+    NavHost(navController = navController, startDestination = "login") {
+
+        composable("login") {
+            LoginScreen(){
+
+            }
+        }
+
+//        composable("dishes/{category}", arguments = listOf(navArgument("category") {
+//            type = NavType.StringType
+//        })) {
+//
+//            var categoryStr = remember {
+//                it.arguments?.getString("category")
+//            }
+//
+//
+//
+//            DishesScreen(category = categoryStr){ dishId ->
+//                navController.navigate("detail/${dishId}")
+//            }
+//        }
+//
+//        composable("detail/{mealId}", arguments = listOf(navArgument("mealId") {
+//            type = NavType.StringType
+//        })) {
+//            var mealStrId = remember {
+//                it.arguments?.getString("mealId")
+//            }
+//
+//            DetailScreen(mealID = mealStrId)
+//        }
+//
+//        // DishesScreen
+//        // CategoryScreen()
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     MyMultiPrevTheme {
-        Greeting("Android")
+//        Greeting("Android")
     }
 }

@@ -24,7 +24,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsReposit
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.service.AlarmService
 import pt.ipleiria.estg.dei.pi.mymultiprev.service.RingtoneService
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainActivity
+//import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainActivity
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.RandomIntUtil
 import java.util.*
@@ -105,20 +105,20 @@ class  AlarmReceiver :
                         }
 
                     }
-                    buildNotification(
-                        context,
-                        context.getString(R.string.taking_medicines),
-                        context.getString(R.string.time_to_take_medicines) + drugsAux
-                    )
+//                    buildNotification(
+//                        context,
+//                        context.getString(R.string.taking_medicines),
+//                        context.getString(R.string.time_to_take_medicines) + drugsAux
+//                    )
                     //single drug
                 } else {
                     val drugName = drugRepository.getDrugById(currentAlarmPrescriptionItems[0].drug)
                         .first().data?.name
-                    buildNotification(
-                        context,
-                        context.getString(R.string.taking_medicin),
-                        context.getString(R.string.time_to_take_medicin) + drugName
-                    )
+//                    buildNotification(
+//                        context,
+//                        context.getString(R.string.taking_medicin),
+//                        context.getString(R.string.time_to_take_medicin) + drugName
+//                    )
                 }
                 val i = Intent(context, RingtoneService::class.java)
                 context.startService(i)
@@ -145,47 +145,47 @@ class  AlarmReceiver :
         sharedPreferencesRepository.saveAlarm(nextAlarmTimestamp)
     }
 
-    private fun buildNotification(context: Context, title: String, message: String) {
-        val notificationID = RandomIntUtil.getRandomInt()
-        // Create an Intent for the activity you want to start
-        val mainActivityIntent = Intent(context, MainActivity::class.java)
-        mainActivityIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
-        // Create the TaskStackBuilder
-        val mainActivityPendingIntent: PendingIntent? = TaskStackBuilder.create(context).run {
-            // Add the intent, which inflates the back stack
-            addNextIntentWithParentStack(mainActivityIntent)
-            // Get the PendingIntent containing the entire back stack
-            getPendingIntent(RandomIntUtil.getRandomInt(), PendingIntent.FLAG_UPDATE_CURRENT)
-        }
-
-        val pauseIntent = Intent(context, RingtoneService::class.java)
-        pauseIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
-        pauseIntent.action = Constants.ACTION_PAUSE
-        val pausePendingIntent = PendingIntent.getService(
-            context,
-            RandomIntUtil.getRandomInt(), pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-
-        val builder = NotificationCompat.Builder(context, Constants.NOTIFICATIONS_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(mainActivityPendingIntent)
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
-            .addAction(
-                R.drawable.ic_baseline_alarm_on_24,
-                context.getString(R.string.confirm),
-                mainActivityPendingIntent
-            )
-            .addAction(
-                R.drawable.ic_baseline_alarm_off_24,
-                context.getString(R.string.stop),
-                pausePendingIntent
-            )
-        with(NotificationManagerCompat.from(context)) {
-            notify(notificationID, builder.build())
-        }
-    }
+//    private fun buildNotification(context: Context, title: String, message: String) {
+//        val notificationID = RandomIntUtil.getRandomInt()
+//        // Create an Intent for the activity you want to start
+//        val mainActivityIntent = Intent(context, MainActivity::class.java)
+//        mainActivityIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
+//        // Create the TaskStackBuilder
+//        val mainActivityPendingIntent: PendingIntent? = TaskStackBuilder.create(context).run {
+//            // Add the intent, which inflates the back stack
+//            addNextIntentWithParentStack(mainActivityIntent)
+//            // Get the PendingIntent containing the entire back stack
+//            getPendingIntent(RandomIntUtil.getRandomInt(), PendingIntent.FLAG_UPDATE_CURRENT)
+//        }
+//
+//        val pauseIntent = Intent(context, RingtoneService::class.java)
+//        pauseIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
+//        pauseIntent.action = Constants.ACTION_PAUSE
+//        val pausePendingIntent = PendingIntent.getService(
+//            context,
+//            RandomIntUtil.getRandomInt(), pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT
+//        )
+//
+//
+//        val builder = NotificationCompat.Builder(context, Constants.NOTIFICATIONS_CHANNEL_ID)
+//            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+//            .setContentTitle(title)
+//            .setContentText(message)
+//            .setPriority(NotificationCompat.PRIORITY_HIGH)
+//            .setContentIntent(mainActivityPendingIntent)
+//            .setDefaults(NotificationCompat.DEFAULT_ALL)
+//            .addAction(
+//                R.drawable.ic_baseline_alarm_on_24,
+//                context.getString(R.string.confirm),
+//                mainActivityPendingIntent
+//            )
+//            .addAction(
+//                R.drawable.ic_baseline_alarm_off_24,
+//                context.getString(R.string.stop),
+//                pausePendingIntent
+//            )
+//        with(NotificationManagerCompat.from(context)) {
+//            notify(notificationID, builder.build())
+//        }
+//    }
 }
