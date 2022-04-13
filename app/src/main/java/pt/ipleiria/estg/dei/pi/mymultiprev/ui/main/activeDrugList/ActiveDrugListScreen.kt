@@ -205,40 +205,40 @@ fun AntibioticCard_Prescription_Item_Full_Item() {
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun HorizontalIndicatorPager() {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(10.dp)) {
-        val pagerSelect = rememberPagerState(pageCount = list.size)
-
-        Box(modifier = Modifier.fillMaxWidth()) {
-            HorizontalPager(state = pagerSelect) { index ->
-                Column(Modifier.fillMaxWidth()) {
-                    when(index){
-                        0 -> {
-
-                        }
-                        1 -> {
-
-                        }
-                    }
-                }   
-            }
-        }
-
-
-
-        HorizontalPagerIndicator(
-            pagerState = pagerSelect,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp),
-        )
-    }
-}
+//@OptIn(ExperimentalPagerApi::class)
+//@Composable
+//fun HorizontalIndicatorPager() {
+//    Column(
+//        Modifier
+//            .fillMaxSize()
+//            .padding(10.dp)) {
+//        val pagerSelect = rememberPagerState(pageCount = list.size)
+//
+//        Box(modifier = Modifier.fillMaxWidth()) {
+//            HorizontalPager(state = pagerSelect) { index ->
+//                Column(Modifier.fillMaxWidth()) {
+//                    when(index){
+//                        0 -> {
+//
+//                        }
+//                        1 -> {
+//
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//
+//        HorizontalPagerIndicator(
+//            pagerState = pagerSelect,
+//            modifier = Modifier
+//                .align(Alignment.CenterHorizontally)
+//                .padding(16.dp),
+//        )
+//    }
+//}
 
 
 @Preview(showBackground = true)
