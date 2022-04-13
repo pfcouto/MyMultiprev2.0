@@ -1,7 +1,6 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.login
 
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -14,17 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import retrofit2.HttpException
-import java.net.HttpURLConnection
 
 
 @Composable
@@ -39,8 +35,8 @@ fun LoginScreen(
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val passwordVisible = remember { mutableStateOf(false) }
-    val isLoading = remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     var test by remember { mutableStateOf("") }
 
@@ -85,17 +81,17 @@ fun LoginScreen(
             label = {
                 Text(text = "Password")
             },
-            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
 
             trailingIcon = {
-                val image = if (passwordVisible.value)
+                val image = if (passwordVisible)
                     Icons.Filled.Visibility
                 else Icons.Filled.VisibilityOff
 
                 // Please provide localized description for accessibility services
-                val description = if (passwordVisible.value) "Hide password" else "Show password"
+                val description = if (passwordVisible) "Hide password" else "Show password"
 
-                IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(imageVector = image, description)
                 }
             },
@@ -107,7 +103,7 @@ fun LoginScreen(
             .padding(top = 8.dp), onClick = {
             Log.i(TAG, "Button Login Clicked: $username / $password")
 
-            isLoading.value = !isLoading.value
+            isLoading = !isLoading
 
             if (username.isEmpty() and password.isNotEmpty()) {
                 Toast.makeText(context, "Username is Empty", Toast.LENGTH_SHORT).show()
@@ -127,7 +123,7 @@ fun LoginScreen(
 //                test = viewModel.loginResponse.value.toString()
             }
         }) {
-            if (!isLoading.value) {
+            if (!isLoading) {
                 Text(
                     "LOGIN",
                     fontSize = 20.sp
@@ -188,7 +184,7 @@ fun LoginScreen(
         is Resource.Success<*> -> {
             Log.i(TAG, "loginResponseResource is Resource.Success")
             treatSuccessResponse()
-            isLoading.value = false
+            isLoading = false
         }
         is Resource.Error<*> -> {
             Log.i(TAG, "loginResponseResource is Resource.Error")
@@ -197,7 +193,7 @@ fun LoginScreen(
             else {
                 treatErrorResponse()
             }
-            isLoading.value = false
+            isLoading = false
         }
     }
 }
