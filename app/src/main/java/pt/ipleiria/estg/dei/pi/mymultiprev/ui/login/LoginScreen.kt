@@ -51,6 +51,8 @@ fun LoginScreen(
     val response = viewModel.loginResponse.observeAsState()
 
 
+
+
     Text(
         text = "Bem-Vindo",
         modifier = Modifier.padding(start = 32.dp, top = 32.dp),
@@ -72,88 +74,99 @@ fun LoginScreen(
             .fillMaxHeight()
             .padding(horizontal = 32.dp)
     ) {
-        OutlinedTextField(
-            value = username,
-            onValueChange = {
-                username = it
-                isErrorUsername = it.isEmpty()
-            },
-            isError = isErrorUsername,
-            singleLine = true,
-            label = {
-                Text(text = "Username")
-            },
-            modifier = Modifier
+
+        if (!isLoading) {
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = {
+                    username = it
+                    isErrorUsername = it.isEmpty()
+                },
+                isError = isErrorUsername,
+                singleLine = true,
+                label = {
+                    Text(text = "Username")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
+            )
+            OutlinedTextField(
+                isError = isErrorPassword,
+                value = password,
+                onValueChange = {
+                    password = it
+                    isErrorPassword = it.isEmpty()
+                },
+                label = {
+                    Text(text = "Password")
+                },
+                singleLine = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
+
+                    // Please provide localized description for accessibility services
+                    val description = if (passwordVisible) "Hide password" else "Show password"
+
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, description)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
+            )
+            Button(modifier = Modifier
                 .fillMaxWidth()
-                .focusRequester(focusRequester)
-        )
-        OutlinedTextField(
-            isError = isErrorPassword,
-            value = password,
-            onValueChange = {
-                password = it
-                isErrorPassword = it.isEmpty()
-            },
-            label = {
-                Text(text = "Password")
-            },
-            singleLine = true,
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-
-            trailingIcon = {
-                val image = if (passwordVisible)
-                    Icons.Filled.Visibility
-                else Icons.Filled.VisibilityOff
-
-                // Please provide localized description for accessibility services
-                val description = if (passwordVisible) "Hide password" else "Show password"
-
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, description)
+                .padding(top = 8.dp), onClick = {
+                Log.i(TAG, "Button Login Clicked: $username / $password")
+                if (isLoading) {
+                    return@Button
                 }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester)
-        )
-        Button(modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp), onClick = {
-            Log.i(TAG, "Button Login Clicked: $username / $password")
-            if (isLoading) {
-                return@Button
-            }
 
-            if (username.isEmpty() and password.isNotEmpty()) {
-                Toast.makeText(context, "Username is Empty", Toast.LENGTH_SHORT).show()
-                isErrorUsername = true
-            }
-            if (password.isEmpty() and username.isNotEmpty()) {
-                Toast.makeText(context, "Password is Empty", Toast.LENGTH_SHORT).show()
-                isErrorPassword = true
-            }
-            if (username.isEmpty() and password.isEmpty()) {
-                Toast.makeText(context, "Username and Password are Empty", Toast.LENGTH_SHORT).show()
-                isErrorUsername = true
-                isErrorPassword = true
+                if (username.isEmpty() and password.isNotEmpty()) {
+                    Toast.makeText(context, "Username is Empty", Toast.LENGTH_SHORT).show()
+                    isErrorUsername = true
+                }
+                if (password.isEmpty() and username.isNotEmpty()) {
+                    Toast.makeText(context, "Password is Empty", Toast.LENGTH_SHORT).show()
+                    isErrorPassword = true
+                }
+                if (username.isEmpty() and password.isEmpty()) {
+                    Toast.makeText(
+                        context,
+                        "Username and Password are Empty",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    isErrorUsername = true
+                    isErrorPassword = true
 
-            }
-            if (username.isNotEmpty() and password.isNotEmpty()) {
-                isErrorUsername = false
-                isErrorPassword = false
-                isLoading = true
-                focusManager.clearFocus()
-                viewModel.login(username, password)
-            }
-        }) {
-            if (!isLoading) {
+                }
+                if (username.isNotEmpty() and password.isNotEmpty()) {
+                    isErrorUsername = false
+                    isErrorPassword = false
+                    isLoading = true
+                    focusManager.clearFocus()
+                    viewModel.login(username, password)
+                }
+            }) {
                 Text(
                     "LOGIN",
                     fontSize = 20.sp
                 )
-            } else {
-                CircularProgressIndicator(modifier = Modifier.size(27.dp), color = Color.White)
             }
+        } else {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(68.dp)
+                    .fillMaxSize()
+            )
         }
     }
 
