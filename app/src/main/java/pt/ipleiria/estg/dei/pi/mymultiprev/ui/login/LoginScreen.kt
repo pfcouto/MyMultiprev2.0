@@ -11,8 +11,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -20,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
+import pt.ipleiria.estg.dei.pi.mymultiprev.responses.LoginResponse
 import retrofit2.HttpException
+import java.net.HttpURLConnection
 
 
 @Composable
@@ -35,10 +40,16 @@ fun LoginScreen(
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isErrorUsername by remember { mutableStateOf(false) }
+    var isErrorPassword by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
     var test by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val response = viewModel.loginResponse.observeAsState()
+
 
     Text(
         text = "Bem-Vindo",
@@ -61,26 +72,32 @@ fun LoginScreen(
             .fillMaxHeight()
             .padding(horizontal = 32.dp)
     ) {
-
         OutlinedTextField(
             value = username,
             onValueChange = {
                 username = it
+                isErrorUsername = it.isEmpty()
             },
+            isError = isErrorUsername,
+            singleLine = true,
             label = {
                 Text(text = "Username")
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
         )
         OutlinedTextField(
-
+            isError = isErrorPassword,
             value = password,
             onValueChange = {
                 password = it
+                isErrorPassword = it.isEmpty()
             },
             label = {
                 Text(text = "Password")
             },
+            singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
 
             trailingIcon = {
@@ -97,30 +114,36 @@ fun LoginScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
+                .focusRequester(focusRequester)
         )
         Button(modifier = Modifier
             .fillMaxWidth()
             .padding(top = 8.dp), onClick = {
             Log.i(TAG, "Button Login Clicked: $username / $password")
-
-            isLoading = !isLoading
+            if (isLoading) {
+                return@Button
+            }
 
             if (username.isEmpty() and password.isNotEmpty()) {
                 Toast.makeText(context, "Username is Empty", Toast.LENGTH_SHORT).show()
+                isErrorUsername = true
             }
             if (password.isEmpty() and username.isNotEmpty()) {
                 Toast.makeText(context, "Password is Empty", Toast.LENGTH_SHORT).show()
+                isErrorPassword = true
             }
             if (username.isEmpty() and password.isEmpty()) {
-                Toast.makeText(context, "Username and Password are Empty", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(context, "Username and Password are Empty", Toast.LENGTH_SHORT).show()
+                isErrorUsername = true
+                isErrorPassword = true
+
             }
             if (username.isNotEmpty() and password.isNotEmpty()) {
+                isErrorUsername = false
+                isErrorPassword = false
+                isLoading = true
+                focusManager.clearFocus()
                 viewModel.login(username, password)
-                test = username + " - " + password
-                test += viewModel.isLoggedIn.toString()
-                viewModel.loginResponse
-//                test = viewModel.loginResponse.value.toString()
             }
         }) {
             if (!isLoading) {
@@ -135,65 +158,56 @@ fun LoginScreen(
     }
 
 
-
-
-
     fun treatHTTPException(errorCode: Int) {
-//        binding.viewFlipper.showPrevious()
-//        Log.i(TAG, "HTTP Exception - $errorCode")
-//        when (errorCode) {
-//            HttpURLConnection.HTTP_UNAUTHORIZED -> {
-//                binding.loginForm.textViewErrors.apply {
-//                    text = getString(R.string.login_invalid_credentials)
-//                    visibility = View.VISIBLE
-//                }
-//            }
-//        }
+        Log.i(TAG, "HTTP Exception - $errorCode")
+        when (errorCode) {
+            HttpURLConnection.HTTP_UNAUTHORIZED -> {
+//                test = getString(R.string.login_invalid_credentials)
+                test = "Invalid Credentials"
+                isErrorUsername = true
+                isErrorPassword = true
+            }
+        }
     }
 
     fun treatErrorResponse() {
-//        Log.i(TAG, "Timeout while connecting to API")
-//        binding.viewFlipper.showPrevious()
-//        val errorMsg = if (!viewModel.isNetworkAvailable())
-//            getString(R.string.login_no_internet)
-//        else
-//            getString(R.string.login_connection_timeout)
-//
-//        Log.i(TAG, "Internet Connection - $viewModel.isNetworkAvailable()")
-//
-//        com.google.android.material.snackbar.Snackbar.make(
-//            binding.root,
-//            errorMsg,
-//            com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
-//        )
-//            .setAction(getString(R.string.OK)) {}.show()
+        Log.i(TAG, "Timeout while connecting to API")
+        val errorMsg = if (!viewModel.isNetworkAvailable())
+            test = "No Network"
+        else
+            test = "Network Connection Timeout"
+
+        Log.i(TAG, "Internet Connection - $viewModel.isNetworkAvailable()")
     }
 
-    fun treatSuccessResponse() {
-        if (viewModel.patient.value != null) {
-            Log.i(TAG, "Logged In Successfully!")
-        }
-
-        viewModel.apply {
-            savePatientId()
-            isLoggedIn = true
-        }
-    }
-
-    when (val loginResponseResource = viewModel.loginResponse.observeAsState()) {
-        is Resource.Success<*> -> {
-            Log.i(TAG, "loginResponseResource is Resource.Success")
-            treatSuccessResponse()
-            isLoading = false
-        }
-        is Resource.Error<*> -> {
-            Log.i(TAG, "loginResponseResource is Resource.Error")
-            if (loginResponseResource.error is HttpException)
-                treatHTTPException(loginResponseResource.error.code())
-            else {
-                treatErrorResponse()
+    fun treatLoginResponse(response: Resource<LoginResponse>) {
+        when (response) {
+            is Resource.Success -> {
+                viewModel.savePatientId()
+                viewModel.isLoggedIn = true
+                test = "LOGGED SUCCESSFULLY"
+                isLoading = false
             }
-            isLoading = false
+            is Resource.Error -> {
+//                test = if (response.isNetworkError) {
+//                    "NETWORK ERROR"
+//                } else {
+//                    "USERNAME/PASSWORD SEEM WRONG"
+//                }
+                isLoading = false
+
+                if (response.error is HttpException) treatHTTPException(
+                    response.error.code()
+                ) else treatErrorResponse()
+            }
+            else -> {
+                test = "UNKNOWN ERROR"
+                isLoading = false
+            }
         }
+    }
+
+    if (response.value != null) {
+        treatLoginResponse(response.value!!)
     }
 }
