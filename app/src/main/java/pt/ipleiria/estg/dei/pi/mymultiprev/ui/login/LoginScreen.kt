@@ -7,13 +7,12 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -31,7 +30,7 @@ import java.net.HttpURLConnection
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onLoginClick: (String) -> Unit
+    onLoginSuccess: (String) -> Unit
 ) {
 
     val TAG = "LoginComposable"
@@ -54,7 +53,7 @@ fun LoginScreen(
 
 
     Text(
-        text = "Bem-Vindo",
+        text = "Welcome",
         modifier = Modifier.padding(start = 32.dp, top = 32.dp),
         fontSize = 32.sp,
         fontWeight = FontWeight.Bold
@@ -121,41 +120,42 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
             )
-            Button(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp), onClick = {
-                Log.i(TAG, "Button Login Clicked: $username / $password")
-                if (isLoading) {
-                    return@Button
-                }
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp), onClick = {
+                    Log.i(TAG, "Button Login Clicked: $username / $password")
+                    if (isLoading) {
+                        return@Button
+                    }
 
-                if (username.isEmpty() and password.isNotEmpty()) {
-                    Toast.makeText(context, "Username is Empty", Toast.LENGTH_SHORT).show()
-                    isErrorUsername = true
-                }
-                if (password.isEmpty() and username.isNotEmpty()) {
-                    Toast.makeText(context, "Password is Empty", Toast.LENGTH_SHORT).show()
-                    isErrorPassword = true
-                }
-                if (username.isEmpty() and password.isEmpty()) {
-                    Toast.makeText(
-                        context,
-                        "Username and Password are Empty",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    isErrorUsername = true
-                    isErrorPassword = true
+                    if (username.isEmpty() and password.isNotEmpty()) {
+                        Toast.makeText(context, "Username is Empty", Toast.LENGTH_SHORT).show()
+                        isErrorUsername = true
+                    }
+                    if (password.isEmpty() and username.isNotEmpty()) {
+                        Toast.makeText(context, "Password is Empty", Toast.LENGTH_SHORT).show()
+                        isErrorPassword = true
+                    }
+                    if (username.isEmpty() and password.isEmpty()) {
+                        Toast.makeText(
+                            context,
+                            "Username and Password are Empty",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        isErrorUsername = true
+                        isErrorPassword = true
 
-                }
-                if (username.isNotEmpty() and password.isNotEmpty()) {
-                    isErrorUsername = false
-                    isErrorPassword = false
-                    isLoading = true
-                    focusManager.clearFocus()
-                    viewModel.login(username, password)
-                }
-            }) {
+                    }
+                    if (username.isNotEmpty() and password.isNotEmpty()) {
+                        isErrorUsername = false
+                        isErrorPassword = false
+                        isLoading = true
+                        focusManager.clearFocus()
+                        viewModel.login(username, password)
+                    }
+                }) {
                 Text(
                     "LOGIN",
                     fontSize = 20.sp
@@ -200,6 +200,8 @@ fun LoginScreen(
                 viewModel.isLoggedIn = true
                 test = "LOGGED SUCCESSFULLY"
                 isLoading = false
+                
+                onLoginSuccess("")
             }
             is Resource.Error -> {
 //                test = if (response.isNetworkError) {
@@ -207,15 +209,14 @@ fun LoginScreen(
 //                } else {
 //                    "USERNAME/PASSWORD SEEM WRONG"
 //                }
-                isLoading = false
 
                 if (response.error is HttpException) treatHTTPException(
                     response.error.code()
                 ) else treatErrorResponse()
+
+                isLoading = false
             }
             else -> {
-                test = "UNKNOWN ERROR"
-                isLoading = false
             }
         }
     }

@@ -49,7 +49,7 @@ class LoginViewModel @Inject constructor(
 
     fun login(username: String, password: String) {
         val hashPassword = digest(password)
-
+        Log.i(TAG, "login() - '$username' / '$password'")
         Log.i(TAG, "login() - $username / $hashPassword")
 
         val loginBody = LoginRequest(username, hashPassword)

@@ -42,8 +42,12 @@ fun MyMultiPrev() {
 
         composable("login") {
             LoginScreen(){
-
+                navController.navigate("mainScreen")
             }
+        }
+
+        composable("mainScreen") {
+
         }
 
 //        composable("dishes/{category}", arguments = listOf(navArgument("category") {
