@@ -3,6 +3,9 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlarmOff
@@ -23,18 +26,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.TesteLazyColumn
+import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.TesteLazyColumRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ActiveDrugListScreen(
 //    viewModel: ActiveDrugListViewModel = hiltViewModel()
 ) {
 
     val showByColumnList = remember { mutableStateOf(true) }
+
+
+    // para testes
+    val testRepository = TesteLazyColumRepository()
+    val alldata = testRepository.getAllData()
+
+    val pagerState = rememberPagerState(pageCount = alldata.size)
+
 
     Column {
 
@@ -53,12 +65,23 @@ fun ActiveDrugListScreen(
 //        LazyColumn() {
 //            items(listOfAntibiotics) { antibiotic ->
 //
-        if (showByColumnList.value)
-            AntibioticCard_Prescription_Item_Short_Item()
-        else
-            AntibioticCard_Prescription_Item_Full_Item()
-//            }
-//        }
+        if (showByColumnList.value) {
+            LazyRow() {
+                items(items = alldata) { item ->
+
+                    AntibioticCard_Prescription_Item_Full_Item(/*item*/)
+                }
+            }
+        } else {
+
+
+            LazyColumn() {
+                items(items = alldata) { item ->
+
+                    AntibioticCard_Prescription_Item_Short_Item(item)
+                }
+            }
+        }
     }
 }
 
@@ -90,7 +113,7 @@ fun ListIcon(showByColumnList: MutableState<Boolean>) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AntibioticCard_Prescription_Item_Short_Item() {
+fun AntibioticCard_Prescription_Item_Short_Item(item: TesteLazyColumn) {
     Card(
         modifier = Modifier
             .padding(horizontal = 24.dp, vertical = 12.dp)
@@ -116,14 +139,14 @@ fun AntibioticCard_Prescription_Item_Short_Item() {
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W600,
-                    text = "Ola"
+                    text = "${item.firstString}"
                 )
                 Spacer(modifier = Modifier.height(1.dp))
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W300,
-                    text = "Ola"
+                    text = "${item.secondString}"
                 )
             }
 
@@ -137,7 +160,7 @@ fun AntibioticCard_Prescription_Item_Short_Item() {
 }
 
 @Composable
-fun AntibioticCard_Prescription_Item_Full_Item() {
+fun AntibioticCard_Prescription_Item_Full_Item(/*item: TesteLazyColumn*/) {
 
     val alarmOn = remember { mutableStateOf(true) }
 
@@ -163,20 +186,26 @@ fun AntibioticCard_Prescription_Item_Full_Item() {
                     .padding(bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.weight(1f)) {
+                Column() {
+
                     Text(
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp)
+                            .weight(1f),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.W600,
-                        text = "Amoxicilina 500 mg"
+                        text = "ola1g67g78h78h78h78"
                     )
                     Spacer(modifier = Modifier.height(1.dp))
                     Text(
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp)
+                            .weight(1f),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W300,
-                        text = "Ola"
+                        text = "ola2"
                     )
+
                 }
                 Row(horizontalArrangement = Arrangement.End) {
                     IconButton(

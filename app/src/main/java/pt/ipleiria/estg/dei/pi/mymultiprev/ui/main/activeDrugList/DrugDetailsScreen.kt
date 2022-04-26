@@ -115,11 +115,14 @@ fun Pager() {
                         when (index) {
                             0 -> {
                                 Details()
+//                                Text(text = "Text_1")
                             }
                             1 -> {
 //                                LazyColumn(content = )
                                 Tomas()
+//                                Text(text = "Text_2")
                             }
+
                             2 -> {
                                 Text(text = "Text_3")
 
@@ -290,7 +293,9 @@ fun Tomas() {
 @Preview
 @Composable
 fun AppBarPreview() {
-    Tomas()
+//    Tomas()
+//    Pager()
+    DrugDetailsScreen()
 }
 
 //@Preview
