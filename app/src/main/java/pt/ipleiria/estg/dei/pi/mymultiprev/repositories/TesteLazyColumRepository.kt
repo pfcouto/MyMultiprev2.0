@@ -6,7 +6,7 @@ class TesteLazyColumRepository {
     fun getAllData(): List<TesteLazyColumn> {
         return listOf(
             TesteLazyColumn(
-                firstString = "John",
+                firstString = "Johnfnsy8fhn8se",
                 secondString = "Doe"
             ),
             TesteLazyColumn(
@@ -14,7 +14,7 @@ class TesteLazyColumRepository {
                 secondString = "Garcia"
             ),
             TesteLazyColumn(
-                firstString = "James",
+                firstString = "Jamesfnmseuifnusefnuesnfufrefrefgerferfreferferfer",
                 secondString = "Johnson"
             ),
             TesteLazyColumn(

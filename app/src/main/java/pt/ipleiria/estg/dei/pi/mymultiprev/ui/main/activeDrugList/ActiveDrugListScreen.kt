@@ -44,9 +44,7 @@ fun ActiveDrugListScreen(
     // para testes
     val testRepository = TesteLazyColumRepository()
     val alldata = testRepository.getAllData()
-
-    val pagerState = rememberPagerState(pageCount = alldata.size)
-
+    //
 
     Column {
 
@@ -61,15 +59,11 @@ fun ActiveDrugListScreen(
 
         ListIcon(showByColumnList)
 
-
-//        LazyColumn() {
-//            items(listOfAntibiotics) { antibiotic ->
-//
         if (showByColumnList.value) {
-            LazyRow() {
+            LazyColumn() {
                 items(items = alldata) { item ->
 
-                    AntibioticCard_Prescription_Item_Full_Item(/*item*/)
+                    AntibioticCard_Prescription_Item_Short_Item(item)
                 }
             }
         } else {
@@ -78,7 +72,7 @@ fun ActiveDrugListScreen(
             LazyColumn() {
                 items(items = alldata) { item ->
 
-                    AntibioticCard_Prescription_Item_Short_Item(item)
+                    AntibioticCard_Prescription_Item_Full_Item(item)
                 }
             }
         }
@@ -160,7 +154,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(item: TesteLazyColumn) {
 }
 
 @Composable
-fun AntibioticCard_Prescription_Item_Full_Item(/*item: TesteLazyColumn*/) {
+fun AntibioticCard_Prescription_Item_Full_Item(item: TesteLazyColumn) {
 
     val alarmOn = remember { mutableStateOf(true) }
 
@@ -172,63 +166,69 @@ fun AntibioticCard_Prescription_Item_Full_Item(/*item: TesteLazyColumn*/) {
         Color.Green
     else Color.Red
 
-
-    Card(
+    Column(
         modifier = Modifier
-            .padding(start = 24.dp, top = 8.dp, end = 24.dp, bottom = 16.dp)
-            .fillMaxWidth(),
-        elevation = 10.dp
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp)
     ) {
-        Column() {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column() {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp),
+            elevation = 10.dp
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
 
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 16.dp, end = 16.dp)
-                            .weight(1f),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.W600,
-                        text = "ola1g67g78h78h78h78"
-                    )
-                    Spacer(modifier = Modifier.height(1.dp))
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 16.dp, end = 16.dp)
-                            .weight(1f),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W300,
-                        text = "ola2"
-                    )
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.W600,
+                            maxLines = 2,
+                            text = "${item.firstString}"
+                        )
+                        Spacer(modifier = Modifier.height(1.dp))
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 16.dp),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W300,
+                            text = "${item.secondString}"
+                        )
 
-                }
-                Row(horizontalArrangement = Arrangement.End) {
+                    }
+//                    Spacer(modifier = Modifier.weight(1f))
                     IconButton(
                         modifier = Modifier.padding(end = 11.dp),
                         onClick = { alarmOn.value = !alarmOn.value }) {
                         Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
                     }
+
+
                 }
+                Image(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(225.dp),
+                    painter = rememberImagePainter(
+                        data = "https://www.example.com/image.jpg",
+                        builder = {
+                            placeholder(R.drawable.placeholder)
+                        }
+                    ),
+                    contentDescription = "Imagem do medicamento")
 
-            }
-            Image(modifier = Modifier
-                .fillMaxWidth()
-                .height(225.dp),
-                painter = rememberImagePainter(
-                    data = "https://www.example.com/image.jpg",
-                    builder = {
-                        placeholder(R.drawable.placeholder)
-                    }
-                ),
-                contentDescription = "Imagem do medicamento")
-
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(text = "Confirmar Toma / Ver Detalhes")
+                TextButton(onClick = { /*TODO*/ }) {
+                    Text(text = "Confirmar Toma / Ver Detalhes")
+                }
             }
         }
     }
@@ -286,10 +286,11 @@ fun MainPreview() {
 //    }
 //}
 
-@Preview(showBackground = true)
-@Composable
-fun CardPreview2() {
-    MyMultiPrevTheme {
-        AntibioticCard_Prescription_Item_Full_Item()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun CardPreview2() {
+//    MyMultiPrevTheme {
+//
+//        AntibioticCard_Prescription_Item_Full_Item()
+//    }
+//}
