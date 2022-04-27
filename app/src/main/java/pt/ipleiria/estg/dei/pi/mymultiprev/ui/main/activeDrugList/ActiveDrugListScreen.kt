@@ -188,6 +188,8 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: TesteLazyColumn) {
                         modifier = Modifier.weight(1f)
                     ) {
 
+
+
                         Text(
                             modifier = Modifier
                                 .padding(start = 16.dp, top = 16.dp, end = 16.dp),
