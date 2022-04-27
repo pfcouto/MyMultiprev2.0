@@ -35,6 +35,11 @@ fun LoginScreen(
     onLoginSuccess: (String) -> Unit
 ) {
 
+    if(viewModel.isLoggedIn){
+        onLoginSuccess("")
+    }
+
+
     val TAG = "LoginComposable"
 
     val context = LocalContext.current
@@ -50,8 +55,6 @@ fun LoginScreen(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val response = viewModel.loginResponse.observeAsState()
-
-
 
 
     Text(

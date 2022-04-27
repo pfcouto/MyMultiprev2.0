@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
+import android.app.AlertDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,24 +24,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
 
 @Composable
 fun ActiveDrugListScreen(
-//    viewModel: ActiveDrugListViewModel = hiltViewModel()
+    viewModel: ActiveDrugListViewModel = hiltViewModel()
 ) {
 
     val showByColumnList = remember { mutableStateOf(true) }
+    var openDialog by remember { mutableStateOf(false) }
+
+
+    AlertDialogLogout(openDialog = openDialog)
 
     Column {
 
-        Logout()
+        Logout() {
+            openDialog = true
+        }
 
         Text(
             modifier = Modifier.padding(start = 32.dp, top = 8.dp, bottom = 8.dp),
@@ -62,14 +68,56 @@ fun ActiveDrugListScreen(
     }
 }
 
+
 @Composable
-fun Logout() {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-        IconButton(modifier = Modifier.padding(end = 11.dp), onClick = { /*TODO*/ }) {
-            Icon(imageVector = Icons.Outlined.Logout, contentDescription = "Loggout")
+fun AlertDialogLogout(openDialog: Boolean) {
+    MaterialTheme {
+        Column {
+            if (openDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                    },
+                    title = {
+                        Text(text = "Dialog Title")
+                    },
+                    text = {
+                        Text("Here is a text ")
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                openDialog = false
+                            }) {
+                            Text("This is the Confirm Button")
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                openDialog = false
+                            }) {
+                            Text("This is the dismiss Button")
+                        }
+                    }
+                )
+            }
         }
     }
 }
+
+
+@Composable
+fun Logout(
+    onClick: () -> Unit
+) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+        IconButton(
+            modifier = Modifier.padding(end = 11.dp),
+            onClick = onClick
+        ) {}
+    }
+}
+
 
 @Composable
 fun ListIcon(showByColumnList: MutableState<Boolean>) {

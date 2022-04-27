@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,8 @@ import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginScreen
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugListScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
 
 @AndroidEntryPoint
@@ -47,7 +50,7 @@ fun MyMultiPrev() {
         }
 
         composable("mainScreen") {
-
+            ActiveDrugListScreen()
         }
 
 //        composable("dishes/{category}", arguments = listOf(navArgument("category") {
