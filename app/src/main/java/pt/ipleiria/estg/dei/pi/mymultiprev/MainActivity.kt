@@ -17,7 +17,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.MainScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginScreen
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugListScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
 
 @AndroidEntryPoint
@@ -38,12 +40,16 @@ fun MyMultiPrev() {
     val navController = rememberNavController()
 
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "mainScreen") {
 
         composable("login") {
             LoginScreen(){
 
             }
+        }
+
+        composable("mainScreen") {
+            MainScreen()
         }
 
 //        composable("dishes/{category}", arguments = listOf(navArgument("category") {
