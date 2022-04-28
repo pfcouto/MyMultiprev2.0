@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
@@ -35,6 +36,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ActiveDrugListScreen(
+    navController: NavHostController
 //    viewModel: ActiveDrugListViewModel = hiltViewModel()
 ) {
 
@@ -63,7 +65,7 @@ fun ActiveDrugListScreen(
             LazyColumn() {
                 items(items = alldata) { item ->
 
-                    AntibioticCard_Prescription_Item_Short_Item(item)
+                    AntibioticCard_Prescription_Item_Short_Item(navController = navController, item = item)
                 }
             }
         } else {
@@ -107,12 +109,12 @@ fun ListIcon(showByColumnList: MutableState<Boolean>) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AntibioticCard_Prescription_Item_Short_Item(item: TesteLazyColumn) {
+fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController, item: TesteLazyColumn) {
     Card(
         modifier = Modifier
             .padding(horizontal = 24.dp, vertical = 12.dp)
             .fillMaxWidth()
-            .clickable { },
+            .clickable { navController.navigate("descricaoAntibiotico") },
         elevation = 8.dp
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -272,13 +274,13 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: TesteLazyColumn) {
 //}
 
 
-@Preview(showBackground = true)
-@Composable
-fun MainPreview() {
-    MyMultiPrevTheme {
-        ActiveDrugListScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun MainPreview() {
+//    MyMultiPrevTheme {
+//        ActiveDrugListScreen()
+//    }
+//}
 //
 //@Preview(showBackground = true)
 //@Composable

@@ -15,7 +15,7 @@ fun BottomNavGraph(navController: NavHostController) {
         startDestination = BottomBarScreen.Antibioticos.route) {
 
         composable(route = BottomBarScreen.Antibioticos.route) {
-            ActiveDrugListScreen()
+            ActiveDrugListScreen(navController = navController)
         }
         
         composable(route = BottomBarScreen.Sintomas.route) {
@@ -24,6 +24,10 @@ fun BottomNavGraph(navController: NavHostController) {
         
         composable(route = BottomBarScreen.Historico.route) {
             Text(text = "HISTORICO")
+        }
+
+        composable(route = "descricaoAntibiotico") {
+            DrugDetailsScreen()
         }
     }
 }
