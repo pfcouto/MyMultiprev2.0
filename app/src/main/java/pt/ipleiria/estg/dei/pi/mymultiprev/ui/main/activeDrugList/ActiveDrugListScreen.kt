@@ -1,10 +1,10 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -17,22 +17,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.rememberPagerState
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.TesteLazyColumn
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.TesteLazyColumRepository
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -43,11 +43,15 @@ fun ActiveDrugListScreen(
 
     val showByColumnList = remember { mutableStateOf(true) }
 
+    val listOfDrugs by viewModel.drugs.observeAsState()
+
+
 
     // para testes
     val testRepository = TesteLazyColumRepository()
     val alldata = testRepository.getAllData()
     //
+
 
     Column {
 
@@ -62,18 +66,27 @@ fun ActiveDrugListScreen(
 
         ListIcon(showByColumnList)
 
+        var newList: List<Drug> = mutableListOf()
+
+        if (!listOfDrugs?.data.isNullOrEmpty()) {
+            newList = listOfDrugs?.data!!
+        }
+
         if (showByColumnList.value) {
             LazyColumn() {
-                items(items = alldata) { item ->
 
-                    AntibioticCard_Prescription_Item_Short_Item(navController = navController, item = item)
+
+                    items(items = newList) { item ->
+
+                        AntibioticCard_Prescription_Item_Short_Item(navController = navController, item = item)
                 }
+
             }
         } else {
 
 
             LazyColumn() {
-                items(items = alldata) { item ->
+                items(items = newList) { item ->
 
                     AntibioticCard_Prescription_Item_Full_Item(item)
                 }
@@ -110,7 +123,10 @@ fun ListIcon(showByColumnList: MutableState<Boolean>) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController, item: TesteLazyColumn) {
+fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController, item: Drug) {
+
+
+
     Card(
         modifier = Modifier
             .padding(horizontal = 24.dp, vertical = 12.dp)
@@ -136,14 +152,14 @@ fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W600,
-                    text = "${item.firstString}"
+                    text = "${item.alias}"
                 )
                 Spacer(modifier = Modifier.height(1.dp))
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W300,
-                    text = "${item.secondString}"
+                    text = "Teste"
                 )
             }
 
@@ -157,9 +173,11 @@ fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController
 }
 
 @Composable
-fun AntibioticCard_Prescription_Item_Full_Item(item: TesteLazyColumn) {
+fun AntibioticCard_Prescription_Item_Full_Item(item: Drug) {
 
     val alarmOn = remember { mutableStateOf(true) }
+
+    val context = LocalContext.current
 
     val icon = if (alarmOn.value)
         Icons.Filled.AlarmOn
@@ -199,7 +217,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: TesteLazyColumn) {
                             fontSize = 20.sp,
                             fontWeight = FontWeight.W600,
                             maxLines = 2,
-                            text = "${item.firstString}"
+                            text = "${item.alias}"
                         )
                         Spacer(modifier = Modifier.height(1.dp))
                         Text(
@@ -207,18 +225,23 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: TesteLazyColumn) {
                                 .padding(start = 16.dp),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W300,
-                            text = "${item.secondString}"
+                            text = "teste"
                         )
 
                     }
 //                    Spacer(modifier = Modifier.weight(1f))
                     IconButton(
                         modifier = Modifier.padding(end = 11.dp),
-                        onClick = { alarmOn.value = !alarmOn.value }) {
+
+                        // TODO passar o que esta dentro do onclick para uma funcao
+                        onClick = { alarmOn.value = !alarmOn.value;
+                            if (alarmOn.value)
+                                Toast.makeText(context, "Notificacao Ativada", Toast.LENGTH_SHORT).show()
+                            else
+                                Toast.makeText(context, "Notificacao Desativada", Toast.LENGTH_SHORT).show()
+                        }) {
                         Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
                     }
-
-
                 }
                 Image(modifier = Modifier
                     .fillMaxWidth()

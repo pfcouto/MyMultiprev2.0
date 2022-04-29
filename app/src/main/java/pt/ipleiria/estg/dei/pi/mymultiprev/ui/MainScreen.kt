@@ -51,7 +51,6 @@ fun BottomBar(navController: NavHostController) {
     }
 }
 
-// TODO FAZER ALTERACAO da versao do compose e do kotlin e voltar aqui
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RowScope.AddItem(
