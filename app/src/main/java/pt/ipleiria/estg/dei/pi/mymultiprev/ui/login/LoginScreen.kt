@@ -30,8 +30,12 @@ import java.net.HttpURLConnection
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onLoginClick: (String) -> Unit
+    onLoginSuccess: () -> Unit
 ) {
+
+    if(viewModel.isLoggedIn){
+        onLoginSuccess()
+    }
 
     val TAG = "LoginComposable"
 
@@ -199,6 +203,8 @@ fun LoginScreen(
                 viewModel.isLoggedIn = true
                 test = "LOGGED SUCCESSFULLY"
                 isLoading = false
+
+                onLoginSuccess()
             }
             is Resource.Error -> {
 //                test = if (response.isNetworkError) {

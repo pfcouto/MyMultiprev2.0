@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -36,8 +37,8 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ActiveDrugListScreen(
-    navController: NavHostController
-//    viewModel: ActiveDrugListViewModel = hiltViewModel()
+    navController: NavHostController,
+    viewModel: ActiveDrugListViewModel = hiltViewModel()
 ) {
 
     val showByColumnList = remember { mutableStateOf(true) }

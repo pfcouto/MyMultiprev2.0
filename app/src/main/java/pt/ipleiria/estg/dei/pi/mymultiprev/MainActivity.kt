@@ -40,45 +40,17 @@ fun MyMultiPrev() {
     val navController = rememberNavController()
 
 
-    NavHost(navController = navController, startDestination = "mainScreen") {
+    NavHost(navController = navController, startDestination = "login") {
 
         composable("login") {
             LoginScreen(){
-
+                navController.navigate("mainScreen")
             }
         }
 
         composable("mainScreen") {
             MainScreen()
         }
-
-//        composable("dishes/{category}", arguments = listOf(navArgument("category") {
-//            type = NavType.StringType
-//        })) {
-//
-//            var categoryStr = remember {
-//                it.arguments?.getString("category")
-//            }
-//
-//
-//
-//            DishesScreen(category = categoryStr){ dishId ->
-//                navController.navigate("detail/${dishId}")
-//            }
-//        }
-//
-//        composable("detail/{mealId}", arguments = listOf(navArgument("mealId") {
-//            type = NavType.StringType
-//        })) {
-//            var mealStrId = remember {
-//                it.arguments?.getString("mealId")
-//            }
-//
-//            DetailScreen(mealID = mealStrId)
-//        }
-//
-//        // DishesScreen
-//        // CategoryScreen()
     }
 }
 

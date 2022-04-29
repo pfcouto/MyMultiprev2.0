@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -115,17 +116,17 @@ fun Pager() {
                         when (index) {
                             0 -> {
                                 Details()
-//                                Text(text = "Text_1")
                             }
                             1 -> {
-//                                LazyColumn(content = )
-                                Tomas()
-//                                Text(text = "Text_2")
+                                LazyColumn() {
+                                    items(10) {
+                                        Tomas()
+                                    }
+                                }
                             }
 
                             2 -> {
-                                Text(text = "Text_3")
-
+                                MoreDetails()
                             }
                         }
                     }
@@ -290,7 +291,36 @@ fun Tomas() {
     }
 }
 
-@Preview
+@Composable
+fun MoreDetails() {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {  }) {
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            text = "Classe Farmacêutica:"
+        )
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+            fontSize = 18.sp,
+            text = "Exemplo"
+        )
+
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            text = "Terapias:"
+        )
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+            fontSize = 18.sp,
+            text = "Exemplo 2"
+        )
+    }
+}
+
+@Preview(showBackground = true)
 @Composable
 fun AppBarPreview() {
 //    Tomas()
