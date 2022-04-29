@@ -1,13 +1,14 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -41,11 +42,17 @@ fun BottomBar(navController: NavHostController) {
 
     BottomNavigation() {
         screens.forEach { screen ->
-            AddItem(screen = screen, currentDestination = currentDestination, navController = navController)
+            AddItem(
+                screen = screen,
+                currentDestination = currentDestination,
+                navController = navController
+            )
         }
     }
 }
 
+// TODO FAZER ALTERACAO da versao do compose e do kotlin e voltar aqui
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RowScope.AddItem(
     screen: BottomBarScreen,
@@ -55,8 +62,20 @@ fun RowScope.AddItem(
     BottomNavigationItem(label = {
         Text(text = screen.title)
     },
-        icon = {Icon(imageVector = screen.icon, contentDescription = "NavigationIcon")},
-        selected = currentDestination?.hierarchy?.any{
+        icon = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                if (screen.badgeCount > 0) {
+                    BadgeBox(badgeContent = {
+                        Text(text = screen.badgeCount.toString())
+                    }) {
+                        Icon(imageVector = screen.icon, contentDescription = "NavigationIcon")
+                    }
+                } else {
+                    Icon(imageVector = screen.icon, contentDescription = "NavigationIcon")
+                }
+            }
+        },
+        selected = currentDestination?.hierarchy?.any {
             it.route == screen.route
         } == true,
         onClick = { navController.navigate(screen.route) })

@@ -9,23 +9,27 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class BottomBarScreen(
     val route: String,
     val title: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val badgeCount: Int
 ) {
     object Antibioticos : BottomBarScreen(
         route = "antibioticos",
         title = "Antibióticos",
-        icon = Icons.Outlined.PlaylistAddCheck
+        icon = Icons.Outlined.PlaylistAddCheck,
+        badgeCount = 8
     )
 
     object Sintomas : BottomBarScreen(
         route = "sintomas",
         title = "Registar Sintomas",
-        icon = Icons.Outlined.Healing
+        icon = Icons.Outlined.Healing,
+        badgeCount = 0
     )
 
     object Historico : BottomBarScreen(
         route = "historico",
         title = "Histórico",
-        icon = Icons.Outlined.History
+        icon = Icons.Outlined.History,
+        badgeCount = 0
     )
 }
