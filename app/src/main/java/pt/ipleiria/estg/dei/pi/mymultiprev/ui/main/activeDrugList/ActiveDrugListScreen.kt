@@ -150,7 +150,8 @@ fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController
             Column(modifier = Modifier.width(160.dp)) {
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
+                    maxLines = 1,
                     fontWeight = FontWeight.W600,
                     text = "${item.alias}"
                 )
