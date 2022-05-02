@@ -64,7 +64,7 @@ fun RowScope.AddItem(
         icon = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 if (screen.badgeCount > 0) {
-                    BadgeBox(badgeContent = {
+                    BadgedBox(badge = {
                         Text(text = screen.badgeCount.toString())
                     }) {
                         Icon(imageVector = screen.icon, contentDescription = "NavigationIcon")
