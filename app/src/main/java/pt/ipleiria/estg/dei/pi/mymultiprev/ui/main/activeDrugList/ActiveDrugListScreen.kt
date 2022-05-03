@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -13,17 +14,14 @@ import androidx.compose.material.icons.filled.AlarmOn
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.outlined.ListAlt
 import androidx.compose.material.icons.outlined.Logout
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,6 +30,8 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.TesteLazyColumRepository
 
 @OptIn(ExperimentalPagerApi::class)
@@ -41,17 +41,36 @@ fun ActiveDrugListScreen(
     viewModel: ActiveDrugListViewModel = hiltViewModel()
 ) {
 
+    val TAG = "ActiveDrugListFragment"
+
     val showByColumnList = remember { mutableStateOf(true) }
 
     val listOfDrugs by viewModel.drugs.observeAsState()
+    val listOfPairs by viewModel.pairs.observeAsState()
 
+
+    val listOfPrescriptions by viewModel.prescriptionItems.observeAsState()
+    when (listOfPrescriptions) {
+        is Resource.Success -> {
+            Log.d(TAG, "Resource Success")
+            if (!(listOfPrescriptions as Resource.Success<List<PrescriptionItem>>).data.isNullOrEmpty()) {
+                viewModel.updatePairs()
+                viewModel.updateNextAlarm()
+            }
+        }
+        is Resource.Loading -> {
+            Log.d(TAG, "Resource Loading")
+        }
+        else -> {
+            Log.d(TAG, "Resource Error")
+        }
+    }
 
 
     // para testes
     val testRepository = TesteLazyColumRepository()
     val alldata = testRepository.getAllData()
     //
-
 
     Column {
 
@@ -72,24 +91,39 @@ fun ActiveDrugListScreen(
             newList = listOfDrugs?.data!!
         }
 
-        if (showByColumnList.value) {
-            LazyColumn() {
+        Log.d("Pairs", listOfPairs?.size.toString())
+
+        if (listOfPairs?.isNotEmpty() == true) {
+            if (showByColumnList.value) {
+                LazyColumn() {
 
 
+                    items(items = listOfPairs!!) { item ->
+
+                        AntibioticCard_Prescription_Item_Short_Item(
+                            navController = navController,
+                            item = item
+                        )
+                    }
+
+                }
+            } else {
+
+                LazyColumn() {
                     items(items = newList) { item ->
 
-                        AntibioticCard_Prescription_Item_Short_Item(navController = navController, item = item)
+                        AntibioticCard_Prescription_Item_Full_Item(item)
+                    }
                 }
-
             }
         } else {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-
-            LazyColumn() {
-                items(items = newList) { item ->
-
-                    AntibioticCard_Prescription_Item_Full_Item(item)
-                }
+                Text(fontSize = 32.sp, fontWeight = FontWeight.SemiBold, text = "Sem Antibióticos")
             }
         }
     }
@@ -123,13 +157,12 @@ fun ListIcon(showByColumnList: MutableState<Boolean>) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController, item: Drug) {
-
+fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController, item: Pair<PrescriptionItem, Drug?>) {
 
 
     Card(
         modifier = Modifier
-            .padding(horizontal = 24.dp, vertical = 12.dp)
+            .padding(start = 24.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)
             .fillMaxWidth()
             .clickable { navController.navigate("descricaoAntibiotico") },
         elevation = 8.dp
@@ -153,7 +186,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController
                     fontSize = 18.sp,
                     maxLines = 1,
                     fontWeight = FontWeight.W600,
-                    text = "${item.alias}"
+                    text = "${item.second?.alias}"
                 )
                 Spacer(modifier = Modifier.height(1.dp))
                 Text(
@@ -211,7 +244,6 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Drug) {
                     ) {
 
 
-
                         Text(
                             modifier = Modifier
                                 .padding(start = 16.dp, top = 16.dp, end = 16.dp),
@@ -235,11 +267,17 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Drug) {
                         modifier = Modifier.padding(end = 11.dp),
 
                         // TODO passar o que esta dentro do onclick para uma funcao
-                        onClick = { alarmOn.value = !alarmOn.value;
+                        onClick = {
+                            alarmOn.value = !alarmOn.value;
                             if (alarmOn.value)
-                                Toast.makeText(context, "Notificacao Ativada", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Notificacao Ativada", Toast.LENGTH_SHORT)
+                                    .show()
                             else
-                                Toast.makeText(context, "Notificacao Desativada", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Notificacao Desativada",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                         }) {
                         Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
                     }
@@ -262,41 +300,6 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Drug) {
         }
     }
 }
-
-//@OptIn(ExperimentalPagerApi::class)
-//@Composable
-//fun HorizontalIndicatorPager() {
-//    Column(
-//        Modifier
-//            .fillMaxSize()
-//            .padding(10.dp)) {
-//        val pagerSelect = rememberPagerState(pageCount = list.size)
-//
-//        Box(modifier = Modifier.fillMaxWidth()) {
-//            HorizontalPager(state = pagerSelect) { index ->
-//                Column(Modifier.fillMaxWidth()) {
-//                    when(index){
-//                        0 -> {
-//
-//                        }
-//                        1 -> {
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//
-//
-//        HorizontalPagerIndicator(
-//            pagerState = pagerSelect,
-//            modifier = Modifier
-//                .align(Alignment.CenterHorizontally)
-//                .padding(16.dp),
-//        )
-//    }
-//}
 
 
 //@Preview(showBackground = true)

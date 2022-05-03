@@ -53,11 +53,3 @@ fun MyMultiPrev() {
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MyMultiPrevTheme {
-//        Greeting("Android")
-    }
-}
