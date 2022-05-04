@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.AlarmOff
 import androidx.compose.material.icons.filled.AlarmOn
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.outlined.ListAlt
+import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -189,7 +190,9 @@ fun Logout(
         IconButton(
             modifier = Modifier.padding(end = 11.dp),
             onClick = onClick
-        ) {}
+        ) {
+            Icon(imageVector = Icons.Outlined.Logout, contentDescription = "Loggout")
+        }
     }
 }
 
