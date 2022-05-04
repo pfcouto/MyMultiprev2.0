@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
-import android.app.AlertDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,35 +9,32 @@ import androidx.compose.material.icons.filled.AlarmOff
 import androidx.compose.material.icons.filled.AlarmOn
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.outlined.ListAlt
-import androidx.compose.material.icons.outlined.Logout
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 
 @Composable
 fun ActiveDrugListScreen(
-    viewModel: ActiveDrugListViewModel = hiltViewModel()
+    mainViewModel: MainViewModel = hiltViewModel(),
+    logout: () -> Unit
 ) {
 
     val showByColumnList = remember { mutableStateOf(true) }
     var openDialog by remember { mutableStateOf(false) }
 
 
-    AlertDialogLogout(openDialog = openDialog)
+    AlertDialogLogout(openDialog = openDialog,{openDialog=false}){
+        mainViewModel.deleteAppData()
+        logout()
+    }
 
     Column {
 
@@ -70,7 +66,7 @@ fun ActiveDrugListScreen(
 
 
 @Composable
-fun AlertDialogLogout(openDialog: Boolean) {
+fun AlertDialogLogout(openDialog: Boolean, setDialogFalse: () -> Unit, logout: () -> Unit) {
     MaterialTheme {
         Column {
             if (openDialog) {
@@ -78,25 +74,26 @@ fun AlertDialogLogout(openDialog: Boolean) {
                     onDismissRequest = {
                     },
                     title = {
-                        Text(text = "Dialog Title")
+                        Text(text = "LOGOUT")
                     },
                     text = {
-                        Text("Here is a text ")
+                        Text("Are you sure you want to logout?")
                     },
                     confirmButton = {
                         Button(
                             onClick = {
-                                openDialog = false
+                                setDialogFalse()
+                                logout()
                             }) {
-                            Text("This is the Confirm Button")
+                            Text("Logout")
                         }
                     },
                     dismissButton = {
                         Button(
                             onClick = {
-                                openDialog = false
+                                setDialogFalse()
                             }) {
-                            Text("This is the dismiss Button")
+                            Text("Cancel")
                         }
                     }
                 )
@@ -250,65 +247,5 @@ fun AntibioticCard_Prescription_Item_Full_Item() {
                 Text(text = "Confirmar Toma / Ver Detalhes")
             }
         }
-    }
-}
-
-//@OptIn(ExperimentalPagerApi::class)
-//@Composable
-//fun HorizontalIndicatorPager() {
-//    Column(
-//        Modifier
-//            .fillMaxSize()
-//            .padding(10.dp)) {
-//        val pagerSelect = rememberPagerState(pageCount = list.size)
-//
-//        Box(modifier = Modifier.fillMaxWidth()) {
-//            HorizontalPager(state = pagerSelect) { index ->
-//                Column(Modifier.fillMaxWidth()) {
-//                    when(index){
-//                        0 -> {
-//
-//                        }
-//                        1 -> {
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//
-//
-//        HorizontalPagerIndicator(
-//            pagerState = pagerSelect,
-//            modifier = Modifier
-//                .align(Alignment.CenterHorizontally)
-//                .padding(16.dp),
-//        )
-//    }
-//}
-
-
-@Preview(showBackground = true)
-@Composable
-fun MainPreview() {
-    MyMultiPrevTheme {
-        ActiveDrugListScreen()
-    }
-}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun CardPreview() {
-//    MyMultiPrevTheme {
-//        AntibioticCard_Prescription_Item_Short_Item()
-//    }
-//}
-
-@Preview(showBackground = true)
-@Composable
-fun CardPreview2() {
-    MyMultiPrevTheme {
-        AntibioticCard_Prescription_Item_Full_Item()
     }
 }

@@ -35,9 +35,9 @@ fun LoginScreen(
     onLoginSuccess: (String) -> Unit
 ) {
 
-    if(viewModel.isLoggedIn){
-        onLoginSuccess("")
-    }
+//    if(viewModel.isLoggedIn){
+//        onLoginSuccess("")
+//    }
 
 
     val TAG = "LoginComposable"
