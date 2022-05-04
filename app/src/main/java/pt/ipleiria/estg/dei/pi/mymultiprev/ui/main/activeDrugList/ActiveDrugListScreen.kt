@@ -41,11 +41,10 @@ fun ActiveDrugListScreen(
     viewModel: ActiveDrugListViewModel = hiltViewModel()
 ) {
 
-    val TAG = "ActiveDrugListFragment"
+    val TAG = "ActiveDrugListScreen"
 
     val showByColumnList = remember { mutableStateOf(true) }
 
-    val listOfDrugs by viewModel.drugs.observeAsState()
     val listOfPairs by viewModel.pairs.observeAsState()
 
 
@@ -85,13 +84,7 @@ fun ActiveDrugListScreen(
 
         ListIcon(showByColumnList)
 
-        var newList: List<Drug> = mutableListOf()
-
-        if (!listOfDrugs?.data.isNullOrEmpty()) {
-            newList = listOfDrugs?.data!!
-        }
-
-        Log.d("Pairs", listOfPairs?.size.toString())
+        Log.d(TAG, listOfPairs?.size.toString())
 
         if (listOfPairs?.isNotEmpty() == true) {
             if (showByColumnList.value) {
@@ -99,6 +92,8 @@ fun ActiveDrugListScreen(
 
 
                     items(items = listOfPairs!!) { item ->
+
+                        Log.d(TAG, item.second.toString())
 
                         AntibioticCard_Prescription_Item_Short_Item(
                             navController = navController,
@@ -110,7 +105,7 @@ fun ActiveDrugListScreen(
             } else {
 
                 LazyColumn() {
-                    items(items = newList) { item ->
+                    items(items = listOfPairs!!) { item ->
 
                         AntibioticCard_Prescription_Item_Full_Item(item)
                     }
@@ -207,7 +202,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController
 }
 
 @Composable
-fun AntibioticCard_Prescription_Item_Full_Item(item: Drug) {
+fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug?>) {
 
     val alarmOn = remember { mutableStateOf(true) }
 
@@ -250,7 +245,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Drug) {
                             fontSize = 20.sp,
                             fontWeight = FontWeight.W600,
                             maxLines = 2,
-                            text = "${item.alias}"
+                            text = "${item.second?.alias}"
                         )
                         Spacer(modifier = Modifier.height(1.dp))
                         Text(
