@@ -9,14 +9,14 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugList
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.DrugDetailsScreen
 
 @Composable
-fun BottomNavGraph(navController: NavHostController) {
-
+fun BottomNavGraph(navController: NavHostController, navControllerLogin : NavHostController) {
+    //TODO VER NAVS CONTROLLERS (2 para 1)
     NavHost(navController = navController,
         startDestination = BottomBarScreen.Antibioticos.route) {
 
         composable(route = BottomBarScreen.Antibioticos.route) {
             ActiveDrugListScreen(navController = navController){
-
+                navControllerLogin.navigate("login")
             }
         }
 

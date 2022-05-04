@@ -16,7 +16,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    navControllerLogin: NavHostController
+) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
@@ -24,7 +26,7 @@ fun MainScreen() {
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            BottomNavGraph(navController = navController)
+            BottomNavGraph(navController = navController, navControllerLogin = navControllerLogin)
         }
     }
 }

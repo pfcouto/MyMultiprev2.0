@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.MainScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugListScreen
@@ -44,17 +45,7 @@ fun MyMultiPrev(
         }
 
         composable("mainScreen") {
-            ActiveDrugListScreen(navController) {
-                navController.navigate("login")
-            }
+            MainScreen(navController)
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    MyMultiPrevTheme {
-////        Greeting("Android")
-//    }
-//}
