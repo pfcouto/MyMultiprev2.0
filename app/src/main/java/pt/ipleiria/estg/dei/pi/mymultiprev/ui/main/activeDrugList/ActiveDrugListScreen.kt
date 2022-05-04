@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,12 +44,16 @@ fun ActiveDrugListScreen(
 
     val showByColumnList = remember { mutableStateOf(true) }
 
+    val listOfDrugs by viewModel.drugs.observeAsState()
     val listOfPairs by viewModel.pairs.observeAsState()
-
-
     val listOfPrescriptions by viewModel.prescriptionItems.observeAsState()
+
+    var loadingData by remember { mutableStateOf(false) }
+
+
     when (listOfPrescriptions) {
         is Resource.Success -> {
+            loadingData = false
             Log.d(TAG, "Resource Success")
             if (!(listOfPrescriptions as Resource.Success<List<PrescriptionItem>>).data.isNullOrEmpty()) {
                 viewModel.updatePairs()
@@ -58,9 +61,11 @@ fun ActiveDrugListScreen(
             }
         }
         is Resource.Loading -> {
+            loadingData = true
             Log.d(TAG, "Resource Loading")
         }
         else -> {
+            loadingData = true
             Log.d(TAG, "Resource Error")
         }
     }
@@ -84,23 +89,19 @@ fun ActiveDrugListScreen(
 
         ListIcon(showByColumnList)
 
-        Log.d(TAG, listOfPairs?.size.toString())
+        Log.d("Pairs", listOfPairs?.size.toString())
 
         if (listOfPairs?.isNotEmpty() == true) {
             if (showByColumnList.value) {
                 LazyColumn() {
 
-
                     items(items = listOfPairs!!) { item ->
-
-                        Log.d(TAG, item.second.toString())
 
                         AntibioticCard_Prescription_Item_Short_Item(
                             navController = navController,
                             item = item
                         )
                     }
-
                 }
             } else {
 
@@ -117,8 +118,21 @@ fun ActiveDrugListScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (loadingData) {
 
-                Text(fontSize = 32.sp, fontWeight = FontWeight.SemiBold, text = "Sem Antibióticos")
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(68.dp)
+                            .fillMaxSize()
+                    )
+                } else {
+
+                    Text(
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        text = "Sem Antibióticos"
+                    )
+                }
             }
         }
     }
@@ -152,7 +166,10 @@ fun ListIcon(showByColumnList: MutableState<Boolean>) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AntibioticCard_Prescription_Item_Short_Item(navController: NavHostController, item: Pair<PrescriptionItem, Drug?>) {
+fun AntibioticCard_Prescription_Item_Short_Item(
+    navController: NavHostController,
+    item: Pair<PrescriptionItem, Drug?>
+) {
 
 
     Card(
