@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
 import android.util.Log
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,12 +34,19 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcquisitionViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.seeDetails.SeeDetailsViewModel
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ActiveDrugListScreen(
     navController: NavHostController,
     viewModel: ActiveDrugListViewModel = hiltViewModel(),
+    confirmViewModel: ConfirmAcquisitionViewModel = hiltViewModel(),
+    confirmIntakeViewModel: ConfirmIntakeViewModel = hiltViewModel(),
+    seeDetailsViewModel: SeeDetailsViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     logout: () -> Unit
 ) {
@@ -99,24 +108,86 @@ fun ActiveDrugListScreen(
         Log.d("Pairs", listOfPairs?.size.toString())
 
         if (listOfPairs?.isNotEmpty() == true) {
-            if (showByColumnList.value) {
-                LazyColumn() {
 
-                    items(items = listOfPairs!!) { item ->
+            LazyColumn() {
 
+                items(items = listOfPairs!!) { item ->
+
+                    var prescriptionAcquisitionConfirmed = remember { mutableStateOf(false) }
+                    val prescriptionIsOverdue = remember { mutableStateOf(false) }
+
+                    // TODO ver isto
+                    if (item.first.acquiredAt == null) {
+                        prescriptionAcquisitionConfirmed.value = false
+                    } else {
+                        prescriptionAcquisitionConfirmed.value = true
+                        if (item.first.nextIntake != null) {
+                            if (item.first.isOverdue) {
+                                prescriptionIsOverdue.value = true
+                            }
+                        }
+                    }
+
+                    var timeTextText by remember { mutableStateOf("") }
+
+                    if (item.first.acquiredAt == null) {
+                        timeTextText = "Confirmar Aquisição"
+                    } else {
+                        if (item.first.nextIntake != null) {
+                            if (item.first.isOverdue) {
+                                timeTextText = "Toma em Atraso"
+                            } else {
+                                val diffMillis = item.first.timeUntil()
+                                val dayDiff = TimeUnit.MILLISECONDS.toDays(diffMillis!!)
+                                val hourDiff =
+                                    TimeUnit.MILLISECONDS.toHours(diffMillis) % TimeUnit.DAYS.toHours(
+                                        1
+                                    )
+                                val minDiff =
+                                    TimeUnit.MILLISECONDS.toMinutes(diffMillis) % TimeUnit.HOURS.toMinutes(
+                                        1
+                                    )
+                                if (dayDiff == 0L) {
+                                    if (hourDiff == 0L) {
+                                        if (minDiff == 0L)
+                                            timeTextText = "Menos de um minuto"
+                                        else
+                                            timeTextText = "${minDiff}min"
+                                    } else
+                                        timeTextText = "${hourDiff} e ${minDiff}min"
+                                } else
+                                    timeTextText = "${dayDiff}d e ${hourDiff}h"
+                            }
+                        }
+                    }
+
+
+
+                    if (showByColumnList.value) {
                         AntibioticCard_Prescription_Item_Short_Item(
                             navController = navController,
-                            item = item
+                            item = item,
+                            seeDetailsViewModel = seeDetailsViewModel,
+                            confirmIntakeViewModel = confirmIntakeViewModel,
+                            confirmViewModel = confirmViewModel,
+                            prescriptionAcquisitionConfirmed = prescriptionAcquisitionConfirmed,
+                            prescriptionIsOverdue = prescriptionIsOverdue,
+                            timeTextText = timeTextText
+                        )
+                    } else {
+                        AntibioticCard_Prescription_Item_Full_Item(
+                            navController = navController,
+                            item = item,
+                            seeDetailsViewModel = seeDetailsViewModel,
+                            confirmIntakeViewModel = confirmIntakeViewModel,
+                            confirmViewModel = confirmViewModel,
+                            prescriptionAcquisitionConfirmed = prescriptionAcquisitionConfirmed,
+                            prescriptionIsOverdue = prescriptionIsOverdue,
+                            timeTextText = timeTextText
                         )
                     }
-                }
-            } else {
 
-                LazyColumn() {
-                    items(items = listOfPairs!!) { item ->
 
-                        AntibioticCard_Prescription_Item_Full_Item(item)
-                    }
                 }
             }
         } else {
@@ -217,8 +288,23 @@ fun ListIcon(showByColumnList: MutableState<Boolean>) {
 @Composable
 fun AntibioticCard_Prescription_Item_Short_Item(
     navController: NavHostController,
-    item: Pair<PrescriptionItem, Drug?>
+    item: Pair<PrescriptionItem, Drug?>,
+    seeDetailsViewModel: SeeDetailsViewModel,
+    confirmIntakeViewModel: ConfirmIntakeViewModel,
+    confirmViewModel: ConfirmAcquisitionViewModel,
+    prescriptionAcquisitionConfirmed: MutableState<Boolean>,
+    prescriptionIsOverdue: MutableState<Boolean>,
+    timeTextText: String
 ) {
+
+    val cardBackgroundColor = if (!prescriptionAcquisitionConfirmed.value)
+        Color.LightGray
+    else MaterialTheme.colors.surface
+
+    val timeTextColor = if (prescriptionIsOverdue.value)
+        Color.Red
+    else
+        Color.DarkGray
 
 
     Card(
@@ -226,20 +312,43 @@ fun AntibioticCard_Prescription_Item_Short_Item(
             .padding(start = 24.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)
             .fillMaxWidth()
             .clickable { navController.navigate("descricaoAntibiotico") },
-        elevation = 8.dp
+        elevation = 8.dp,
+        backgroundColor = cardBackgroundColor
+
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+
+//            Glide.with(LocalContext.current).load(item.first.imageLocation)
+//                .placeholder(R.drawable.default_img).into(this)
+//            item.first.imageLocation?.let {
+//                CoilImage(
+//                    imageModel = it,
+//                    // Crop, Fit, Inside, FillHeight, FillWidth, None
+//                    contentScale = ContentScale.Crop,
+//                    // shows a placeholder while loading the image.
+//                    placeHolder = ImageBitmap.imageResource(R.drawable.placeholder),
+//                    // shows an error ImageBitmap when the request failed.
+//                    error = ImageBitmap.imageResource(R.drawable.error_image)
+//                )
+//            }
+//            GlideImage(
+//                imageModel = item.first.imageLocation,
+//                // Crop, Fit, Inside, FillHeight, FillWidth, None
+//                contentScale = ContentScale.Crop,
+//                // shows a placeholder while loading the image.
+//                placeHolder = ImageBitmap.imageResource(R.drawable.default_img),
+//                // shows an error ImageBitmap when the request failed.
+//                error = ImageBitmap.imageResource(R.drawable.error_image)
+//            )
+
+            //TODO alterar imagem, mas coloquei so para ficar bonito
             Image(
                 modifier = Modifier
                     .size(80.dp)
                     .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
-                painter = rememberImagePainter(
-                    data = "https://www.example.com/image.jpg",
-                    builder = {
-                        placeholder(R.drawable.placeholder)
-                    }
-                ),
-                contentDescription = "Imagem do medicamento")
+                painter = painterResource(id = R.drawable.default_img),
+                contentDescription = "Imagem do medicamento"
+            )
 
             Column(modifier = Modifier.width(160.dp)) {
                 Text(
@@ -254,21 +363,62 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W300,
-                    text = "Teste"
+                    color = timeTextColor,
+                    text = timeTextText
                 )
             }
 
             Button(modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth(), onClick = { /*TODO*/ }) {
+                .fillMaxWidth(),
+                onClick = {
+                    onClickActions(
+                        item,
+                        seeDetailsViewModel = seeDetailsViewModel,
+                        confirmIntakeViewModel = confirmIntakeViewModel,
+                        confirmViewModel = confirmViewModel,
+                        prescriptionAcquisitionConfirmed = prescriptionAcquisitionConfirmed,
+                        prescriptionIsOverdue = prescriptionIsOverdue
+                    )
+                }) {
                 Text(text = "VER")
             }
         }
     }
 }
 
+fun onClickActions(
+    pair: Pair<PrescriptionItem, Drug?>,
+    seeDetailsViewModel: SeeDetailsViewModel,
+    confirmIntakeViewModel: ConfirmIntakeViewModel,
+    confirmViewModel: ConfirmAcquisitionViewModel,
+    prescriptionAcquisitionConfirmed: MutableState<Boolean>,
+    prescriptionIsOverdue: MutableState<Boolean>
+) {
+    if (pair.first.acquiredAt == null) {
+        onConfirmAcquisitionClick(pair = pair, confirmViewModel = confirmViewModel)
+    } else {
+        if (pair.first.nextIntake != null) {
+            if (pair.first.isOverdue) {
+                onConfirmDoseClick(pair = pair, confirmIntakeViewModel = confirmIntakeViewModel)
+            } else {
+//                onSeeDetailsClick(pair = pair, seeDetailsViewModel = seeDetailsViewModel, /*todo*/)
+            }
+        }
+    }
+}
+
 @Composable
-fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug?>) {
+fun AntibioticCard_Prescription_Item_Full_Item(
+    item: Pair<PrescriptionItem, Drug?>,
+    navController: NavHostController,
+    seeDetailsViewModel: SeeDetailsViewModel,
+    confirmIntakeViewModel: ConfirmIntakeViewModel,
+    confirmViewModel: ConfirmAcquisitionViewModel,
+    prescriptionAcquisitionConfirmed: MutableState<Boolean>,
+    prescriptionIsOverdue: MutableState<Boolean>,
+    timeTextText: String
+) {
 
     val alarmOn = remember { mutableStateOf(true) }
 
@@ -282,6 +432,15 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug
         Color.Green
     else Color.Red
 
+    val cardBackgroundColor = if (!prescriptionAcquisitionConfirmed.value)
+        Color.LightGray
+    else MaterialTheme.colors.surface
+
+    val timeTextColor = if (prescriptionIsOverdue.value)
+        Color.Red
+    else
+        Color.DarkGray
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -291,7 +450,8 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp),
-            elevation = 10.dp
+            elevation = 10.dp,
+            backgroundColor = cardBackgroundColor
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -303,7 +463,6 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
-
 
                         Text(
                             modifier = Modifier
@@ -319,9 +478,9 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug
                                 .padding(start = 16.dp),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W300,
-                            text = "teste"
+                            color = timeTextColor,
+                            text = timeTextText
                         )
-
                     }
 //                    Spacer(modifier = Modifier.weight(1f))
                     IconButton(
@@ -346,12 +505,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug
                 Image(modifier = Modifier
                     .fillMaxWidth()
                     .height(225.dp),
-                    painter = rememberImagePainter(
-                        data = "https://www.example.com/image.jpg",
-                        builder = {
-                            placeholder(R.drawable.placeholder)
-                        }
-                    ),
+                    painter = painterResource(id = R.drawable.default_img),
                     contentDescription = "Imagem do medicamento")
 
                 TextButton(onClick = { /*TODO*/ }) {
@@ -363,27 +517,61 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug
 }
 
 
-//@Preview(showBackground = true)
-//@Composable
-//fun MainPreview() {
-//    MyMultiPrevTheme {
-//        ActiveDrugListScreen()
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun CardPreview() {
-//    MyMultiPrevTheme {
-//        AntibioticCard_Prescription_Item_Short_Item()
-//    }
-//}
+fun onSeeDetailsClick(
+    imageview: ImageView?,
+    pair: Pair<PrescriptionItem, Drug?>,
+    seeDetailsViewModel: SeeDetailsViewModel
+) {
+    seeDetailsViewModel.setPrescriptionItemDrugPair(pair)
+    Log.d("onSeeDetailsClick", "aqui details")
 
-//@Preview(showBackground = true)
-//@Composable
-//fun CardPreview2() {
-//    MyMultiPrevTheme {
-//
-//        AntibioticCard_Prescription_Item_Full_Item()
+//        if (imageview != null) {
+//            val args =
+//                bundleOf(Constants.PRESCRIPTION_ITEM_IMAGE_TRANSITION to imageview.transitionName)
+//            val extras = FragmentNavigatorExtras(imageview to imageview.transitionName)
+//            findNavController().navigate(
+//                R.id.action_activeDrugListFragment_to_drugDetailsFragment,
+//                args,
+//                null,
+//                extras
+//            )
+//        } else {
+//            findNavController().navigate(
+//                R.id.action_activeDrugListFragment_to_drugDetailsFragment
+//            )
+//        }
+
+}
+
+fun onConfirmDoseClick(
+    pair: Pair<PrescriptionItem, Drug?>,
+    confirmIntakeViewModel: ConfirmIntakeViewModel
+) {
+    confirmIntakeViewModel.setPrescriptionItemDrugPair(pair)
+
+    Log.d("onSeeDetailsClick", "aqui confirm intake")
+//        findNavController().navigate(R.id.action_activeDrugListFragment_to_newIntakeDetailsFragment)
+}
+
+//    fun onAlarmClick(prescriptionItem: PrescriptionItem) {
+//        viewModel.prescriptionItems.value?.data?.find { prescriptionItem.id == it.id }?.alarm =
+//            prescriptionItem.alarm
+//        val alarmState = prescriptionItem.alarm
+//        viewModel.setAlarm(alarmState, prescriptionItem.id)
+//        val restId = when (alarmState) {
+//            true -> R.string.alarm_on
+//            else -> R.string.alarm_off
+//        }
+//        com.google.android.material.snackbar.Snackbar.make(binding.root, restId, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT)
+//            .setAction(getString(R.string.OK)) {}.show()
 //    }
-//}
+
+fun onConfirmAcquisitionClick(
+    pair: Pair<PrescriptionItem, Drug?>,
+    confirmViewModel: ConfirmAcquisitionViewModel
+) {
+    Log.d("onSeeDetailsClick", "aqui confirmViewModel")
+
+    confirmViewModel.setPrescriptionItemDrugPair(pair)
+//        findNavController().navigate(R.id.action_activeDrugListFragment_to_confirmAcquisitionFragment)
+}
