@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
@@ -372,37 +371,14 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 .padding(16.dp)
                 .fillMaxWidth(),
                 onClick = {
-                    onClickActions(
-                        item,
-                        seeDetailsViewModel = seeDetailsViewModel,
+                    onDetailsAndConfirmButtonClick(
+                        item = item,
                         confirmIntakeViewModel = confirmIntakeViewModel,
                         confirmViewModel = confirmViewModel,
-                        prescriptionAcquisitionConfirmed = prescriptionAcquisitionConfirmed,
-                        prescriptionIsOverdue = prescriptionIsOverdue
+                        navController = navController
                     )
                 }) {
                 Text(text = "VER")
-            }
-        }
-    }
-}
-
-fun onClickActions(
-    pair: Pair<PrescriptionItem, Drug?>,
-    seeDetailsViewModel: SeeDetailsViewModel,
-    confirmIntakeViewModel: ConfirmIntakeViewModel,
-    confirmViewModel: ConfirmAcquisitionViewModel,
-    prescriptionAcquisitionConfirmed: MutableState<Boolean>,
-    prescriptionIsOverdue: MutableState<Boolean>
-) {
-    if (pair.first.acquiredAt == null) {
-        onConfirmAcquisitionClick(pair = pair, confirmViewModel = confirmViewModel)
-    } else {
-        if (pair.first.nextIntake != null) {
-            if (pair.first.isOverdue) {
-                onConfirmDoseClick(pair = pair, confirmIntakeViewModel = confirmIntakeViewModel)
-            } else {
-//                onSeeDetailsClick(pair = pair, seeDetailsViewModel = seeDetailsViewModel, /*todo*/)
             }
         }
     }
@@ -449,7 +425,8 @@ fun AntibioticCard_Prescription_Item_Full_Item(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp),
+                .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
+                .clickable { /*TODO onSeeDetailsClick()*/ },
             elevation = 10.dp,
             backgroundColor = cardBackgroundColor
         ) {
@@ -502,18 +479,50 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
                     }
                 }
-                Image(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(225.dp),
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(225.dp),
                     painter = painterResource(id = R.drawable.default_img),
-                    contentDescription = "Imagem do medicamento")
+                    contentDescription = "Imagem do medicamento"
+                )
 
-                TextButton(onClick = { /*TODO*/ }) {
+                TextButton(onClick = {
+                    onDetailsAndConfirmButtonClick(
+                        item = item,
+                        confirmIntakeViewModel = confirmIntakeViewModel,
+                        confirmViewModel = confirmViewModel,
+                        navController = navController
+                    )
+                }) {
                     Text(text = "Confirmar Toma / Ver Detalhes")
                 }
             }
         }
     }
+}
+
+private fun onDetailsAndConfirmButtonClick(
+    item: Pair<PrescriptionItem, Drug?>,
+    confirmIntakeViewModel: ConfirmIntakeViewModel,
+    confirmViewModel: ConfirmAcquisitionViewModel,
+    navController: NavHostController
+) {
+
+    Log.d("onDetailsAndConfirmButtonClick", "Aqui")
+    if (item.first.acquiredAt == null) {
+        onConfirmAcquisitionClick(pair = item, confirmViewModel = confirmViewModel)
+    } else {
+        if (item.first.nextIntake != null) {
+            if (item.first.isOverdue) {
+                onConfirmDoseClick(item, confirmIntakeViewModel)
+                navController.navigate("newIntakeDetailsScreen")
+            } else {
+//                onSeeDetailsClick()
+            }
+        }
+    }
+
 }
 
 
@@ -548,9 +557,7 @@ fun onConfirmDoseClick(
     confirmIntakeViewModel: ConfirmIntakeViewModel
 ) {
     confirmIntakeViewModel.setPrescriptionItemDrugPair(pair)
-
-    Log.d("onSeeDetailsClick", "aqui confirm intake")
-//        findNavController().navigate(R.id.action_activeDrugListFragment_to_newIntakeDetailsFragment)
+    Log.d("onConfirmDoseClick", "aqui confirm intake")
 }
 
 //    fun onAlarmClick(prescriptionItem: PrescriptionItem) {
@@ -570,8 +577,8 @@ fun onConfirmAcquisitionClick(
     pair: Pair<PrescriptionItem, Drug?>,
     confirmViewModel: ConfirmAcquisitionViewModel
 ) {
-    Log.d("onSeeDetailsClick", "aqui confirmViewModel")
 
     confirmViewModel.setPrescriptionItemDrugPair(pair)
+    Log.d("onConfirmAcquisitionClick", "aqui confirmViewModel")
 //        findNavController().navigate(R.id.action_activeDrugListFragment_to_confirmAcquisitionFragment)
 }
