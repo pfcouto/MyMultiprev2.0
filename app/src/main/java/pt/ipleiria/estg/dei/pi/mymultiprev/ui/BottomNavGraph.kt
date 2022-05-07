@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugListScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.DrugDetailsScreen
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.NewIntakeDetailsScreen
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeDetailsScreen
 
 @Composable
 fun BottomNavGraph(navController: NavHostController, navControllerLogin : NavHostController) {
@@ -34,7 +34,7 @@ fun BottomNavGraph(navController: NavHostController, navControllerLogin : NavHos
         }
 
         composable(route = "newIntakeDetailsScreen") {
-            NewIntakeDetailsScreen()
+            ConfirmIntakeDetailsScreen()
         }
     }
 }

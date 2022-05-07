@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import java.util.*
 
 @Composable
-fun NewIntakeDetailsScreen() {
+fun ConfirmIntakeDetailsScreen() {
 
 
     // Fetching the Local Context
