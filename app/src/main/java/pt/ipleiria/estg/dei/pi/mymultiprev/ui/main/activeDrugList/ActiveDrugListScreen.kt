@@ -20,7 +20,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.skydoves.landscapist.glide.GlideImage
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
@@ -479,13 +483,26 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
                     }
                 }
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(225.dp),
-                    painter = painterResource(id = R.drawable.default_img),
-                    contentDescription = "Imagem do medicamento"
-                )
+                if (item.first.imageLocation == null) {
+
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(225.dp),
+                        painter = painterResource(id = R.drawable.default_img),
+                        contentDescription = "Imagem do medicamento"
+                    )
+                } else {
+                    GlideImage(
+                        imageModel = item.first.imageLocation,
+                        // Crop, Fit, Inside, FillHeight, FillWidth, None
+                        contentScale = ContentScale.Crop,
+                        // shows a placeholder while loading the image.
+                        placeHolder = ImageBitmap.imageResource(R.drawable.default_img),
+                        // shows an error ImageBitmap when the request failed.
+                        error = ImageBitmap.imageResource(R.drawable.error_image)
+                    )
+                }
 
                 TextButton(onClick = {
                     onDetailsAndConfirmButtonClick(
