@@ -2,6 +2,9 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -40,17 +43,17 @@ fun BottomNavGraph(
         composable(route = BottomBarScreen.Sintomas.route) {
             val context = LocalContext.current
 
-
             Text(text = "SINTOMAS")
-
-            if (!mainViewModel.isNetworkAvailable()) {
+            Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Bottom) {
+                if (!mainViewModel.isNetworkAvailable()) {
 //                Toast.makeText(
 //                    context,
 //                    "No Internet Connection! Please, reconnect and try again",
 //                    Toast.LENGTH_SHORT
 //                )
-                Snackbar() {
-                    Text(text = "No Internet Connection! Please, reconnect and try again")
+                    Snackbar() {
+                        Text(text = "No Internet Connection! Please, reconnect and try again")
+                    }
                 }
             }
         }
