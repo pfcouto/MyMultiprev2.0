@@ -26,7 +26,6 @@ import java.util.*
 fun ConfirmIntakeDetailsScreen(
     navController: NavHostController,
     drugId: String,
-    prescriptionItemId: String,
     viewModel: ConfirmIntakeViewModel = hiltViewModel()
 ) {
 
@@ -34,11 +33,6 @@ fun ConfirmIntakeDetailsScreen(
         if (!drugId.isNullOrBlank()) {
 
             viewModel.getDrug(drugId)
-        }
-
-        if (!prescriptionItemId.isNullOrBlank()) {
-
-            viewModel.prescriptionItem(prescriptionItemId)
         }
         onDispose { }
     }
