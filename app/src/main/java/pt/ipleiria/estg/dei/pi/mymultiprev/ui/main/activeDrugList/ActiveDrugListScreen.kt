@@ -116,6 +116,8 @@ fun ActiveDrugListScreen(
 
                 items(items = listOfPairs!!) { item ->
 
+                    Log.d("Aqui4", item.first.isOverdue.toString())
+
                     var prescriptionAcquisitionConfirmed = remember { mutableStateOf(false) }
                     val prescriptionIsOverdue = remember { mutableStateOf(false) }
 

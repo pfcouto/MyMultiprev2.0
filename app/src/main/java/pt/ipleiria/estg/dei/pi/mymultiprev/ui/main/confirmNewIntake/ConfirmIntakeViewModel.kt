@@ -40,16 +40,19 @@ class ConfirmIntakeViewModel @Inject constructor(
     private val _prescriptionItem: MutableState<PrescriptionItem?> = mutableStateOf(null)
     val prescriptionItem: State<PrescriptionItem?> = _prescriptionItem
 
+//    private val _scheduleIntakeDate: MutableState<LocalDate> = mutableStateOf(LocalDate)
+//    val scheduleIntakeDate: State<LocalDate> = _scheduleIntakeDate
+
 //    lateinit var prescriptionItem: PrescriptionItem
 //    lateinit var drug: Drug
-    lateinit var scheduleIntakeDate: LocalDate
+//    lateinit var scheduleIntakeDate: LocalDate
 
     private var _registrationIntakeDateTime: MutableLiveData<LocalDateTime> =
         MutableLiveData(Clock.System.now().toLocalDateTime(Constants.TIME_ZONE))
     val registrationIntakeDateTime: LiveData<LocalDateTime> get() = _registrationIntakeDateTime
 
-    private var _response: MutableLiveData<Resource<IntakeDTO>> = MutableLiveData()
-    val response: LiveData<Resource<IntakeDTO>>
+    private var _response: MutableLiveData<Resource<IntakeDTO>?> = MutableLiveData()
+    val response: LiveData<Resource<IntakeDTO>?>
         get() = _response
 
 
@@ -66,7 +69,9 @@ class ConfirmIntakeViewModel @Inject constructor(
     fun getPrescriptionItem(prescriptionItemID: String) {
         viewModelScope.launch {
             try {
-                _prescriptionItem.value = prescriptionItemsRepository.getPrescriptionItemById(prescriptionItemId = prescriptionItemID).first().data!!
+                _prescriptionItem.value =
+                    prescriptionItemsRepository.getPrescriptionItemById(prescriptionItemId = prescriptionItemID)
+                        .first().data!!
             } catch (e: Exception) {
                 Log.d(TAG, "EXCEPTION ${e.message}")
             }
@@ -82,29 +87,36 @@ class ConfirmIntakeViewModel @Inject constructor(
 //        Log.d("setPrescriptionItemDrugPair", "aqui 2")
 //    }
 
-//    fun clearResponse() {
-//        Log.i(TAG, "Clearing Response")
-//        //TODO ver isto
-//        _response.value = null
-//        _registrationIntakeDateTime.value = Clock.System.now().toLocalDateTime(Constants.TIME_ZONE)
-//    }
-
-    fun setDate(year: Int, month: Int, dayOfMonth: Int) {
-        Log.i(TAG, "Date = $dayOfMonth/$month/$year")
-        scheduleIntakeDate = LocalDate(year, month + 1, dayOfMonth)
+    fun clearResponse() {
+        Log.i(TAG, "Clearing Response")
+        //TODO ver isto
+        _response.value = null
+        _registrationIntakeDateTime.value = Clock.System.now().toLocalDateTime(Constants.TIME_ZONE)
     }
 
-    fun setTime(hourOfDay: Int, minute: Int) {
+//    // TODO verificar os !!
+//    fun setDate(year: Int, month: Int, dayOfMonth: Int) {
+//        Log.i(TAG, "Date = $dayOfMonth/$month/$year")
+//        _scheduleIntakeDate.value = LocalDate(year, month + 1, dayOfMonth)
+//    }
+
+    fun setTime(year: Int, month: Int, dayOfMonth: Int, hourOfDay: Int, minute: Int) {
+        Log.d(
+            "Data",
+            year.toString() + "/" + month.toString() + "/" + dayOfMonth.toString() + " " + hourOfDay.toString() + ":" + minute.toString()
+        )
         Log.i(TAG, "Time = $hourOfDay/$minute")
         _registrationIntakeDateTime.value = LocalDateTime(
-            scheduleIntakeDate.year,
-            scheduleIntakeDate.monthNumber,
-            scheduleIntakeDate.dayOfMonth,
-            hourOfDay, minute
+            year,
+            month,
+            dayOfMonth,
+            hourOfDay,
+            minute
         )
     }
 
     fun verifyRegistrationDateTime(): Boolean {
+
         if (_registrationIntakeDateTime.value!! < prescriptionItem.value?.nextIntake!!.toInstant(Constants.TIME_ZONE)
                 .minus(2, DateTimeUnit.HOUR).toLocalDateTime(Constants.TIME_ZONE)
         ) {
@@ -114,6 +126,7 @@ class ConfirmIntakeViewModel @Inject constructor(
     }
 
     fun verifyRange(): Boolean {
+
         val first = prescriptionItem.value?.nextIntake!!.toInstant(Constants.TIME_ZONE)
             .minus(2, DateTimeUnit.HOUR).toLocalDateTime(Constants.TIME_ZONE)
         val second = prescriptionItem.value?.nextIntake!!.toInstant(Constants.TIME_ZONE)
@@ -126,6 +139,10 @@ class ConfirmIntakeViewModel @Inject constructor(
 
     fun registerIntake() {
         viewModelScope.launch {
+            Log.d("Aqui5", prescriptionItem.value?.id!!)
+            Log.d("Aqui5", prescriptionItem.value?.nextIntake.toString())
+            Log.d("Aqui5", sharedPreferencesRepository.getCurrentPatientId())
+            Log.d("Aqui5", registrationIntakeDateTime.value.toString())
             _response.value = intakeRepository.doIntake(
                 IntakeDTO(
                     id = null,
