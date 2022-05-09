@@ -98,7 +98,7 @@ fun ConfirmIntakeDetailsScreen(
         Text(
             modifier = Modifier.padding(start = 32.dp, top = 32.dp, end = 32.dp),
             fontSize = 18.sp,
-            text = drug?.name ?: "(Nome Antibiótico)"
+            text = drug?.name ?: ""
         )
         Row() {
             Text(
@@ -134,7 +134,7 @@ fun ConfirmIntakeDetailsScreen(
                     .weight(1f),
                 textAlign = TextAlign.End,
                 fontSize = 18.sp,
-                text = prescriptionItem?.dosage ?: "Dosage"
+                text = prescriptionItem?.dosage ?: ""
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
