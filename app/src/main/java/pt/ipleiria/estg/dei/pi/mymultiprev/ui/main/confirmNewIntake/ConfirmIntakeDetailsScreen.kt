@@ -9,11 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,11 +17,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import java.util.*
 
 @Composable
-fun ConfirmIntakeDetailsScreen() {
+fun ConfirmIntakeDetailsScreen(
+    navController: NavHostController,
+    drugId: String,
+    prescriptionItemId: String,
+    viewModel: ConfirmIntakeViewModel = hiltViewModel()
+) {
 
+    DisposableEffect(key1 = Unit) {
+        if (!drugId.isNullOrBlank()) {
+
+            viewModel.getDrug(drugId)
+        }
+
+        if (!prescriptionItemId.isNullOrBlank()) {
+
+            viewModel.prescriptionItem(prescriptionItemId)
+        }
+        onDispose { }
+    }
+
+    val drug by remember { viewModel.drug }
 
     // Fetching the Local Context
     val mContext = LocalContext.current
@@ -79,9 +97,8 @@ fun ConfirmIntakeDetailsScreen() {
         Text(
             modifier = Modifier.padding(start = 32.dp, top = 32.dp, end = 32.dp),
             fontSize = 18.sp,
-            text = "(Nome Droga)"
+            text = drug?.name ?: "(Nome Antibiótico)"
         )
-
         Row() {
             Text(
                 modifier = Modifier.padding(start = 32.dp, top = 24.dp),

@@ -1,32 +1,42 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.IntakeDTO
+import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.DrugRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.IntakeRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import javax.inject.Inject
 
+
 @HiltViewModel
 class ConfirmIntakeViewModel @Inject constructor(
     private val intakeRepository: IntakeRepository,
+    private val drugRepository: DrugRepository,
     private val sharedPreferencesRepository: SharedPreferencesRepository
 ) : ViewModel() {
 
     private val TAG = "ConfirmIntakeViewModel"
 
+    private val _drug: MutableState<Drug?> = mutableStateOf(null)
+    val drug: State<Drug?> = _drug
+
     lateinit var prescriptionItem: PrescriptionItem
-    lateinit var drug: Drug
+//    lateinit var drug: Drug
     lateinit var scheduleIntakeDate: LocalDate
 
     private var _registrationIntakeDateTime: MutableLiveData<LocalDateTime> =
@@ -38,14 +48,24 @@ class ConfirmIntakeViewModel @Inject constructor(
         get() = _response
 
 
-    fun setPrescriptionItemDrugPair(pair: Pair<PrescriptionItem, Drug?>) {
-        Log.d("setPrescriptionItemDrugPair", "aqui 2")
-
-        prescriptionItem = pair.first
-        if (pair.second != null) {
-            drug = pair.second!!
+    fun getDrug(drugID: String) {
+        viewModelScope.launch {
+            try {
+                _drug.value = drugRepository.getDrugById(drugId = drugID).first().data!!
+            } catch (e: Exception) {
+                Log.d(TAG, "EXCEPTION ${e.message}")
+            }
         }
     }
+
+//    fun setPrescriptionItemDrugPair(pair: Pair<PrescriptionItem, Drug?>) {
+//
+//        prescriptionItem = pair.first
+//        if (pair.second != null) {
+//            drug = pair.second!!
+//        }
+//        Log.d("setPrescriptionItemDrugPair", "aqui 2")
+//    }
 
 //    fun clearResponse() {
 //        Log.i(TAG, "Clearing Response")

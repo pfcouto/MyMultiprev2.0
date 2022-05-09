@@ -532,8 +532,7 @@ private fun onDetailsAndConfirmButtonClick(
     } else {
         if (item.first.nextIntake != null) {
             if (item.first.isOverdue) {
-                onConfirmDoseClick(item, confirmIntakeViewModel)
-                navController.navigate("newIntakeDetailsScreen")
+                onConfirmDoseClick(item, confirmIntakeViewModel, navController)
             } else {
 //                onSeeDetailsClick()
             }
@@ -571,10 +570,13 @@ fun onSeeDetailsClick(
 
 fun onConfirmDoseClick(
     pair: Pair<PrescriptionItem, Drug?>,
-    confirmIntakeViewModel: ConfirmIntakeViewModel
+    confirmIntakeViewModel: ConfirmIntakeViewModel,
+    navController: NavHostController
 ) {
-    confirmIntakeViewModel.setPrescriptionItemDrugPair(pair)
-    Log.d("onConfirmDoseClick", "aqui confirm intake")
+//    confirmIntakeViewModel.setPrescriptionItemDrugPair(pair)
+//    Log.d("onConfirmDoseClick", "aqui confirm intake")
+    navController.navigate("newIntakeDetailsScreen/${pair.first!!.id}/${pair.second!!.id}")
+
 }
 
 //    fun onAlarmClick(prescriptionItem: PrescriptionItem) {
