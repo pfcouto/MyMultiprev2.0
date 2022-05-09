@@ -29,7 +29,7 @@ interface PrescriptionItemDao {
     suspend fun updatePrescriptionItem(prescriptionItem: PrescriptionItem)
 
     @Query("SELECT * FROM prescription_items WHERE id = :id")
-    suspend fun getPrescriptionItemById(id: String): PrescriptionItem
+    fun getPrescriptionItemById(id: String): Flow<PrescriptionItem>
 
     @Query("UPDATE prescription_items SET imageLocation = :photo_uri WHERE id = :id")
     suspend fun setPrescriptionItemPhoto(id: String, photo_uri: String)

@@ -18,6 +18,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.IntakeDTO
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.DrugRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.IntakeRepository
+import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import javax.inject.Inject
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class ConfirmIntakeViewModel @Inject constructor(
     private val intakeRepository: IntakeRepository,
     private val drugRepository: DrugRepository,
+    private val prescriptionItemsRepository: PrescriptionItemsRepository,
     private val sharedPreferencesRepository: SharedPreferencesRepository
 ) : ViewModel() {
 
@@ -35,7 +37,10 @@ class ConfirmIntakeViewModel @Inject constructor(
     private val _drug: MutableState<Drug?> = mutableStateOf(null)
     val drug: State<Drug?> = _drug
 
-    lateinit var prescriptionItem: PrescriptionItem
+    private val _prescriptionItem: MutableState<PrescriptionItem?> = mutableStateOf(null)
+    val prescriptionItem: State<PrescriptionItem?> = _prescriptionItem
+
+//    lateinit var prescriptionItem: PrescriptionItem
 //    lateinit var drug: Drug
     lateinit var scheduleIntakeDate: LocalDate
 
@@ -52,6 +57,16 @@ class ConfirmIntakeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _drug.value = drugRepository.getDrugById(drugId = drugID).first().data!!
+            } catch (e: Exception) {
+                Log.d(TAG, "EXCEPTION ${e.message}")
+            }
+        }
+    }
+
+    fun getPrescriptionItem(prescriptionItemID: String) {
+        viewModelScope.launch {
+            try {
+                _prescriptionItem.value = prescriptionItemsRepository.getPrescriptionItemById(prescriptionItemId = prescriptionItemID).first().data!!
             } catch (e: Exception) {
                 Log.d(TAG, "EXCEPTION ${e.message}")
             }
@@ -90,7 +105,7 @@ class ConfirmIntakeViewModel @Inject constructor(
     }
 
     fun verifyRegistrationDateTime(): Boolean {
-        if (_registrationIntakeDateTime.value!! < prescriptionItem.nextIntake!!.toInstant(Constants.TIME_ZONE)
+        if (_registrationIntakeDateTime.value!! < prescriptionItem.value?.nextIntake!!.toInstant(Constants.TIME_ZONE)
                 .minus(2, DateTimeUnit.HOUR).toLocalDateTime(Constants.TIME_ZONE)
         ) {
             return false;
@@ -99,9 +114,9 @@ class ConfirmIntakeViewModel @Inject constructor(
     }
 
     fun verifyRange(): Boolean {
-        val first = prescriptionItem.nextIntake!!.toInstant(Constants.TIME_ZONE)
+        val first = prescriptionItem.value?.nextIntake!!.toInstant(Constants.TIME_ZONE)
             .minus(2, DateTimeUnit.HOUR).toLocalDateTime(Constants.TIME_ZONE)
-        val second = prescriptionItem.nextIntake!!.toInstant(Constants.TIME_ZONE)
+        val second = prescriptionItem.value?.nextIntake!!.toInstant(Constants.TIME_ZONE)
             .plus(2, DateTimeUnit.HOUR).toLocalDateTime(Constants.TIME_ZONE)
         if (_registrationIntakeDateTime.value!! in first..second) {
             return true
@@ -114,8 +129,8 @@ class ConfirmIntakeViewModel @Inject constructor(
             _response.value = intakeRepository.doIntake(
                 IntakeDTO(
                     id = null,
-                    prescriptionItemId = prescriptionItem.id,
-                    expectedAt = prescriptionItem.nextIntake.toString(),
+                    prescriptionItemId = prescriptionItem.value?.id!!,
+                    expectedAt = prescriptionItem.value?.nextIntake.toString(),
                     patientId = sharedPreferencesRepository.getCurrentPatientId(),
                     intakeDate = registrationIntakeDateTime.value.toString(),
                     took = true
@@ -123,5 +138,4 @@ class ConfirmIntakeViewModel @Inject constructor(
             )
         }
     }
-
 }

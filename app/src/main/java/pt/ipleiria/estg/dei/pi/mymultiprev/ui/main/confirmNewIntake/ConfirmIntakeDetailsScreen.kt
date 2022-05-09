@@ -26,6 +26,7 @@ import java.util.*
 fun ConfirmIntakeDetailsScreen(
     navController: NavHostController,
     drugId: String,
+    prescriptionItemId: String,
     viewModel: ConfirmIntakeViewModel = hiltViewModel()
 ) {
 
@@ -34,10 +35,16 @@ fun ConfirmIntakeDetailsScreen(
 
             viewModel.getDrug(drugId)
         }
+
+        if (!prescriptionItemId.isNullOrBlank()) {
+
+            viewModel.getPrescriptionItem(prescriptionItemId)
+        }
         onDispose { }
     }
 
     val drug by remember { viewModel.drug }
+    val prescriptionItem by remember {viewModel.prescriptionItem}
 
     // Fetching the Local Context
     val mContext = LocalContext.current
@@ -108,7 +115,7 @@ fun ConfirmIntakeDetailsScreen(
                     .weight(1f),
                 textAlign = TextAlign.End,
                 fontSize = 18.sp,
-                text = "data"
+                text = prescriptionItem?.formattedNextIntake() ?: "Data"
             )
         }
 
@@ -127,7 +134,7 @@ fun ConfirmIntakeDetailsScreen(
                     .weight(1f),
                 textAlign = TextAlign.End,
                 fontSize = 18.sp,
-                text = "dosagem"
+                text = prescriptionItem?.dosage ?: "Dosage"
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {

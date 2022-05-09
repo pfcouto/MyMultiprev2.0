@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.data.network.services
 
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.DrugDTO
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.IntakeDTO
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
 import retrofit2.http.Body
@@ -22,4 +23,7 @@ interface PrescriptionItemsService {
 
     @GET("prescriptionItems/{prescriptionItemId}/intakes")
     suspend fun getIntakesByPrescriptionItemId(@Path("prescriptionItemId") id: String): List<IntakeDTO>
+
+    @GET("prescriptionItems/{prescriptionItemId}")
+    suspend fun getPrescriptionItemById(@Path("prescriptionItemId") prescriptionItemId: String): PrescriptionItemDTO
 }

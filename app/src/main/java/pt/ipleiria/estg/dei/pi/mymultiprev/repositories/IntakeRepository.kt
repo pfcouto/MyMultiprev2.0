@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.repositories
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.toLocalDateTime
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.daos.IntakeDao
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.daos.PrescriptionItemDao
@@ -52,7 +53,7 @@ class IntakeRepository @Inject constructor(
                 result.data.expectedAt!!.toLocalDateTime()
             )
             val prescription =
-                prescriptionItemDao.getPrescriptionItemById(result.data.prescriptionItemId)
+                prescriptionItemDao.getPrescriptionItemById(result.data.prescriptionItemId).first()
             if (prescription.expectedIntakeCount == prescription.intakesTakenCount!! + 1)
                 prescriptionItemDao.updateStatus(
                     prescription.id, PrescriptionItemStatus.Completed.value(),

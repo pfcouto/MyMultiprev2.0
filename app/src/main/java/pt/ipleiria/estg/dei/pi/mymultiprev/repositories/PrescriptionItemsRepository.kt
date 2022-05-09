@@ -3,13 +3,16 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.repositories
 import android.net.Uri
 import androidx.core.net.toUri
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.daos.PrescriptionItemDao
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.ServiceBuilder
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.mappers.PrescriptionItemNetworkMapper
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.networkBoundResource
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.services.DrugService
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.services.PrescriptionItemsService
 import javax.inject.Inject
 
@@ -81,6 +84,27 @@ class PrescriptionItemsRepository @Inject constructor(
         return result
     }
 
+    fun getPrescriptionItemById(prescriptionItemId: String): Flow<Resource<PrescriptionItem>> {
+        val prescriptionItemServices =
+            ServiceBuilder(sharedPreferencesRepository).buildService(PrescriptionItemsService::class.java)
+        return networkBoundResource(
+            query = {
+                prescriptionItemDao.getPrescriptionItemById(prescriptionItemId)
+            },
+            fetch = {
+                prescriptionItemServices.getPrescriptionItemById(prescriptionItemId)
+            },
+            saveFetchResult = { prescriptionItem ->
+                prescriptionItemDao.insertPrescriptionItem(
+
+                    prescriptionItemNetworkMapper.mapFromDTO(
+                        prescriptionItem
+                    )
+                )
+            }
+        )
+    }
+
     suspend fun getPrescriptionItemPhoto(id: String): Uri? {
         val string = prescriptionItemDao.getPrescriptionItemPhoto(id) ?: return null
         return string.toUri()
@@ -91,7 +115,7 @@ class PrescriptionItemsRepository @Inject constructor(
     }
 
     suspend fun getLocalPrescriptionItem(specificPrescriptionItemId: String): PrescriptionItem {
-        return prescriptionItemDao.getPrescriptionItemById(specificPrescriptionItemId)
+        return prescriptionItemDao.getPrescriptionItemById(specificPrescriptionItemId).first()
     }
 
     override suspend fun deleteData() {
