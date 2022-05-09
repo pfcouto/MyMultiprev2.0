@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -31,26 +30,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
+import pt.ipleiria.estg.dei.pi.mymultiprev.R
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executor
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CameraScreen(
-    outputDirectory: File,
-    executor: Executor,
-    onImageCaptured: (Uri) -> Unit,
-    onError: (ImageCaptureException) -> Unit
+    viewModel: CameraViewModel = hiltViewModel(),
 ) {
 
-    // 1
     val lensFacing = CameraSelector.LENS_FACING_BACK
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -62,12 +57,13 @@ fun CameraScreen(
         .requireLensFacing(lensFacing)
         .build()
 
+    //TODO identificar numero da prescricao
+//    viewModel.setPrescriptionItemId(intent.getStringExtra(Constants.PRESCRIPTION_ITEM_ID)!!)
 
-    // 2
     LaunchedEffect(lensFacing) {
-        val cameraProvider = context.getCameraProvider()
-        cameraProvider.unbindAll()
-        cameraProvider.bindToLifecycle(
+        val cameraProvider = ProcessCameraProvider.getInstance(context)
+        cameraProvider.get().unbindAll()
+        cameraProvider.get().bindToLifecycle(
             lifecycleOwner,
             cameraSelector,
             preview,
@@ -83,6 +79,50 @@ fun CameraScreen(
         android.Manifest.permission.CAMERA
     )
 
+
+
+    fun Context.getOutputDirectory(): File {
+        val mediaDir = externalMediaDirs.firstOrNull()?.let {
+            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
+        }
+        return if (mediaDir != null && mediaDir.exists())
+            mediaDir else filesDir
+    }
+
+    fun takePhoto() {
+        val imageCapture = imageCapture
+
+        val photoFile: File = File(
+            context.getOutputDirectory(),
+            SimpleDateFormat(
+                "yyyy-MM-dd-HH-mm-ss-SSS", Locale.US
+            ).format(System.currentTimeMillis()) + ".jpg"
+        )
+
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exc: ImageCaptureException) {
+//                    setResult(CameraResult.RESULT_ERROR)
+                    this.onError(exc)
+//                    scaffoldState.snackbarHostState.showSnackbar("An error occurred while trying to take a picture")
+                    Log.i("ERROR", "Photo capture failed: ${exc.message}", exc)
+                }
+
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val savedUri = Uri.fromFile(photoFile)
+                    viewModel.setPrescriptionItemPhoto(
+                        viewModel.prescriptionItemId.value!!,
+                        savedUri
+                    )
+                }
+            })
+    }
+
+
     when (cameraPermissionState.status) {
         // If the camera permission is granted, then show screen with the feature enabled
         PermissionStatus.Granted -> {
@@ -93,15 +133,8 @@ fun CameraScreen(
                 IconButton(
                     modifier = Modifier.padding(bottom = 20.dp),
                     onClick = {
-                        Log.i("PhotoScreen","Button Clicked")
-                        takePhoto(
-                            filename = "photo_test.jpg",
-                            imageCapture = imageCapture,
-                            outputDirectory = outputDirectory,
-                            executor = executor,
-                            onImageCaptured = onImageCaptured,
-                            onError = onError
-                        )
+                        Log.i("PhotoScreen", "Button Clicked")
+                        takePhoto()
                     },
                     content = {
                         Icon(
@@ -145,43 +178,113 @@ fun CameraScreen(
             }
         }
     }
-
 }
 
-private fun takePhoto(
-    filename: String,
-    imageCapture: ImageCapture,
-    outputDirectory: File,
-    executor: Executor,
-    onImageCaptured: (Uri) -> Unit,
-    onError: (ImageCaptureException) -> Unit
-) {
+//    suspend fun Context.getCameraProvider(): ProcessCameraProvider =
+//        suspendCoroutine { continuation ->
+//            ProcessCameraProvider.getInstance(this).also { cameraProvider ->
+//                cameraProvider.addListener({
+//                    continuation.resume(cameraProvider.get())
+//                }, ContextCompat.getMainExecutor(this))
+//            }
+//        }
 
-    val photoFile = File(
-        outputDirectory,
-        filename
-    )
 
-    val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+//private fun takePhoto(
+//    filename: String,
+//    imageCapture: ImageCapture,
+//    outputDirectory: File,
+//    executor: Executor,
+//    onImageCaptured: (Uri) -> Unit,
+//    onError: (ImageCaptureException) -> Unit
+//) {
+//
+//    val photoFile = File(
+//        outputDirectory,
+//        filename
+//    )
+//
+//    val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+//
+//    imageCapture.takePicture(outputOptions, executor, object : ImageCapture.OnImageSavedCallback {
+//        override fun onError(exception: ImageCaptureException) {
+//            Log.i("kilo", "Take photo error:", exception)
+//            onError(exception)
+//        }
+//
+//        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+//            val savedUri = Uri.fromFile(photoFile)
+//            onImageCaptured(savedUri)
+//        }
+//    })
+//}
 
-    imageCapture.takePicture(outputOptions, executor, object : ImageCapture.OnImageSavedCallback {
-        override fun onError(exception: ImageCaptureException) {
-            Log.i("kilo", "Take photo error:", exception)
-            onError(exception)
-        }
 
-        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-            val savedUri = Uri.fromFile(photoFile)
-            onImageCaptured(savedUri)
-        }
-    })
-}
+//fun takePhoto() {
+//    val imageCapture = imageCapture ?: return
+//
+//    val photoFile = File(
+//        outputDirectory,
+//        SimpleDateFormat(
+//            "yyyy-MM-dd-HH-mm-ss-SSS", Locale.US
+//        ).format(System.currentTimeMillis()) + ".jpg"
+//    )
+//
+//    val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+//
+//    imageCapture.takePicture(
+//        outputOptions,
+//        ContextCompat.getMainExecutor(LocalContext.current),
+//        object : ImageCapture.OnImageSavedCallback {
+//            override fun onError(exc: ImageCaptureException) {
+//                setResult(CameraResult.RESULT_ERROR)
+//                Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+//            }
+//
+//            override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+//                val savedUri = Uri.fromFile(photoFile)
+//                viewModel.setPrescriptionItemPhoto(
+//                    viewModel.prescriptionItemId.value!!,
+//                    savedUri
+//                )
+//            }
+//        })
+//}
+//
+//fun ImageCapture.takePicture(
+//    context: Context,
+//    lensFacing: Int,
+//    onImageCaptured: (Uri, Boolean) -> Unit,
+//    onError: (ImageCaptureException) -> Unit
+//) {
+//    val outputDirectory = context.getOutputDirectory()
+//    // Create output file to hold the image
+//    val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
+//    val outputFileOptions = getOutputFileOptions(lensFacing, photoFile)
+//
+//    this.takePicture(
+//        outputFileOptions,
+//        Executors.newSingleThreadExecutor(),
+//        object : ImageCapture.OnImageSavedCallback {
+//            override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+//                val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
+//                // If the folder selected is an external media directory, this is
+//                // unnecessary but otherwise other apps will not be able to access our
+//                // images unless we scan them using [MediaScannerConnection]
+//                val mimeType = MimeTypeMap.getSingleton()
+//                    .getMimeTypeFromExtension(savedUri.toFile().extension)
+//                MediaScannerConnection.scanFile(
+//                    context,
+//                    arrayOf(savedUri.toFile().absolutePath),
+//                    arrayOf(mimeType)
+//                ) { _, uri ->
+//
+//                }
+//                onImageCaptured(savedUri, false)
+//            }
+//            override fun onError(exception: ImageCaptureException) {
+//                onError(exception)
+//            }
+//        })
+//}
 
-private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
-    suspendCoroutine { continuation ->
-        ProcessCameraProvider.getInstance(this).also { cameraProvider ->
-            cameraProvider.addListener({
-                continuation.resume(cameraProvider.get())
-            }, ContextCompat.getMainExecutor(this))
-        }
-    }

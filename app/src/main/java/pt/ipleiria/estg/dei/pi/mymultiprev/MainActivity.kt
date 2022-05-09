@@ -47,13 +47,7 @@ fun MyMultiPrev(
 
     NavHost(navController = navController, startDestination = "teste") {
         composable("teste") {
-            CameraScreen(
-                File("Downloads"),
-                Executor { Runnable {  } },
-                onImageCaptured = { Log.i("MainActivity", it.toString()) }
-            ) {
-                Log.i("MainActivity", it.toString())
-            }
+            CameraScreen()
         }
 
         composable("login") {
