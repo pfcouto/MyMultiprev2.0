@@ -78,27 +78,12 @@ class ConfirmIntakeViewModel @Inject constructor(
         }
     }
 
-//    fun setPrescriptionItemDrugPair(pair: Pair<PrescriptionItem, Drug?>) {
-//
-//        prescriptionItem = pair.first
-//        if (pair.second != null) {
-//            drug = pair.second!!
-//        }
-//        Log.d("setPrescriptionItemDrugPair", "aqui 2")
-//    }
-
     fun clearResponse() {
         Log.i(TAG, "Clearing Response")
         //TODO ver isto
         _response.value = null
         _registrationIntakeDateTime.value = Clock.System.now().toLocalDateTime(Constants.TIME_ZONE)
     }
-
-//    // TODO verificar os !!
-//    fun setDate(year: Int, month: Int, dayOfMonth: Int) {
-//        Log.i(TAG, "Date = $dayOfMonth/$month/$year")
-//        _scheduleIntakeDate.value = LocalDate(year, month + 1, dayOfMonth)
-//    }
 
     fun setTime(year: Int, month: Int, dayOfMonth: Int, hourOfDay: Int, minute: Int) {
         Log.d(
