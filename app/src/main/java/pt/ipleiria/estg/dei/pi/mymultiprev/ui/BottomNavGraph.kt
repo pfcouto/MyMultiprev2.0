@@ -5,16 +5,18 @@ import android.widget.Toast
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import okhttp3.internal.wait
+import androidx.navigation.compose.navArgument
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugListScreen
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.DrugDetailsScreen
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
 
 
 @Composable
@@ -59,8 +61,14 @@ fun BottomNavGraph(
             Text(text = "HISTORICO")
         }
 
-        composable(route = "descricaoAntibiotico") {
-            DrugDetailsScreen()
+        composable(route = "descricaoAntibiotico/{drug}", arguments = listOf(navArgument("drug") {
+            type = NavType.StringType
+        })) {
+            var drugId = remember {
+                it.arguments?.getString("drug")
+            }
+            Log.i("BottomNavGraph", drugId.toString())
+            DrugDetailsScreen(drugId = drugId!!)
         }
     }
 }

@@ -114,7 +114,10 @@ fun ActiveDrugListScreen(
                 LazyColumn() {
                     items(items = listOfPairs!!) { item ->
 
-                        AntibioticCard_Prescription_Item_Full_Item(item)
+                        AntibioticCard_Prescription_Item_Full_Item(
+                            navController = navController,
+                            item = item
+                        )
                     }
                 }
             }
@@ -222,7 +225,9 @@ fun AntibioticCard_Prescription_Item_Short_Item(
         modifier = Modifier
             .padding(start = 24.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)
             .fillMaxWidth()
-            .clickable { navController.navigate("descricaoAntibiotico") },
+            .clickable {
+                navController.navigate("descricaoAntibiotico/" + item.second!!.id)
+            },
         elevation = 8.dp
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -265,7 +270,10 @@ fun AntibioticCard_Prescription_Item_Short_Item(
 }
 
 @Composable
-fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug?>) {
+fun AntibioticCard_Prescription_Item_Full_Item(
+    navController: NavHostController,
+    item: Pair<PrescriptionItem, Drug?>
+) {
 
     val alarmOn = remember { mutableStateOf(true) }
 
@@ -283,6 +291,10 @@ fun AntibioticCard_Prescription_Item_Full_Item(item: Pair<PrescriptionItem, Drug
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 8.dp, end = 8.dp)
+            .clickable {
+                Log.i("HERE1", "HERE1")
+                navController.navigate("descricaoAntibiotico" + item.second!!.id)
+            },
     ) {
         Card(
             modifier = Modifier
