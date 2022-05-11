@@ -93,9 +93,12 @@ fun ConfirmIntakeDetailsScreen(
         if (response.value != null){
             when (response.value!!) {
                 is Resource.Success -> {
+
 //                loadingDialog.dismissDialog()
 
                     if (openDialog.value) {
+//                        Log.d("TAG", response.value.toString())
+//                        Log.d("TAG", response.value!!.data.toString())
                         AlertDialog(onDismissRequest = { openDialog.value = false },
                             title = {
                                 Text(text = "Sintomas")
@@ -105,11 +108,17 @@ fun ConfirmIntakeDetailsScreen(
                             },
                             confirmButton = {
                                 OutlinedButton(onClick = {
-                                    viewModel.clearResponse(); openDialog.value = false;
-                                    Log.d("TAG", response.value.toString())
-                                    Log.d("TAG", response.value!!.data.toString())
-//                                    registerSymptomsViewModel.specificPrescriptionItemId =
-//                                    response.value!!.data!!.prescriptionItemId;
+
+//                                    Log.d("TAG", response.value.toString())
+//                                    Log.d("TAG", response.value!!.data!!.prescriptionItemId)
+                                    // TODO validar isto!!!!!!!! Pode nao funcionar
+                                    registerSymptomsViewModel.specificPrescriptionItemId =
+                                        response.value!!.data!!.prescriptionItemId
+
+                                    viewModel.clearResponse()
+                                    openDialog.value = false;
+
+
 
                                     navController.navigate("sintomas")
                                 }) {
