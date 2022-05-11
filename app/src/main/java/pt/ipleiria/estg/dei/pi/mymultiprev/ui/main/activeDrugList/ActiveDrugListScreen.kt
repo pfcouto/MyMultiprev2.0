@@ -93,7 +93,9 @@ fun ActiveDrugListScreen(
 
 
 
-    Column {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
 
         Logout() {
             openDialog = true
@@ -191,8 +193,6 @@ fun ActiveDrugListScreen(
                             timeTextText = timeTextText
                         )
                     }
-
-
                 }
             }
         } else {
@@ -316,10 +316,11 @@ fun AntibioticCard_Prescription_Item_Short_Item(
         modifier = Modifier
             .padding(start = 24.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)
             .fillMaxWidth()
-            .clickable { navController.navigate("descricaoAntibiotico") },
+            .clickable {
+                navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id)
+            },
         elevation = 8.dp,
         backgroundColor = cardBackgroundColor
-
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
@@ -427,6 +428,10 @@ fun AntibioticCard_Prescription_Item_Full_Item(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 8.dp, end = 8.dp)
+            .clickable {
+                Log.i("HERE1", "HERE1")
+                navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id)
+            },
     ) {
         Card(
             modifier = Modifier

@@ -35,11 +35,6 @@ fun LoginScreen(
     onLoginSuccess: (String) -> Unit
 ) {
 
-//    if(viewModel.isLoggedIn){
-//        onLoginSuccess("")
-//    }
-
-
     val TAG = "LoginComposable"
 
     val context = LocalContext.current
