@@ -1,5 +1,8 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,14 +15,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -30,9 +32,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
-import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
-import java.time.format.DateTimeFormatter
 
 enum class TabPage() {
     Detalhes(),
@@ -61,17 +61,22 @@ fun DrugDetailsScreen(
     val drug = remember { viewModel.drug }
     val prescription = remember { viewModel.prescriptionItem }
 
-    if (prescription.value != null) {
+    if (prescription.observeAsState().value != null) {
         DisposableEffect(key1 = Unit) {
+
             GlobalScope.launch {
                 viewModel.getIntakes()
             }
             onDispose { }
         }
-
     }
 
     val intakes = viewModel.intakes
+
+//    val handler = Handler(Looper.getMainLooper())
+//    handler.postDelayed({
+//        Log.i("HERE2", viewModel.intakes.value.toString())
+//    }, 5000)
 
     Column() {
         AppBar(drug = drug)
@@ -106,13 +111,9 @@ fun AppBar(drug: LiveData<Drug>) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
-                    painter = rememberImagePainter(
-                        data = "https://www.example.com/image.jpg",
-                        builder = {
-                            placeholder(R.drawable.placeholder)
-                        }
-                    ),
-                    contentDescription = "Botao de Tirar Fotografia")
+                    painter = painterResource(id = R.drawable.default_img),
+                    contentDescription = "Botao de Tirar Fotografia"
+                )
                 IconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -164,6 +165,7 @@ fun Pager(
 
     val drugState = drug.observeAsState()
     val prescriptionState = prescription.observeAsState()
+    val intakesState = intakes.observeAsState()
 
     val pagerSelect = rememberPagerState(pageCount = TabPage.values().size)
     val scope = rememberCoroutineScope()
@@ -183,7 +185,7 @@ fun Pager(
                                 Details(drug = drugState, prescription = prescriptionState)
                             }
                             1 -> {
-                                Tomas(intakes = intakes)
+                                Tomas(intakes = intakesState)
                             }
 
                             2 -> {
@@ -330,29 +332,42 @@ fun Details(drug: State<Drug?>, prescription: State<PrescriptionItem?>) {
 
 @Composable
 fun Tomas(
-    intakes: LiveData<Resource<List<Intake>>>
-) {
     //TODO intakes not working
-    val resourceList = intakes.observeAsState()
+    intakes: State<Resource<List<Intake>>?>
+) {
 
-    if (resourceList.value == null) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator(modifier = Modifier.size(56.dp))
-        }
-    } else {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(
-                items = intakes.value!!.data!!
-            ) { item ->
-                Toma(item)
+    Log.i("HERE1", intakes.value?.data.toString())
+    Log.i("HERE2", intakes.value.toString())
+
+
+    if (intakes.value != null) {
+        when (intakes.value) {
+            is Resource.Success -> {
+                Log.i("INTAKES", "INTAKES SUCCESS")
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(
+                        items = intakes.value!!.data!!
+                    ) { item ->
+                        Toma(item)
+                    }
+                }
+            }
+            is Resource.Loading -> {
+                Log.i("INTAKES", "INTAKES LOADING")
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(56.dp))
+                }
+            }
+            is Resource.Error -> {
+                Log.i("INTAKES", "INTAKES ERROR")
             }
         }
     }
-
 }
 
 @Composable

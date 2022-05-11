@@ -54,7 +54,9 @@ class DrugDetailsViewModel @Inject constructor(
     }
 
     suspend fun getIntakes() {
-        _intakes.value = intakeRepository.getIntakesByPrescriptionItemId(_prescriptionItem.value!!.id).first()
+        _intakes.postValue(
+            intakeRepository.getIntakesByPrescriptionItemId(_prescriptionItem.value!!.id).first()
+        )
     }
 
     fun setPrescriptionItemAlias(id: String, alias: String) {
@@ -77,7 +79,9 @@ class DrugDetailsViewModel @Inject constructor(
     fun getPrescription(prescriptionId: String) {
         viewModelScope.launch {
             try {
-                _prescriptionItem.value = prescriptionItemsRepository.getPrescriptionItemById(prescriptionId).first().data!!
+                _prescriptionItem.value =
+                    prescriptionItemsRepository.getPrescriptionItemById(prescriptionId)
+                        .first().data!!
             } catch (e: Exception) {
                 Log.d(TAG, "EXCEPTION ${e.message}")
             }

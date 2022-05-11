@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -237,12 +238,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 modifier = Modifier
                     .size(80.dp)
                     .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
-                painter = rememberImagePainter(
-                    data = "https://www.example.com/image.jpg",
-                    builder = {
-                        placeholder(R.drawable.placeholder)
-                    }
-                ),
+                painter = painterResource(id = R.drawable.default_img),
                 contentDescription = "Imagem do medicamento")
 
             Column(modifier = Modifier.width(160.dp)) {
@@ -357,12 +353,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                 Image(modifier = Modifier
                     .fillMaxWidth()
                     .height(225.dp),
-                    painter = rememberImagePainter(
-                        data = "https://www.example.com/image.jpg",
-                        builder = {
-                            placeholder(R.drawable.placeholder)
-                        }
-                    ),
+                    painter = painterResource(id = R.drawable.default_img),
                     contentDescription = "Imagem do medicamento")
 
                 TextButton(onClick = { /*TODO*/ }) {
