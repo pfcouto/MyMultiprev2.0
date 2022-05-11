@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.data.network.services
 
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.DrugDTO
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.IntakeDTO
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
 import retrofit2.http.Body

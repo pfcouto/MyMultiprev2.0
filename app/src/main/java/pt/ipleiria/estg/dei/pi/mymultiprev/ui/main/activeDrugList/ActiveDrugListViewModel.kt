@@ -26,7 +26,7 @@ class ActiveDrugListViewModel @Inject constructor(
     private val alarmService: AlarmService,
     private val sharedPreferencesRepository: SharedPreferencesRepository,
     private val alarmDao: AlarmDao
-) :  ViewModel() {
+) : ViewModel() {
 
     private val TAG = "ActiveDrugListViewModel"
 

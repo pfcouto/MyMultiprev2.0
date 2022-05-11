@@ -5,14 +5,12 @@ import androidx.core.net.toUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.daos.PrescriptionItemDao
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.ServiceBuilder
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.mappers.PrescriptionItemNetworkMapper
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.networkBoundResource
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.services.DrugService
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.services.PrescriptionItemsService
 import javax.inject.Inject
 

@@ -1,15 +1,10 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 
 import android.util.Log
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import android.widget.Toast
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -19,8 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugListScreen
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeDetailsScreen
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
 
 
 @Composable
@@ -100,7 +95,11 @@ fun BottomNavGraph(
                 it.arguments?.getString("prescriptionItem")
             }
             Log.d("Aqui", "")
-            ConfirmIntakeDetailsScreen(navController = navController, drugId = drugId!!, prescriptionItemId = prescriptionItemId!!)
+            ConfirmIntakeDetailsScreen(
+                navController = navController,
+                drugId = drugId!!,
+                prescriptionItemId = prescriptionItemId!!
+            )
         }
     }
 }

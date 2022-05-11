@@ -382,7 +382,8 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                         item = item,
                         confirmIntakeViewModel = confirmIntakeViewModel,
                         confirmViewModel = confirmViewModel,
-                        navController = navController
+                        navController = navController,
+                        seeDetailsViewModel = seeDetailsViewModel
                     )
                 }) {
                 Text(text = "VER")
@@ -428,16 +429,12 @@ fun AntibioticCard_Prescription_Item_Full_Item(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 8.dp, end = 8.dp)
-            .clickable {
-                Log.i("HERE1", "HERE1")
-                navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id)
-            },
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
-                .clickable { /*TODO onSeeDetailsClick()*/ },
+                .clickable {  navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id) },
             elevation = 10.dp,
             backgroundColor = cardBackgroundColor
         ) {
@@ -516,7 +513,8 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         item = item,
                         confirmIntakeViewModel = confirmIntakeViewModel,
                         confirmViewModel = confirmViewModel,
-                        navController = navController
+                        navController = navController,
+                        seeDetailsViewModel = seeDetailsViewModel
                     )
                 }) {
                     Text(text = "Confirmar Toma / Ver Detalhes")
@@ -530,7 +528,8 @@ private fun onDetailsAndConfirmButtonClick(
     item: Pair<PrescriptionItem, Drug?>,
     confirmIntakeViewModel: ConfirmIntakeViewModel,
     confirmViewModel: ConfirmAcquisitionViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    seeDetailsViewModel: SeeDetailsViewModel
 ) {
 
     Log.d("onDetailsAndConfirmButtonClick", "Aqui")
@@ -541,7 +540,7 @@ private fun onDetailsAndConfirmButtonClick(
             if (item.first.isOverdue) {
                 onConfirmDoseClick(item, confirmIntakeViewModel, navController)
             } else {
-//                onSeeDetailsClick()
+                onSeeDetailsClick(pair = item, seeDetailsViewModel = seeDetailsViewModel, navController = navController)
             }
         }
     }
@@ -550,11 +549,13 @@ private fun onDetailsAndConfirmButtonClick(
 
 
 fun onSeeDetailsClick(
-    imageview: ImageView?,
+//    imageview: ImageView?,
     pair: Pair<PrescriptionItem, Drug?>,
-    seeDetailsViewModel: SeeDetailsViewModel
+    seeDetailsViewModel: SeeDetailsViewModel,
+    navController: NavHostController
 ) {
-    seeDetailsViewModel.setPrescriptionItemDrugPair(pair)
+//    seeDetailsViewModel.setPrescriptionItemDrugPair(pair)
+    navController.navigate("descricaoAntibiotico/" + pair.first.id + "/" + pair.second!!.id)
     Log.d("onSeeDetailsClick", "aqui details")
 
 //        if (imageview != null) {
@@ -596,8 +597,7 @@ fun onConfirmDoseClick(
 //            else -> R.string.alarm_off
 //        }
 //        com.google.android.material.snackbar.Snackbar.make(binding.root, restId, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT)
-//            .setAction(getString(R.string.OK)) {}.show()
-//    }
+//            .setAction(getString(R.string.OK)) {}.show()\
 
 fun onConfirmAcquisitionClick(
     pair: Pair<PrescriptionItem, Drug?>,

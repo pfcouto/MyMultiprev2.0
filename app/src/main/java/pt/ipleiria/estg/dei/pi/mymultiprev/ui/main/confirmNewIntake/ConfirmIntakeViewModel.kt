@@ -56,7 +56,6 @@ class ConfirmIntakeViewModel @Inject constructor(
         get() = _response
 
 
-
     fun getDrug(drugID: String) {
         viewModelScope.launch {
             try {
@@ -103,7 +102,9 @@ class ConfirmIntakeViewModel @Inject constructor(
 
     fun verifyRegistrationDateTime(): Boolean {
 
-        if (_registrationIntakeDateTime.value!! < prescriptionItem.value?.nextIntake!!.toInstant(Constants.TIME_ZONE)
+        if (_registrationIntakeDateTime.value!! < prescriptionItem.value?.nextIntake!!.toInstant(
+                Constants.TIME_ZONE
+            )
                 .minus(2, DateTimeUnit.HOUR).toLocalDateTime(Constants.TIME_ZONE)
         ) {
             return false;

@@ -14,7 +14,6 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel

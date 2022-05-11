@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDateTime
@@ -19,7 +18,11 @@ object Util {
     @Composable
     fun <T> handleError(error: Error<T>) {
         when {
-            error.isNetworkError -> Toast.makeText(LocalContext.current, "Por favor, verifique a sua conexão á internet", Toast.LENGTH_LONG)
+            error.isNetworkError -> Toast.makeText(
+                LocalContext.current,
+                "Por favor, verifique a sua conexão á internet",
+                Toast.LENGTH_LONG
+            )
             else -> Toast.makeText(LocalContext.current, "Ocorreu um erro", Toast.LENGTH_LONG)
         }
     }

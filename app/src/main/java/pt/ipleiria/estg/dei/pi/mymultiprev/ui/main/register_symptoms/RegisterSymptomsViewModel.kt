@@ -63,7 +63,7 @@ class RegisterSymptomsViewModel @Inject constructor(
     fun getPatient() {
         viewModelScope.launch {
             try {
-            _patient.value = authRepository.getPatient(patientId).first().data!!
+                _patient.value = authRepository.getPatient(patientId).first().data!!
             } catch (e: Exception) {
                 Log.d(TAG, "EXCEPTION ${e.message}")
             }

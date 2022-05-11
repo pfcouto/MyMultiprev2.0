@@ -20,7 +20,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
-import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 import java.util.*
 
 @Composable
@@ -90,7 +89,7 @@ fun ConfirmIntakeDetailsScreen(
         val response = viewModel.response.observeAsState()
         val openDialog = remember { mutableStateOf(false) }
 
-        if (response.value != null){
+        if (response.value != null) {
             when (response.value!!) {
                 is Resource.Success -> {
 
@@ -145,8 +144,6 @@ fun ConfirmIntakeDetailsScreen(
                 }
             }
         }
-
-
 
 
         var estadoCor = if (estadoColorVerde)
@@ -318,14 +315,14 @@ fun ConfirmIntakeDetailsScreen(
                 }
             }
 
-        if (showError) {
-            Text(
-                modifier = Modifier.padding(start = 32.dp, top = 24.dp, end = 32.dp),
-                fontSize = 16.sp,
-                color = Color.Red,
-                text = "A hora selecionada é inválida"
-            )
-        }
+            if (showError) {
+                Text(
+                    modifier = Modifier.padding(start = 32.dp, top = 24.dp, end = 32.dp),
+                    fontSize = 16.sp,
+                    color = Color.Red,
+                    text = "A hora selecionada é inválida"
+                )
+            }
 
             Spacer(modifier = Modifier.height(290.dp))
 

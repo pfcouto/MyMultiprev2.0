@@ -13,7 +13,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.MainScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginViewModel
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugListScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

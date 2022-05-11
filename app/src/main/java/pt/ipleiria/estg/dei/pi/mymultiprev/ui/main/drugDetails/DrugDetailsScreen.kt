@@ -1,7 +1,5 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -202,7 +200,8 @@ fun Pager(
 @Composable
 fun Details(drug: State<Drug?>, prescription: State<PrescriptionItem?>) {
 
-    if (drug.value == null) {
+    if (drug.value == null || prescription.value == null) {
+
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,

@@ -2,7 +2,6 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.util
 
 import android.app.Activity
 import android.app.AlertDialog
-import pt.ipleiria.estg.dei.pi.mymultiprev.R
 
 class LoadingDialog(private val activity: Activity) {
     private lateinit var alertDialog: AlertDialog
@@ -18,8 +17,8 @@ class LoadingDialog(private val activity: Activity) {
 //        isShowing=true
 //    }
 
-    fun dismissDialog(){
-        if(isShowing){
+    fun dismissDialog() {
+        if (isShowing) {
             alertDialog.dismiss()
         }
     }
