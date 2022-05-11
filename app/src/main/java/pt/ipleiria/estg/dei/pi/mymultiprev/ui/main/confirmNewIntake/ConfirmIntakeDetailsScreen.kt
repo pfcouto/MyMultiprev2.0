@@ -5,10 +5,7 @@ import android.app.TimePickerDialog
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -21,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 import java.util.*
 
 @Composable
@@ -28,7 +28,8 @@ fun ConfirmIntakeDetailsScreen(
     navController: NavHostController,
     drugId: String,
     prescriptionItemId: String,
-    viewModel: ConfirmIntakeViewModel = hiltViewModel()
+    viewModel: ConfirmIntakeViewModel = hiltViewModel(),
+    registerSymptomsViewModel: RegisterSymptomsViewModel = hiltViewModel()
 ) {
 
     DisposableEffect(key1 = Unit) {
@@ -86,44 +87,57 @@ fun ConfirmIntakeDetailsScreen(
         }
 
 
-//    val response = viewModel.response.observeAsState()
-//
-//    if (response == null) return
-//    when (response) {
-//        is Resource.Success<*> -> {
-//            loadingDialog.dismissDialog()
-//            val builder = AlertDialog.Builder(requireContext())
-//            builder.setTitle(getString(R.string.symptoms_title))
-//            builder.setMessage(getString(R.string.felt_symptoms_dialog_message))
-//
-//            builder.setPositiveButton(getString(R.string.yes)) { dialog, which ->
-//                clearResponse()
-//                dialog.dismiss()
-//                val registerSymptomsViewModel: RegisterSymptomsViewModel by activityViewModels()
-//                registerSymptomsViewModel.specificPrescriptionItemId =
-//                    response.data!!.prescriptionItemId
-//                requireActivity().findNavController(R.id.nav_host_fragment)
-//                    .navigate(R.id.action_newIntakeDetailsFragment_to_registerSymptomsFragment)
-//            }
-//            builder.setNegativeButton(
-//                getString(R.string.no)
-//            ) { dialog, which ->
-//                clearResponse()
-//                dialog.dismiss()
-//                requireActivity().onBackPressed()
-//            }
-//
-//            val alert = builder.create()
-//            alert.show()
-//        }
-//        is Resource.Error -> {
-//            loadingDialog.dismissDialog()
-//            handleError(response)
-//        }
-//        else -> {
-//            loadingDialog.dismissDialog()
-//        }
-//    }
+        val response = viewModel.response.observeAsState()
+        val openDialog = remember { mutableStateOf(false) }
+
+        if (response.value != null){
+            when (response.value!!) {
+                is Resource.Success -> {
+//                loadingDialog.dismissDialog()
+
+                    if (openDialog.value) {
+                        AlertDialog(onDismissRequest = { openDialog.value = false },
+                            title = {
+                                Text(text = "Sintomas")
+                            },
+                            text = {
+                                Text(text = "Sentiu algum sintoma secundário durante a toma?")
+                            },
+                            confirmButton = {
+                                OutlinedButton(onClick = {
+                                    viewModel.clearResponse(); openDialog.value = false;
+                                    Log.d("TAG", response.value.toString())
+                                    Log.d("TAG", response.value!!.data.toString())
+//                                    registerSymptomsViewModel.specificPrescriptionItemId =
+//                                    response.value!!.data!!.prescriptionItemId;
+
+                                    navController.navigate("sintomas")
+                                }) {
+                                    Text(text = "Sim")
+                                }
+                            },
+                            dismissButton = {
+                                OutlinedButton(onClick = {
+                                    viewModel.clearResponse(); openDialog.value =
+                                    false; navController.popBackStack()
+                                }) {
+                                    Text(text = "Não")
+                                }
+                            }
+                        )
+                    }
+                }
+                is Resource.Error -> {
+//                loadingDialog.dismissDialog()
+//                    Util.handleError(response)
+                }
+                else -> {
+//                loadingDialog.dismissDialog()
+                }
+            }
+        }
+
+
 
 
         var estadoCor = if (estadoColorVerde)
@@ -191,7 +205,7 @@ fun ConfirmIntakeDetailsScreen(
             Text(
                 modifier = Modifier.padding(start = 32.dp, top = 32.dp, end = 32.dp),
                 fontSize = 18.sp,
-                text = drug?.name ?: ""
+                text = drug!!.name
             )
 
             if (ultimaTomaVisible) {
@@ -217,7 +231,7 @@ fun ConfirmIntakeDetailsScreen(
                         .weight(1f),
                     textAlign = TextAlign.End,
                     fontSize = 18.sp,
-                    text = prescriptionItem?.formattedNextIntake() ?: ""
+                    text = prescriptionItem!!.formattedNextIntake()
                 )
             }
 
@@ -236,7 +250,7 @@ fun ConfirmIntakeDetailsScreen(
                         .weight(1f),
                     textAlign = TextAlign.End,
                     fontSize = 18.sp,
-                    text = prescriptionItem?.dosage ?: ""
+                    text = prescriptionItem!!.dosage
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -266,7 +280,7 @@ fun ConfirmIntakeDetailsScreen(
                     maxLines = 1,
                     text = "Data de Registo:"
                 )
-
+                // TODO VERIFICAR SE A GUARDAR A DATA quando a mudamos esta certo, nao testei
                 Text(
                     modifier = Modifier
                         .padding(top = 24.dp, end = 32.dp)
@@ -295,15 +309,14 @@ fun ConfirmIntakeDetailsScreen(
                 }
             }
 
-//        if (showError) {
+        if (showError) {
             Text(
                 modifier = Modifier.padding(start = 32.dp, top = 24.dp, end = 32.dp),
                 fontSize = 16.sp,
                 color = Color.Red,
                 text = "A hora selecionada é inválida"
             )
-
-//        }
+        }
 
             Spacer(modifier = Modifier.height(290.dp))
 
@@ -315,9 +328,14 @@ fun ConfirmIntakeDetailsScreen(
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.registerIntake() }) {
+                    onClick = { openDialog.value = true; viewModel.registerIntake() }) {
 
-                    Text(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, text = "SEGUINTE")
+                    Text(
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        text = "SEGUINTE"
+                    )
                 }
 
                 Button(
@@ -325,7 +343,7 @@ fun ConfirmIntakeDetailsScreen(
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .fillMaxWidth(),
-                    onClick = { /*TODO*/ }) {
+                    onClick = { navController.popBackStack() }) {
                     Text(
                         color = Color.Black,
                         fontSize = 18.sp,

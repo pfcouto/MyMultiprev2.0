@@ -56,6 +56,7 @@ class ConfirmIntakeViewModel @Inject constructor(
         get() = _response
 
 
+
     fun getDrug(drugID: String) {
         viewModelScope.launch {
             try {
@@ -138,6 +139,7 @@ class ConfirmIntakeViewModel @Inject constructor(
                     took = true
                 )
             )
+            Log.d("Aqui4", _response.value.toString())
         }
     }
 }
