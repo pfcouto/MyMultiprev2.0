@@ -1,9 +1,9 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -18,13 +18,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
+import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
+import java.time.format.DateTimeFormatter
 
 enum class TabPage() {
     Detalhes(),
@@ -35,20 +43,39 @@ enum class TabPage() {
 @Composable
 fun DrugDetailsScreen(
     viewModel: DrugDetailsViewModel = hiltViewModel(),
-    drugId: String
+    drugId: String,
+    prescriptionId: String
+
 ) {
     DisposableEffect(key1 = Unit) {
         if (!drugId.isNullOrBlank()) {
             viewModel.getDrug(drugId)
         }
+        if (!prescriptionId.isNullOrBlank()) {
+            viewModel.getPrescription(prescriptionId)
+        }
+
         onDispose { }
     }
 
     val drug = remember { viewModel.drug }
+    val prescription = remember { viewModel.prescriptionItem }
+
+    if (prescription.value != null) {
+        DisposableEffect(key1 = Unit) {
+            GlobalScope.launch {
+                viewModel.getIntakes()
+            }
+            onDispose { }
+        }
+
+    }
+
+    val intakes = viewModel.intakes
 
     Column() {
         AppBar(drug = drug)
-        Pager(drug = drug)
+        Pager(drug = drug, prescription = prescription, intakes = intakes)
     }
 }
 
@@ -129,9 +156,14 @@ fun TabHome(selectIndex: Int, onSelect: (TabPage) -> Unit) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun Pager(drug: LiveData<Drug>) {
+fun Pager(
+    drug: LiveData<Drug>,
+    prescription: LiveData<PrescriptionItem>,
+    intakes: LiveData<Resource<List<Intake>>>
+) {
 
     val drugState = drug.observeAsState()
+    val prescriptionState = prescription.observeAsState()
 
     val pagerSelect = rememberPagerState(pageCount = TabPage.values().size)
     val scope = rememberCoroutineScope()
@@ -148,14 +180,10 @@ fun Pager(drug: LiveData<Drug>) {
                     Column(Modifier.fillMaxSize()) {
                         when (index) {
                             0 -> {
-                                Details(drug = drugState)
+                                Details(drug = drugState, prescription = prescriptionState)
                             }
                             1 -> {
-                                LazyColumn() {
-                                    items(10) {
-                                        Tomas()
-                                    }
-                                }
+                                Tomas(intakes = intakes)
                             }
 
                             2 -> {
@@ -170,7 +198,7 @@ fun Pager(drug: LiveData<Drug>) {
 }
 
 @Composable
-fun Details(drug: State<Drug?>) {
+fun Details(drug: State<Drug?>, prescription: State<PrescriptionItem?>) {
 
     if (drug.value == null) {
         Column(
@@ -237,7 +265,7 @@ fun Details(drug: State<Drug?>) {
                         .padding(end = 16.dp, top = 16.dp),
                     fontSize = 18.sp,
                     textAlign = TextAlign.End,
-                    text = drug.value!!.dosageMassMg.toString() + " mg"
+                    text = prescription.value!!.intakeValue.toString() + " " + prescription.value!!.dosage
                 )
             }
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -273,33 +301,62 @@ fun Details(drug: State<Drug?>) {
                         .padding(end = 16.dp, top = 16.dp),
                     fontSize = 18.sp,
                     textAlign = TextAlign.End,
-                    text = "7h - TODO"
+                    text = prescription.value!!.frequency.toString() + "h"
                 )
             }
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    maxLines = 1,
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    text = "Próxima Toma"
-                )
-                Text(
-                    maxLines = 1,
-                    modifier = Modifier
-                        .weight(1F)
-                        .padding(end = 16.dp, top = 16.dp),
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.End,
-                    text = "2022-04-13 08:22 - TODO"
-                )
+            if (prescription.value!!.nextIntake != null) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        maxLines = 1,
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        text = "Próxima Toma"
+                    )
+                    Text(
+                        maxLines = 1,
+                        modifier = Modifier
+                            .weight(1F)
+                            .padding(end = 16.dp, top = 16.dp),
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.End,
+                        text = Util.formatDateTime(prescription.value!!.nextIntake!!)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun Tomas() {
+fun Tomas(
+    intakes: LiveData<Resource<List<Intake>>>
+) {
+    //TODO intakes not working
+    val resourceList = intakes.observeAsState()
+
+    if (resourceList.value == null) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator(modifier = Modifier.size(56.dp))
+        }
+    } else {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(
+                items = intakes.value!!.data!!
+            ) { item ->
+                Toma(item)
+            }
+        }
+    }
+
+}
+
+@Composable
+fun Toma(intake: Intake) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
@@ -333,18 +390,20 @@ fun Tomas() {
                 textAlign = TextAlign.End,
                 color = MaterialTheme.colors.secondary,
 
-                text = "12/04/2021 23:30"
+                text = Util.formatDateTime(intake.intakeDate!!)
             )
         }
     }
 }
 
+
 @Composable
 fun MoreDetails(drug: State<Drug?>) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)
-        .clickable { }) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
         Text(
             modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
             fontSize = 18.sp,
@@ -370,17 +429,3 @@ fun MoreDetails(drug: State<Drug?>) {
         )
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun AppBarPreview() {
-////    Tomas()
-////    Pager()
-//    DrugDetailsScreen()
-//}
-
-//@Preview
-//@Composable
-//fun DetailsPreview() {
-//    Details()
-//}

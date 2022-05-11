@@ -36,7 +36,11 @@ class DrugDetailsViewModel @Inject constructor(
     val drug: LiveData<Drug>
         get() = _drug
 
-    lateinit var intakes: LiveData<Resource<List<Intake>>>
+    private var _intakes: MutableLiveData<Resource<List<Intake>>> = MutableLiveData()
+    val intakes: LiveData<Resource<List<Intake>>>
+        get() = _intakes
+
+//    lateinit var intakes: LiveData<Resource<List<Intake>>>
 
     fun getPrescriptionItemPhoto(id: String) {
         viewModelScope.launch {
@@ -49,9 +53,8 @@ class DrugDetailsViewModel @Inject constructor(
         _drug.value = pair.second!!
     }
 
-    fun getIntakes() {
-        intakes = intakeRepository.getIntakesByPrescriptionItemId(_prescriptionItem.value!!.id)
-            .asLiveData()
+    suspend fun getIntakes() {
+        _intakes.value = intakeRepository.getIntakesByPrescriptionItemId(_prescriptionItem.value!!.id).first()
     }
 
     fun setPrescriptionItemAlias(id: String, alias: String) {
@@ -65,6 +68,16 @@ class DrugDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _drug.value = drugRepository.getDrugById(drugId = drugID).first().data!!
+            } catch (e: Exception) {
+                Log.d(TAG, "EXCEPTION ${e.message}")
+            }
+        }
+    }
+
+    fun getPrescription(prescriptionId: String) {
+        viewModelScope.launch {
+            try {
+                _prescriptionItem.value = prescriptionItemsRepository.getPrescriptionItemById(prescriptionId).first().data!!
             } catch (e: Exception) {
                 Log.d(TAG, "EXCEPTION ${e.message}")
             }

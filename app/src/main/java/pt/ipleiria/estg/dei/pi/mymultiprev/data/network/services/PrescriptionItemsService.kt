@@ -22,4 +22,7 @@ interface PrescriptionItemsService {
 
     @GET("prescriptionItems/{prescriptionItemId}/intakes")
     suspend fun getIntakesByPrescriptionItemId(@Path("prescriptionItemId") id: String): List<IntakeDTO>
+
+    @GET("prescriptionItems/{prescriptionItemId}")
+    suspend fun getPrescriptionItemById(@Path("prescriptionItemId") prescriptionItemId: String): PrescriptionItemDTO
 }

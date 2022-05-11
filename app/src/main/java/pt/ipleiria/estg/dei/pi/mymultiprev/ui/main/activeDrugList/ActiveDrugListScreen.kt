@@ -80,7 +80,9 @@ fun ActiveDrugListScreen(
 
 
 
-    Column {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
 
         Logout() {
             openDialog = true
@@ -99,7 +101,7 @@ fun ActiveDrugListScreen(
 
         if (listOfPairs?.isNotEmpty() == true) {
             if (showByColumnList.value) {
-                LazyColumn() {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
 
                     items(items = listOfPairs!!) { item ->
 
@@ -226,7 +228,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
             .padding(start = 24.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)
             .fillMaxWidth()
             .clickable {
-                navController.navigate("descricaoAntibiotico/" + item.second!!.id)
+                navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id)
             },
         elevation = 8.dp
     ) {
@@ -293,7 +295,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
             .padding(start = 8.dp, end = 8.dp)
             .clickable {
                 Log.i("HERE1", "HERE1")
-                navController.navigate("descricaoAntibiotico" + item.second!!.id)
+                navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id)
             },
     ) {
         Card(

@@ -61,14 +61,24 @@ fun BottomNavGraph(
             Text(text = "HISTORICO")
         }
 
-        composable(route = "descricaoAntibiotico/{drug}", arguments = listOf(navArgument("drug") {
-            type = NavType.StringType
-        })) {
+        composable(
+            route = "descricaoAntibiotico/{prescription}/{drug}",
+            arguments = listOf(
+                navArgument("drug") {
+                    type = NavType.StringType
+                },
+                navArgument("prescription") {
+                    type = NavType.StringType
+                })
+        ) {
             var drugId = remember {
                 it.arguments?.getString("drug")
             }
-            Log.i("BottomNavGraph", drugId.toString())
-            DrugDetailsScreen(drugId = drugId!!)
+            var prescriptionId = remember {
+                it.arguments?.getString("prescription")
+            }
+//            Log.i("BottomNavGraph", prescriptionId.toString())
+            DrugDetailsScreen(drugId = drugId!!, prescriptionId = prescriptionId!!)
         }
     }
 }
