@@ -1,7 +1,6 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
 import android.util.Log
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -123,6 +122,12 @@ fun ActiveDrugListScreen(
                     var prescriptionAcquisitionConfirmed = remember { mutableStateOf(false) }
                     val prescriptionIsOverdue = remember { mutableStateOf(false) }
 
+                    val itemFullText =
+                        if (!prescriptionIsOverdue.value)
+                            "Ver Detalhes"
+                        else
+                            "Confirmar Toma"
+
                     // TODO ver isto
                     if (item.first.acquiredAt == null) {
                         prescriptionAcquisitionConfirmed.value = false
@@ -190,7 +195,8 @@ fun ActiveDrugListScreen(
                             confirmViewModel = confirmViewModel,
                             prescriptionAcquisitionConfirmed = prescriptionAcquisitionConfirmed,
                             prescriptionIsOverdue = prescriptionIsOverdue,
-                            timeTextText = timeTextText
+                            timeTextText = timeTextText,
+                            itemFullText = itemFullText
                         )
                     }
                 }
@@ -401,7 +407,8 @@ fun AntibioticCard_Prescription_Item_Full_Item(
     confirmViewModel: ConfirmAcquisitionViewModel,
     prescriptionAcquisitionConfirmed: MutableState<Boolean>,
     prescriptionIsOverdue: MutableState<Boolean>,
-    timeTextText: String
+    timeTextText: String,
+    itemFullText: String
 ) {
 
     val alarmOn = remember { mutableStateOf(true) }
@@ -517,7 +524,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         seeDetailsViewModel = seeDetailsViewModel
                     )
                 }) {
-                    Text(text = "Confirmar Toma / Ver Detalhes")
+                    Text(text = itemFullText)
                 }
             }
         }
