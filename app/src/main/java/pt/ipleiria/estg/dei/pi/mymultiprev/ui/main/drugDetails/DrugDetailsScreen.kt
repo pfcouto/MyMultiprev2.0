@@ -1,10 +1,12 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
 import android.util.Log
+import androidx.compose.animation.VectorConverter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -351,17 +353,17 @@ fun Tomas(
         Log.i("HERE", "INTAKES SUCCESS")
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(
+            itemsIndexed(
                 items = intakes.value!!
-            ) { item ->
-                Toma(item)
+            ) { idx, item ->
+                Toma(item, idx + 1)
             }
         }
     }
 }
 
 @Composable
-fun Toma(intake: Intake) {
+fun Toma(intake: Intake, nIntake: Int) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
@@ -375,13 +377,13 @@ fun Toma(intake: Intake) {
                     style = MaterialTheme.typography.h6,
                     fontSize = 20.sp,
                     maxLines = 2,
-                    text = intake.id
+                    text = "Toma $nIntake"
                 )
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                     style = MaterialTheme.typography.body2,
                     fontSize = 18.sp,
-                    color = MaterialTheme.colors.secondary,
+                    color = if (intake.took) Color.Green else Color.Red,
                     text = if (intake.took) "Tomado" else "Falhou Toma"
                 )
             }
@@ -393,7 +395,6 @@ fun Toma(intake: Intake) {
                 style = MaterialTheme.typography.body2,
                 fontSize = 18.sp,
                 textAlign = TextAlign.End,
-                color = MaterialTheme.colors.secondary,
 
                 text = if (intake.took) Util.formatDateTime(intake.intakeDate!!) else Util.formatDateTime(
                     intake.expectedAt!!

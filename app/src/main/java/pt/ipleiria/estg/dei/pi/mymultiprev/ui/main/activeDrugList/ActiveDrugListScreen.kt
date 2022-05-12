@@ -113,7 +113,9 @@ fun ActiveDrugListScreen(
 
         if (listOfPairs?.isNotEmpty() == true) {
 
-            LazyColumn() {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
 
                 items(items = listOfPairs!!) { item ->
 
@@ -166,7 +168,7 @@ fun ActiveDrugListScreen(
                                         else
                                             timeTextText = "${minDiff}min"
                                     } else
-                                        timeTextText = "${hourDiff} e ${minDiff}min"
+                                        timeTextText = "${hourDiff}h e ${minDiff}min"
                                 } else
                                     timeTextText = "${dayDiff}d e ${hourDiff}h"
                             }
@@ -441,7 +443,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
-                .clickable {  navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id) },
+                .clickable { navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id) },
             elevation = 10.dp,
             backgroundColor = cardBackgroundColor
         ) {
@@ -547,7 +549,11 @@ private fun onDetailsAndConfirmButtonClick(
             if (item.first.isOverdue) {
                 onConfirmDoseClick(item, confirmIntakeViewModel, navController)
             } else {
-                onSeeDetailsClick(pair = item, seeDetailsViewModel = seeDetailsViewModel, navController = navController)
+                onSeeDetailsClick(
+                    pair = item,
+                    seeDetailsViewModel = seeDetailsViewModel,
+                    navController = navController
+                )
             }
         }
     }
