@@ -29,7 +29,6 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 
 enum class TabPage() {
@@ -69,7 +68,7 @@ fun DrugDetailsScreen(
         }
     }
 
-    val intakes = viewModel.intakes
+    val intakes = remember { viewModel.intakes }
 
 //    val handler = Handler(Looper.getMainLooper())
 //    handler.postDelayed({
@@ -158,7 +157,7 @@ fun TabHome(selectIndex: Int, onSelect: (TabPage) -> Unit) {
 fun Pager(
     drug: LiveData<Drug>,
     prescription: LiveData<PrescriptionItem>,
-    intakes: LiveData<Resource<List<Intake>>>
+    intakes: LiveData<List<Intake>>
 ) {
 
     val drugState = drug.observeAsState()
@@ -331,39 +330,31 @@ fun Details(drug: State<Drug?>, prescription: State<PrescriptionItem?>) {
 
 @Composable
 fun Tomas(
-    //TODO intakes not working
-    intakes: State<Resource<List<Intake>>?>
+    intakes: State<List<Intake>?>
 ) {
 
-    Log.i("HERE1", intakes.value?.data.toString())
-    Log.i("HERE2", intakes.value.toString())
+    Log.i("HERE", intakes.value.toString())
 
 
-    if (intakes.value != null) {
-        when (intakes.value) {
-            is Resource.Success -> {
-                Log.i("INTAKES", "INTAKES SUCCESS")
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(
-                        items = intakes.value!!.data!!
-                    ) { item ->
-                        Toma(item)
-                    }
-                }
-            }
-            is Resource.Loading -> {
-                Log.i("INTAKES", "INTAKES LOADING")
+    if (intakes.value == null) {
+        Log.i("HERE", "INTAKES LOADING")
 
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.size(56.dp))
-                }
-            }
-            is Resource.Error -> {
-                Log.i("INTAKES", "INTAKES ERROR")
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator(modifier = Modifier.size(56.dp))
+        }
+    } else {
+        Log.i("HERE COUNT", intakes.value!!.size.toString())
+        Log.i("HERE", "INTAKES SUCCESS")
+
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(
+                items = intakes.value!!
+            ) { item ->
+                Toma(item)
             }
         }
     }
@@ -384,14 +375,14 @@ fun Toma(intake: Intake) {
                     style = MaterialTheme.typography.h6,
                     fontSize = 20.sp,
                     maxLines = 2,
-                    text = "12313132-123-123-123-123"
+                    text = intake.id
                 )
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                     style = MaterialTheme.typography.body2,
                     fontSize = 18.sp,
                     color = MaterialTheme.colors.secondary,
-                    text = "Took"
+                    text = if (intake.took) "Tomado" else "Falhou Toma"
                 )
             }
             Text(
@@ -404,7 +395,9 @@ fun Toma(intake: Intake) {
                 textAlign = TextAlign.End,
                 color = MaterialTheme.colors.secondary,
 
-                text = Util.formatDateTime(intake.intakeDate!!)
+                text = if (intake.took) Util.formatDateTime(intake.intakeDate!!) else Util.formatDateTime(
+                    intake.expectedAt!!
+                )
             )
         }
     }
