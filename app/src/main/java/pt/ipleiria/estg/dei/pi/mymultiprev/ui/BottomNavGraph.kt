@@ -77,7 +77,11 @@ fun BottomNavGraph(
                 it.arguments?.getString("prescription")
             }
 //            Log.i("BottomNavGraph", prescriptionId.toString())
-            DrugDetailsScreen(drugId = drugId!!, prescriptionId = prescriptionId!!)
+            DrugDetailsScreen(
+                drugId = drugId!!,
+                prescriptionId = prescriptionId!!,
+                navController = navController
+            )
         }
 
         composable(
@@ -94,11 +98,29 @@ fun BottomNavGraph(
             var prescriptionItemId = remember {
                 it.arguments?.getString("prescriptionItem")
             }
-            Log.d("Aqui", "")
             ConfirmIntakeDetailsScreen(
                 navController = navController,
                 drugId = drugId!!,
                 prescriptionItemId = prescriptionItemId!!
+            )
+        }
+
+        composable(
+            route = "drugDetailsScreenCamera/{prescriptionId}", arguments = listOf(
+                navArgument("prescriptionId") {
+                    type = NavType.StringType
+                })
+        ) {
+            var prescriptionId = remember {
+                it.arguments?.getString("prescriptionId")
+            }
+//            var drugId = remember {
+//                it.arguments?.getString("drugId")
+//            }
+            CameraScreen(
+                prescriptionId = prescriptionId!!,
+//                drugId = drugId!!,
+                navController = navController
             )
         }
     }

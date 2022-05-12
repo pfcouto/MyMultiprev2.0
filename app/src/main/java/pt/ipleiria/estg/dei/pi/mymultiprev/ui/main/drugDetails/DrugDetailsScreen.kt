@@ -15,6 +15,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,9 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
+import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
@@ -41,10 +47,10 @@ enum class TabPage() {
 
 @Composable
 fun DrugDetailsScreen(
+    navController: NavHostController,
     viewModel: DrugDetailsViewModel = hiltViewModel(),
     drugId: String,
     prescriptionId: String
-
 ) {
     DisposableEffect(key1 = Unit) {
         if (!drugId.isNullOrBlank()) {
@@ -78,15 +84,20 @@ fun DrugDetailsScreen(
 //    }, 5000)
 
     Column() {
-        AppBar(drug = drug)
+        AppBar(drug = drug, navController = navController, prescription = prescription)
         Pager(drug = drug, prescription = prescription, intakes = intakes)
     }
 }
 
 @Composable
-fun AppBar(drug: LiveData<Drug>) {
+fun AppBar(
+    drug: LiveData<Drug>,
+    prescription: LiveData<PrescriptionItem>,
+    navController: NavHostController
+) {
 
     val drugState = drug.observeAsState()
+    val prescriptionState = prescription.observeAsState()
 
 
     Box(
@@ -105,19 +116,27 @@ fun AppBar(drug: LiveData<Drug>) {
         } else {
 
             Card {
-
-                Image(
+                GlideImage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
-                    painter = painterResource(id = R.drawable.default_img),
-                    contentDescription = "Botao de Tirar Fotografia"
-                )
+                    imageModel = prescriptionState.value!!.imageLocation,
+                    // Crop, Fit, Inside, FillHeight, FillWidth, None
+                    contentScale = ContentScale.FillBounds,
+                    // shows a placeholder while loading the image.
+//                    placeHolder = ImageBitmap.imageResource(R.drawable.loading),
+                    // shows an error ImageBitmap when the request failed.
+                    error = ImageBitmap.imageResource(R.drawable.default_img),
+
+                    )
                 IconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(top = 10.dp, end = 10.dp),
-                    onClick = { /*TODO - navegar para camera com drug.id*/ }) {
+                    onClick = {
+//                        navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id + "/" + drugState.value!!.id)
+                        navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id)
+                    }) {
                     Icon(
                         tint = Color.Black,
                         imageVector = Icons.Filled.PhotoCamera,
