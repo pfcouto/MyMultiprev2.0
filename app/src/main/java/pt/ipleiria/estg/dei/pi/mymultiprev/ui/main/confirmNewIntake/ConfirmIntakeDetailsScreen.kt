@@ -98,7 +98,10 @@ fun ConfirmIntakeDetailsScreen(
                     if (openDialog.value) {
 //                        Log.d("TAG", response.value.toString())
 //                        Log.d("TAG", response.value!!.data.toString())
-                        AlertDialog(onDismissRequest = { openDialog.value = false },
+                        AlertDialog(onDismissRequest = {
+                            openDialog.value = false
+                            navController.popBackStack()
+                        },
                             title = {
                                 Text(text = "Sintomas")
                             },
@@ -207,7 +210,9 @@ fun ConfirmIntakeDetailsScreen(
             }, mHour, mMinute, true
         )
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Text(
                 modifier = Modifier.padding(start = 32.dp, top = 32.dp, end = 32.dp),
                 fontSize = 18.sp,
@@ -324,7 +329,7 @@ fun ConfirmIntakeDetailsScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(290.dp))
+            Spacer(modifier = Modifier.height(270.dp))
 
             Column(
                 modifier = Modifier

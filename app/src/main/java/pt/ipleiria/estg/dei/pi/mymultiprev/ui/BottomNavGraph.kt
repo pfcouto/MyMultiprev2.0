@@ -16,6 +16,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugListScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory.PrescriptionItemsHistoryScreen
 
 
 @Composable
@@ -57,7 +58,7 @@ fun BottomNavGraph(
         }
 
         composable(route = BottomBarScreen.Historico.route) {
-            Text(text = "HISTORICO")
+            PrescriptionItemsHistoryScreen(navController = navController)
         }
 
         composable(
