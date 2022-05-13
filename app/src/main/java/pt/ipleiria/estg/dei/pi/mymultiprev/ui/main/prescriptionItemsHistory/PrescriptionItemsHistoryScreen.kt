@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -104,7 +105,12 @@ fun PrescriptionItemsHistoryScreen(
                     viewModel.filterPairs(query)
                     keyboardFocusManager.clearFocus()
                 }
+            ),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = MaterialTheme.colors.surface,
+                textColor = MaterialTheme.colors.onSurface
             )
+
         )
 
         if (resourceSuccessNoItems) {
