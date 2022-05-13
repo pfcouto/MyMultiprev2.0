@@ -46,6 +46,7 @@ class PrescriptionItemsRepository @Inject constructor(
         return networkBoundResource(
             query = {
                 prescriptionItemDao.getCompletedPrescriptionItems()
+
             },
             fetch = {
                 prescriptionItemsServices.getCompletedPrescriptionItems(patientId)

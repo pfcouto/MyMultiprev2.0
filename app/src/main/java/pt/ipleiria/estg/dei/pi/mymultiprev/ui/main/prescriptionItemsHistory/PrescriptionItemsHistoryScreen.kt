@@ -36,9 +36,9 @@ fun PrescriptionItemsHistoryScreen(
 ) {
     val TAG = "PrescriptionItemsHistoryScreen"
 
-    val prescriptionItems = viewModel.prescriptionItems.observeAsState()
     val drugs = viewModel.drugs.observeAsState()
     val pairs = viewModel.pairs.observeAsState()
+    val prescriptionItems = viewModel.prescriptionItems.observeAsState()
 
     var resourceSuccessNoItems by remember { mutableStateOf(false) }
 
@@ -46,17 +46,20 @@ fun PrescriptionItemsHistoryScreen(
 
     val keyboardFocusManager = LocalFocusManager.current
 
+    Log.d(TAG, "Prescription Items: " + prescriptionItems.value?.data.toString())
+    Log.d(TAG, "Prescription Items Resource: " + prescriptionItems.value.toString())
 
-    when (prescriptionItems) {
-        is Resource.Success<*> -> {
+    when (prescriptionItems.value) {
+        is Resource.Success -> {
             Log.i(TAG, "Resource Success")
-            if (!prescriptionItems.value!!.data.isNullOrEmpty()) {
+            if (!prescriptionItems.value?.data.isNullOrEmpty()) {
                 viewModel.updatePairs()
+                resourceSuccessNoItems = false
             } else {
                 resourceSuccessNoItems = true
             }
         }
-        is Resource.Loading<*> -> {
+        is Resource.Loading -> {
             Log.i(TAG, "Resource Loading")
         }
         else -> {
@@ -64,15 +67,20 @@ fun PrescriptionItemsHistoryScreen(
         }
     }
 
-    Log.d(TAG, drugs.value.toString())
+    Log.d(TAG, "Drugs: " + drugs.value?.data.toString())
 
-//    if (!drugs.value!!.data.isNullOrEmpty()) {
-//        viewModel.updatePairs()
-//    }
+    if (!drugs.value?.data.isNullOrEmpty()) {
+        resourceSuccessNoItems = false
+        viewModel.updatePairs()
+    }
+
+    Log.d(TAG, "Pairs: " + pairs.value)
 
     if (pairs.value.isNullOrEmpty()) {
         Log.i(TAG, "Pairs are NULL - Displaying No Prescription Items text")
         resourceSuccessNoItems = true
+    } else {
+        resourceSuccessNoItems = false
     }
 
 
@@ -135,6 +143,11 @@ fun PrescriptionItemsHistoryScreen(
             }
         }
     }
+}
+
+@Composable
+fun PairsList() {
+
 }
 
 @OptIn(ExperimentalMaterialApi::class)
