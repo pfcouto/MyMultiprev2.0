@@ -1,14 +1,18 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.content.Intent
+import android.text.InputType
 import android.util.Log
-import androidx.compose.animation.VectorConverter
-import androidx.compose.foundation.Image
+import android.widget.EditText
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -17,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,7 +33,6 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -38,6 +41,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
+
 
 enum class TabPage() {
     Detalhes(),
@@ -84,7 +88,12 @@ fun DrugDetailsScreen(
 //    }, 5000)
 
     Column() {
-        AppBar(drug = drug, navController = navController, prescription = prescription)
+        AppBar(
+            drug = drug,
+            navController = navController,
+            prescription = prescription,
+            viewModel = viewModel
+        )
         Pager(drug = drug, prescription = prescription, intakes = intakes)
     }
 }
@@ -93,11 +102,32 @@ fun DrugDetailsScreen(
 fun AppBar(
     drug: LiveData<Drug>,
     prescription: LiveData<PrescriptionItem>,
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: DrugDetailsViewModel
 ) {
 
     val drugState = drug.observeAsState()
     val prescriptionState = prescription.observeAsState()
+
+
+    val builder: AlertDialog.Builder = AlertDialog.Builder(LocalContext.current)
+    builder.setTitle("Set New Alias")
+
+    val input = EditText(LocalContext.current)
+    input.inputType = InputType.TYPE_CLASS_TEXT
+    builder.setView(input)
+
+    builder.setPositiveButton(
+        "OK"
+    ) { _, _ ->
+        viewModel.setPrescriptionItemAlias(
+            drugState.value!!.id, input.text.toString()
+        )
+        
+    }
+    builder.setNegativeButton(
+        "Cancel"
+    ) { dialog, _ -> dialog.cancel() }
 
 
     Box(
@@ -144,17 +174,45 @@ fun AppBar(
                     )
                     // TODO ver a cor que queremos
                 }
-                Text(
-                    maxLines = 2,
-                    color = Color.Black,
+                Row(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .align(Alignment.BottomStart)
-                        .padding(start = 18.dp, bottom = 18.dp),
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    text = drugState.value!!.name
-                )
+                        .padding(bottom = 18.dp, start = 18.dp, end = 18.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Column(
+                    ) {
+                        Text(
+                            maxLines = 1,
+                            color = Color.Black,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            text = drugState.value!!.name
+                        )
+                        if (drugState.value!!.alias.isNotBlank() && drugState.value!!.alias != drugState.value!!.name) {
 
+                            Text(
+                                maxLines = 1,
+                                color = Color.Black,
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Bold,
+                                text = drugState.value!!.alias
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.size(14.dp))
+                    IconButton(onClick = {
+                        builder.show()
+                    }) {
+                        Icon(
+                            tint = Color.Black,
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = "Edit_Pencil"
+                        )
+                    }
+                }
             }
         }
     }
