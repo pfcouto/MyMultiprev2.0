@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -16,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,7 +37,7 @@ fun PrescriptionItemsHistoryScreen(
     val TAG = "PrescriptionItemsHistoryScreen"
 
     val drugs = viewModel.drugs.observeAsState()
-    val pairs = viewModel.pairs.observeAsState()
+    val pairs = viewModel.pairs.value
     val prescriptionItems = viewModel.prescriptionItems.observeAsState()
 
     var resourceSuccessNoItems by remember { mutableStateOf(false) }
@@ -46,18 +46,18 @@ fun PrescriptionItemsHistoryScreen(
 
     val keyboardFocusManager = LocalFocusManager.current
 
-    Log.d(TAG, "Prescription Items: " + prescriptionItems.value?.data.toString())
-    Log.d(TAG, "Prescription Items Resource: " + prescriptionItems.value.toString())
-
     when (prescriptionItems.value) {
         is Resource.Success -> {
-            Log.i(TAG, "Resource Success")
-            if (!prescriptionItems.value?.data.isNullOrEmpty()) {
-                viewModel.updatePairs()
-                resourceSuccessNoItems = false
-            } else {
-                resourceSuccessNoItems = true
+            if (pairs.isEmpty()) {
+                Log.i(TAG, "Resource Success")
+                if (!prescriptionItems.value?.data.isNullOrEmpty()) {
+                    viewModel.updatePairs()
+                    resourceSuccessNoItems = false
+                } else {
+                    resourceSuccessNoItems = true
+                }
             }
+
         }
         is Resource.Loading -> {
             Log.i(TAG, "Resource Loading")
@@ -67,18 +67,32 @@ fun PrescriptionItemsHistoryScreen(
         }
     }
 
-    Log.d(TAG, "Drugs: " + drugs.value?.data.toString())
 
     if (!drugs.value?.data.isNullOrEmpty()) {
-        resourceSuccessNoItems = false
-        viewModel.updatePairs()
+        if (pairs.isEmpty()) {
+            viewModel.updatePairs()
+        }
     }
 
-    Log.d(TAG, "Pairs: " + pairs.value)
+    if (pairs.isEmpty()) {
 
-    if (pairs.value.isNullOrEmpty()) {
-        Log.i(TAG, "Pairs are NULL - Displaying No Prescription Items text")
-        resourceSuccessNoItems = true
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(68.dp)
+                    .fillMaxSize()
+            )
+        }
+
+        when (prescriptionItems.value) {
+            is Resource.Success -> {
+                Log.i(TAG, "Pairs are NULL - Displaying No Prescription Items text")
+                resourceSuccessNoItems = true
+            }
+        }
     } else {
         resourceSuccessNoItems = false
     }
@@ -94,7 +108,7 @@ fun PrescriptionItemsHistoryScreen(
             label = {
                 Text(text = "Nome do Medicamento")
             },
-            trailingIcon = {
+            leadingIcon = {
                 IconButton(
                     onClick = {
                         viewModel.filterPairs(query)
@@ -102,6 +116,20 @@ fun PrescriptionItemsHistoryScreen(
                     }) {
 
                     Icon(Icons.Filled.Search, contentDescription = "Botão para pesquisar")
+                }
+            },
+            trailingIcon = {
+                Log.d("Aqui7", query.isNullOrEmpty().toString())
+                if (!query.isNullOrEmpty()) {
+                    IconButton(
+                        onClick = {
+                            viewModel.onQueryChanged("")
+                            viewModel.updatePairs()
+                            keyboardFocusManager.clearFocus()
+                        }) {
+
+                        Icon(Icons.Filled.Close, contentDescription = "Botão para apagar o texto")
+                    }
                 }
             },
             keyboardOptions = KeyboardOptions(
@@ -136,7 +164,7 @@ fun PrescriptionItemsHistoryScreen(
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(
-                    items = pairs.value!!
+                    items = pairs
                 ) { pair ->
                     HistoryCard(pair, navController = navController)
                 }
@@ -145,14 +173,12 @@ fun PrescriptionItemsHistoryScreen(
     }
 }
 
-@Composable
-fun PairsList() {
-
-}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HistoryCard(pair: Pair<PrescriptionItem, Drug?>, navController: NavHostController) {
+    Log.d("Drug Alias: ", pair.second!!.alias)
+    Log.d("Drug Dosagem: ", pair.first.dosage)
+    Log.d("Drug IntakeUnit: ", pair.first!!.intakeUnit)
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
@@ -165,15 +191,15 @@ fun HistoryCard(pair: Pair<PrescriptionItem, Drug?>, navController: NavHostContr
 
                 Text(
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
-                    maxLines = 1,
-                    fontSize = 20.sp,
+                    maxLines = 2,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    text = pair.second!!.alias + " " + pair.first.dosage + pair.first.intakeUnit
+                    text = pair.second!!.alias + " " + pair.first.dosage
                 )
 
                 Text(
                     modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 16.dp),
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     text = "${pair.first.intakesTakenCount ?: 0} doses tomadas"
                 )
             }

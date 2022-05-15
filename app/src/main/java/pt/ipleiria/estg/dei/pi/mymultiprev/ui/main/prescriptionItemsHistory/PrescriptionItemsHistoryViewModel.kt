@@ -1,6 +1,8 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -35,16 +37,16 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
         prescriptionItemsRepository.getCompletedPrescriptionItems(patientId)
             .asLiveData()
 
-    private var _allPairs: MutableLiveData<List<Pair<PrescriptionItem, Drug?>>> = MutableLiveData(
-        listOf()
-    )
+    private var _allPairs: MutableState<List<Pair<PrescriptionItem, Drug?>>> = mutableStateOf(ArrayList())
 
-    private var _pairs: MutableLiveData<List<Pair<PrescriptionItem, Drug?>>> = MutableLiveData(
-        listOf()
-    )
-    val pairs: LiveData<List<Pair<PrescriptionItem, Drug?>>>
-        get() = _pairs
+//    private var _pairs: MutableLiveData<List<Pair<PrescriptionItem, Drug?>>> = MutableLiveData(
+//        listOf()
+//    )
+//    val pairs: LiveData<List<Pair<PrescriptionItem, Drug?>>>
+//        get() = _pairs
 
+    private var _pairs: MutableState<List<Pair<PrescriptionItem, Drug?>>> = mutableStateOf(ArrayList())
+    val pairs: State<List<Pair<PrescriptionItem, Drug?>>> = _pairs
 
     fun updatePairs() {
         val prescriptions = prescriptionItems.value?.data
@@ -54,7 +56,6 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
                 val drug = getDrugById(prescription.drug)
                 list.add(prescription to drug)
             }
-//            Log.d("AQUI7 - prescricoes: ", prescriptions.toString())
             _allPairs.value = Collections.unmodifiableList(list)
             _pairs.value = _allPairs.value
         }
@@ -77,11 +78,9 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
         }
         if (searchQuery.value.isNotBlank()) {
             searchQuery.value = searchQuery.value.lowercase(Locale.getDefault())
-            _pairs.value = _allPairs.value?.filter { pair ->
+            _pairs.value = _allPairs.value.filter { pair ->
                 containsString(pair)
             }
-            Log.d("AQUI7", _pairs.value.toString())
-            Log.d("AQUI7", "pairs " + pairs.value.toString())
         } else
             _pairs.value = _allPairs.value
     }
@@ -89,7 +88,6 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
     private fun containsString(pair: Pair<PrescriptionItem, Drug?>): Boolean {
         val alias = pair.second?.alias?.lowercase(Locale.getDefault())
         val commercialName = pair.second?.commercialName?.lowercase(Locale.getDefault())
-        Log.d("AQUI7", alias!!.contains(searchQuery.value).toString())
         return alias!!.contains(searchQuery.value) || commercialName!!.contains(searchQuery.value)
     }
 
