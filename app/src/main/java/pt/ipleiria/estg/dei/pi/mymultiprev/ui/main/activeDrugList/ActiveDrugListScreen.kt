@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.skydoves.landscapist.glide.GlideImage
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
@@ -328,18 +329,25 @@ fun AntibioticCard_Prescription_Item_Short_Item(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
-            GlideImage(
-                modifier = Modifier
-                    .size(80.dp)
-                    .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
-                imageModel = item.first.imageLocation,
-                // Crop, Fit, Inside, FillHeight, FillWidth, None
-                contentScale = ContentScale.FillBounds,
-                // shows a placeholder while loading the image.
-//                placeHolder = ImageBitmap.imageResource(R.drawable.loading),
-                // shows an error ImageBitmap when the request failed.
-                error = ImageBitmap.imageResource(R.drawable.default_img),
-            )
+            if (item.first.imageLocation != null) {
+                val painter = rememberImagePainter(data = item.first.imageLocation)
+                Image(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
+                    painter = painter,
+                    contentDescription = "",
+                    contentScale = ContentScale.FillBounds
+                )
+            } else {
+                Image(
+                    modifier = Modifier.size(80.dp)
+                        .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
+                    painter = painterResource(id = R.drawable.default_img),
+                    contentDescription = "",
+                    contentScale = ContentScale.FillBounds
+                )
+            }
 
             Column(modifier = Modifier.width(160.dp)) {
                 Text(
@@ -441,7 +449,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.W600,
                             maxLines = 2,
-                            text = "${ if (item.second?.alias.isNullOrEmpty()) item.second?.name else item.second?.alias }"
+                            text = "${if (item.second?.alias.isNullOrEmpty()) item.second?.name else item.second?.alias}"
                         )
                         Spacer(modifier = Modifier.height(1.dp))
                         Text(
@@ -474,18 +482,38 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                     }
                 }
                 // TODO, quando o card sai da vista o ecra crasha
-                GlideImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(225.dp),
-                    imageModel = item.first.imageLocation,
-                    // Crop, Fit, Inside, FillHeight, FillWidth, None
-                    contentScale = ContentScale.FillBounds,
-                    // shows a placeholder while loading the image.
-//                    placeHolder = ImageBitmap.imageResource(R.drawable.loading),
-                    // shows an error ImageBitmap when the request failed.
-                    error = ImageBitmap.imageResource(R.drawable.default_img),
-                )
+
+                if (item.first.imageLocation != null) {
+                    val painter = rememberImagePainter(data = item.first.imageLocation)
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(225.dp), painter = painter, contentDescription = "",
+                        contentScale = ContentScale.FillBounds
+                    )
+                } else {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(225.dp),
+                        painter = painterResource(id = R.drawable.default_img),
+                        contentDescription = "",
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
+
+//                CoilImage(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(225.dp),
+//                    imageModel = ,
+//                    // Crop, Fit, Inside, FillHeight, FillWidth, None
+//                    contentScale = ContentScale.FillBounds,
+//                    // shows a placeholder while loading the image.
+////                    placeHolder = ImageBitmap.imageResource(R.drawable.loading),
+//                    // shows an error ImageBitmap when the request failed.
+//                    error = ImageBitmap.imageResource(R.drawable.default_img),
+//                )
 
                 TextButton(onClick = {
                     onDetailsAndConfirmButtonClick(
