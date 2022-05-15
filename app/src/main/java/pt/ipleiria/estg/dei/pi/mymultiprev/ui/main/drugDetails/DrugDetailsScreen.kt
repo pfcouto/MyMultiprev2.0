@@ -1,36 +1,47 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.content.Intent
+import android.text.InputType
 import android.util.Log
-import androidx.compose.foundation.Image
+import android.widget.EditText
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
+import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
+
 
 enum class TabPage() {
     Detalhes(),
@@ -40,10 +51,10 @@ enum class TabPage() {
 
 @Composable
 fun DrugDetailsScreen(
+    navController: NavHostController,
     viewModel: DrugDetailsViewModel = hiltViewModel(),
     drugId: String,
     prescriptionId: String
-
 ) {
     DisposableEffect(key1 = Unit) {
         if (!drugId.isNullOrBlank()) {
@@ -69,7 +80,7 @@ fun DrugDetailsScreen(
         }
     }
 
-    val intakes = viewModel.intakes
+    val intakes = remember { viewModel.intakes }
 
 //    val handler = Handler(Looper.getMainLooper())
 //    handler.postDelayed({
@@ -77,15 +88,33 @@ fun DrugDetailsScreen(
 //    }, 5000)
 
     Column() {
-        AppBar(drug = drug)
+        AppBar(
+            drug = drug,
+            navController = navController,
+            prescription = prescription,
+            viewModel = viewModel
+        )
         Pager(drug = drug, prescription = prescription, intakes = intakes)
     }
 }
 
 @Composable
-fun AppBar(drug: LiveData<Drug>) {
+fun AppBar(
+    drug: LiveData<Drug>,
+    prescription: LiveData<PrescriptionItem>,
+    navController: NavHostController,
+    viewModel: DrugDetailsViewModel
+) {
 
     val drugState = drug.observeAsState()
+    val prescriptionState = prescription.observeAsState()
+    val showInputDialog = remember { mutableStateOf(false) }
+
+    if (showInputDialog.value) {
+        InputDialog(showInputDialog) {
+            viewModel.setPrescriptionItemAlias(drugState.value!!.id, it)
+        }
+    }
 
 
     Box(
@@ -104,19 +133,27 @@ fun AppBar(drug: LiveData<Drug>) {
         } else {
 
             Card {
-
-                Image(
+                GlideImage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
-                    painter = painterResource(id = R.drawable.default_img),
-                    contentDescription = "Botao de Tirar Fotografia"
-                )
+                    imageModel = prescriptionState.value!!.imageLocation,
+                    // Crop, Fit, Inside, FillHeight, FillWidth, None
+                    contentScale = ContentScale.FillBounds,
+                    // shows a placeholder while loading the image.
+//                    placeHolder = ImageBitmap.imageResource(R.drawable.loading),
+                    // shows an error ImageBitmap when the request failed.
+                    error = ImageBitmap.imageResource(R.drawable.default_img),
+
+                    )
                 IconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(top = 10.dp, end = 10.dp),
-                    onClick = { /*TODO - navegar para camera com drug.id*/ }) {
+                    onClick = {
+//                        navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id + "/" + drugState.value!!.id)
+                        navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id)
+                    }) {
                     Icon(
                         tint = Color.Black,
                         imageVector = Icons.Filled.PhotoCamera,
@@ -124,17 +161,45 @@ fun AppBar(drug: LiveData<Drug>) {
                     )
                     // TODO ver a cor que queremos
                 }
-                Text(
-                    maxLines = 2,
-                    color = Color.Black,
+                Row(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .align(Alignment.BottomStart)
-                        .padding(start = 18.dp, bottom = 18.dp),
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    text = drugState.value!!.name
-                )
+                        .padding(bottom = 18.dp, start = 18.dp, end = 18.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Column(
+                    ) {
+                        Text(
+                            maxLines = 1,
+                            color = Color.Black,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            text = drugState.value!!.name
+                        )
+                        if (drugState.value!!.alias.isNotBlank() && drugState.value!!.alias != drugState.value!!.name) {
 
+                            Text(
+                                maxLines = 1,
+                                color = Color.Black,
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Bold,
+                                text = drugState.value!!.alias
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.size(14.dp))
+                    IconButton(onClick = {
+                        showInputDialog.value = true
+                    }) {
+                        Icon(
+                            tint = Color.Black,
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = "Edit_Pencil"
+                        )
+                    }
+                }
             }
         }
     }
@@ -158,7 +223,7 @@ fun TabHome(selectIndex: Int, onSelect: (TabPage) -> Unit) {
 fun Pager(
     drug: LiveData<Drug>,
     prescription: LiveData<PrescriptionItem>,
-    intakes: LiveData<Resource<List<Intake>>>
+    intakes: LiveData<List<Intake>>
 ) {
 
     val drugState = drug.observeAsState()
@@ -331,46 +396,38 @@ fun Details(drug: State<Drug?>, prescription: State<PrescriptionItem?>) {
 
 @Composable
 fun Tomas(
-    //TODO intakes not working
-    intakes: State<Resource<List<Intake>>?>
+    intakes: State<List<Intake>?>
 ) {
 
-    Log.i("HERE1", intakes.value?.data.toString())
-    Log.i("HERE2", intakes.value.toString())
+    Log.i("HERE", intakes.value.toString())
 
 
-    if (intakes.value != null) {
-        when (intakes.value) {
-            is Resource.Success -> {
-                Log.i("INTAKES", "INTAKES SUCCESS")
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(
-                        items = intakes.value!!.data!!
-                    ) { item ->
-                        Toma(item)
-                    }
-                }
-            }
-            is Resource.Loading -> {
-                Log.i("INTAKES", "INTAKES LOADING")
+    if (intakes.value == null) {
+        Log.i("HERE", "INTAKES LOADING")
 
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.size(56.dp))
-                }
-            }
-            is Resource.Error -> {
-                Log.i("INTAKES", "INTAKES ERROR")
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator(modifier = Modifier.size(56.dp))
+        }
+    } else {
+        Log.i("HERE COUNT", intakes.value!!.size.toString())
+        Log.i("HERE", "INTAKES SUCCESS")
+
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            itemsIndexed(
+                items = intakes.value!!
+            ) { idx, item ->
+                Toma(item, idx + 1)
             }
         }
     }
 }
 
 @Composable
-fun Toma(intake: Intake) {
+fun Toma(intake: Intake, nIntake: Int) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
@@ -384,14 +441,14 @@ fun Toma(intake: Intake) {
                     style = MaterialTheme.typography.h6,
                     fontSize = 20.sp,
                     maxLines = 2,
-                    text = "12313132-123-123-123-123"
+                    text = "Toma $nIntake"
                 )
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                     style = MaterialTheme.typography.body2,
                     fontSize = 18.sp,
-                    color = MaterialTheme.colors.secondary,
-                    text = "Took"
+                    color = if (intake.took) Color.Green else Color.Red,
+                    text = if (intake.took) "Tomado" else "Falhou Toma"
                 )
             }
             Text(
@@ -402,12 +459,61 @@ fun Toma(intake: Intake) {
                 style = MaterialTheme.typography.body2,
                 fontSize = 18.sp,
                 textAlign = TextAlign.End,
-                color = MaterialTheme.colors.secondary,
 
-                text = Util.formatDateTime(intake.intakeDate!!)
+                text = if (intake.took) Util.formatDateTime(intake.intakeDate!!) else Util.formatDateTime(
+                    intake.expectedAt!!
+                )
             )
         }
     }
+}
+
+@Composable
+fun InputDialog(showInputDialog: MutableState<Boolean>, onSuccess: (String) -> Unit) {
+    var text by remember { mutableStateOf("") }
+
+
+    AlertDialog(
+        onDismissRequest = {
+            showInputDialog.value = false
+        },
+        title = {
+            Text(text = "New Alias")
+        },
+        text = {
+            Column() {
+                Text("Insert a new alias for the drug")
+                TextField(
+                    value = text,
+                    onValueChange = { text = it }
+                )
+            }
+        },
+        buttons = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = { showInputDialog.value = false }
+                ) {
+                    Text("Dismiss")
+                }
+                Button(
+                    onClick = {
+                        onSuccess(text)
+                        showInputDialog.value = false
+//                            setNewAlias(text)
+                    }
+                ) {
+                    Text("Confirm")
+                }
+            }
+        }
+    )
+
 }
 
 

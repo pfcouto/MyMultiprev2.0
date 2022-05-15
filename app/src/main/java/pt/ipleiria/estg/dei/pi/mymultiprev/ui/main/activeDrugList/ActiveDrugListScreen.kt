@@ -113,7 +113,9 @@ fun ActiveDrugListScreen(
 
         if (listOfPairs?.isNotEmpty() == true) {
 
-            LazyColumn() {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
 
                 items(items = listOfPairs!!) { item ->
 
@@ -166,7 +168,7 @@ fun ActiveDrugListScreen(
                                         else
                                             timeTextText = "${minDiff}min"
                                     } else
-                                        timeTextText = "${hourDiff} e ${minDiff}min"
+                                        timeTextText = "${hourDiff}h e ${minDiff}min"
                                 } else
                                     timeTextText = "${dayDiff}d e ${hourDiff}h"
                             }
@@ -330,36 +332,17 @@ fun AntibioticCard_Prescription_Item_Short_Item(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
-//            Glide.with(LocalContext.current).load(item.first.imageLocation)
-//                .placeholder(R.drawable.default_img).into(this)
-//            item.first.imageLocation?.let {
-//                CoilImage(
-//                    imageModel = it,
-//                    // Crop, Fit, Inside, FillHeight, FillWidth, None
-//                    contentScale = ContentScale.Crop,
-//                    // shows a placeholder while loading the image.
-//                    placeHolder = ImageBitmap.imageResource(R.drawable.placeholder),
-//                    // shows an error ImageBitmap when the request failed.
-//                    error = ImageBitmap.imageResource(R.drawable.error_image)
-//                )
-//            }
-//            GlideImage(
-//                imageModel = item.first.imageLocation,
-//                // Crop, Fit, Inside, FillHeight, FillWidth, None
-//                contentScale = ContentScale.Crop,
-//                // shows a placeholder while loading the image.
-//                placeHolder = ImageBitmap.imageResource(R.drawable.default_img),
-//                // shows an error ImageBitmap when the request failed.
-//                error = ImageBitmap.imageResource(R.drawable.error_image)
-//            )
-
-
-            Image(
+            GlideImage(
                 modifier = Modifier
                     .size(80.dp)
                     .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
-                painter = painterResource(id = R.drawable.default_img),
-                contentDescription = "Imagem do medicamento"
+                imageModel = item.first.imageLocation,
+                // Crop, Fit, Inside, FillHeight, FillWidth, None
+                contentScale = ContentScale.FillBounds,
+                // shows a placeholder while loading the image.
+//                placeHolder = ImageBitmap.imageResource(R.drawable.loading),
+                // shows an error ImageBitmap when the request failed.
+                error = ImageBitmap.imageResource(R.drawable.default_img),
             )
 
             Column(modifier = Modifier.width(160.dp)) {
@@ -441,7 +424,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
-                .clickable {  navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id) },
+                .clickable { navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id) },
             elevation = 10.dp,
             backgroundColor = cardBackgroundColor
         ) {
@@ -494,26 +477,38 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
                     }
                 }
-                if (item.first.imageLocation == null) {
-
-                    Image(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(225.dp),
-                        painter = painterResource(id = R.drawable.default_img),
-                        contentDescription = "Imagem do medicamento"
-                    )
-                } else {
-                    GlideImage(
-                        imageModel = item.first.imageLocation,
-                        // Crop, Fit, Inside, FillHeight, FillWidth, None
-                        contentScale = ContentScale.Crop,
-                        // shows a placeholder while loading the image.
-                        placeHolder = ImageBitmap.imageResource(R.drawable.default_img),
-                        // shows an error ImageBitmap when the request failed.
-                        error = ImageBitmap.imageResource(R.drawable.error_image)
-                    )
-                }
+                GlideImage(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(225.dp),
+                    imageModel = item.first.imageLocation,
+                    // Crop, Fit, Inside, FillHeight, FillWidth, None
+                    contentScale = ContentScale.FillBounds,
+                    // shows a placeholder while loading the image.
+//                    placeHolder = ImageBitmap.imageResource(R.drawable.loading),
+                    // shows an error ImageBitmap when the request failed.
+                    error = ImageBitmap.imageResource(R.drawable.default_img),
+                )
+//                if (item.first.imageLocation == null) {
+//
+//                    Image(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(225.dp),
+//                        painter = painterResource(id = R.drawable.default_img),
+//                        contentDescription = "Imagem do medicamento"
+//                    )
+//                } else {
+//                    GlideImage(
+//                        imageModel = item.first.imageLocation,
+//                        // Crop, Fit, Inside, FillHeight, FillWidth, None
+//                        contentScale = ContentScale.FillBounds,
+//                        // shows a placeholder while loading the image.
+//                        placeHolder = ImageBitmap.imageResource(R.drawable.default_img),
+//                        // shows an error ImageBitmap when the request failed.
+//                        error = ImageBitmap.imageResource(R.drawable.error_image)
+//                    )
+//                }
 
                 TextButton(onClick = {
                     onDetailsAndConfirmButtonClick(
@@ -547,7 +542,11 @@ private fun onDetailsAndConfirmButtonClick(
             if (item.first.isOverdue) {
                 onConfirmDoseClick(item, confirmIntakeViewModel, navController)
             } else {
-                onSeeDetailsClick(pair = item, seeDetailsViewModel = seeDetailsViewModel, navController = navController)
+                onSeeDetailsClick(
+                    pair = item,
+                    seeDetailsViewModel = seeDetailsViewModel,
+                    navController = navController
+                )
             }
         }
     }

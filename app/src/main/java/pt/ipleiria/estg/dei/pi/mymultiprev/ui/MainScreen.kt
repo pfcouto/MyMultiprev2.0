@@ -53,7 +53,6 @@ fun BottomBar(navController: NavHostController) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RowScope.AddItem(
     screen: BottomBarScreen,
