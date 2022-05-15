@@ -11,7 +11,7 @@ interface PrescriptionItemsService {
     @GET("patients/{patientId}/prescriptionItems/active")
     suspend fun getActivePrescriptionItems(@Path("patientId") id: String): List<PrescriptionItemDTO>
 
-    @GET("patients/{patientId}/prescriptionItems/complete")
+    @GET("patients/{patientId}/prescriptionItems/completed")
     suspend fun getCompletedPrescriptionItems(@Path("patientId") id: String): List<PrescriptionItemDTO>
 
     @POST("prescriptionItems/{prescriptionId}/")

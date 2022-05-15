@@ -108,26 +108,13 @@ fun AppBar(
 
     val drugState = drug.observeAsState()
     val prescriptionState = prescription.observeAsState()
+    val showInputDialog = remember { mutableStateOf(false) }
 
-
-    val builder: AlertDialog.Builder = AlertDialog.Builder(LocalContext.current)
-    builder.setTitle("Set New Alias")
-
-    val input = EditText(LocalContext.current)
-    input.inputType = InputType.TYPE_CLASS_TEXT
-    builder.setView(input)
-
-    builder.setPositiveButton(
-        "OK"
-    ) { _, _ ->
-        viewModel.setPrescriptionItemAlias(
-            drugState.value!!.id, input.text.toString()
-        )
-        
+    if (showInputDialog.value) {
+        InputDialog(showInputDialog) {
+            viewModel.setPrescriptionItemAlias(drugState.value!!.id, it)
+        }
     }
-    builder.setNegativeButton(
-        "Cancel"
-    ) { dialog, _ -> dialog.cancel() }
 
 
     Box(
@@ -204,7 +191,7 @@ fun AppBar(
                     }
                     Spacer(modifier = Modifier.size(14.dp))
                     IconButton(onClick = {
-                        builder.show()
+                        showInputDialog.value = true
                     }) {
                         Icon(
                             tint = Color.Black,
@@ -479,6 +466,54 @@ fun Toma(intake: Intake, nIntake: Int) {
             )
         }
     }
+}
+
+@Composable
+fun InputDialog(showInputDialog: MutableState<Boolean>, onSuccess: (String) -> Unit) {
+    var text by remember { mutableStateOf("") }
+
+
+    AlertDialog(
+        onDismissRequest = {
+            showInputDialog.value = false
+        },
+        title = {
+            Text(text = "New Alias")
+        },
+        text = {
+            Column() {
+                Text("Insert a new alias for the drug")
+                TextField(
+                    value = text,
+                    onValueChange = { text = it }
+                )
+            }
+        },
+        buttons = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = { showInputDialog.value = false }
+                ) {
+                    Text("Dismiss")
+                }
+                Button(
+                    onClick = {
+                        onSuccess(text)
+                        showInputDialog.value = false
+//                            setNewAlias(text)
+                    }
+                ) {
+                    Text("Confirm")
+                }
+            }
+        }
+    )
+
 }
 
 
