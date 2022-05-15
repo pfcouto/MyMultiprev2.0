@@ -109,8 +109,6 @@ fun ActiveDrugListScreen(
 
         ListIcon(showByColumnList)
 
-        Log.d("Pairs", listOfPairs?.size.toString())
-
         if (listOfPairs?.isNotEmpty() == true) {
 
             LazyColumn(
@@ -118,8 +116,6 @@ fun ActiveDrugListScreen(
             ) {
 
                 items(items = listOfPairs!!) { item ->
-
-                    Log.d("Aqui4", item.first.isOverdue.toString())
 
                     var prescriptionAcquisitionConfirmed = remember { mutableStateOf(false) }
                     val prescriptionIsOverdue = remember { mutableStateOf(false) }
@@ -351,7 +347,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                     fontSize = 18.sp,
                     maxLines = 1,
                     fontWeight = FontWeight.W600,
-                    text = "${item.second?.alias}"
+                    text = "${if (item.second?.alias.isNullOrEmpty()) item.second?.name else item.second?.alias}"
                 )
                 Spacer(modifier = Modifier.height(1.dp))
                 Text(
@@ -445,7 +441,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.W600,
                             maxLines = 2,
-                            text = "${item.second?.alias}"
+                            text = "${ if (item.second?.alias.isNullOrEmpty()) item.second?.name else item.second?.alias }"
                         )
                         Spacer(modifier = Modifier.height(1.dp))
                         Text(
@@ -477,6 +473,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
                     }
                 }
+                // TODO, quando o card sai da vista o ecra crasha
                 GlideImage(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -489,26 +486,6 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                     // shows an error ImageBitmap when the request failed.
                     error = ImageBitmap.imageResource(R.drawable.default_img),
                 )
-//                if (item.first.imageLocation == null) {
-//
-//                    Image(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(225.dp),
-//                        painter = painterResource(id = R.drawable.default_img),
-//                        contentDescription = "Imagem do medicamento"
-//                    )
-//                } else {
-//                    GlideImage(
-//                        imageModel = item.first.imageLocation,
-//                        // Crop, Fit, Inside, FillHeight, FillWidth, None
-//                        contentScale = ContentScale.FillBounds,
-//                        // shows a placeholder while loading the image.
-//                        placeHolder = ImageBitmap.imageResource(R.drawable.default_img),
-//                        // shows an error ImageBitmap when the request failed.
-//                        error = ImageBitmap.imageResource(R.drawable.error_image)
-//                    )
-//                }
 
                 TextButton(onClick = {
                     onDetailsAndConfirmButtonClick(
@@ -533,8 +510,6 @@ private fun onDetailsAndConfirmButtonClick(
     navController: NavHostController,
     seeDetailsViewModel: SeeDetailsViewModel
 ) {
-
-    Log.d("onDetailsAndConfirmButtonClick", "Aqui")
     if (item.first.acquiredAt == null) {
         onConfirmAcquisitionClick(pair = item, confirmViewModel = confirmViewModel)
     } else {
@@ -550,7 +525,6 @@ private fun onDetailsAndConfirmButtonClick(
             }
         }
     }
-
 }
 
 
@@ -562,7 +536,6 @@ fun onSeeDetailsClick(
 ) {
 //    seeDetailsViewModel.setPrescriptionItemDrugPair(pair)
     navController.navigate("descricaoAntibiotico/" + pair.first.id + "/" + pair.second!!.id)
-    Log.d("onSeeDetailsClick", "aqui details")
 
 //        if (imageview != null) {
 //            val args =
@@ -588,7 +561,6 @@ fun onConfirmDoseClick(
     navController: NavHostController
 ) {
 //    confirmIntakeViewModel.setPrescriptionItemDrugPair(pair)
-//    Log.d("onConfirmDoseClick", "aqui confirm intake")
     navController.navigate("newIntakeDetailsScreen/${pair.first!!.id}/${pair.second!!.id}")
 
 }
@@ -611,6 +583,5 @@ fun onConfirmAcquisitionClick(
 ) {
 
     confirmViewModel.setPrescriptionItemDrugPair(pair)
-    Log.d("onConfirmAcquisitionClick", "aqui confirmViewModel")
 //        findNavController().navigate(R.id.action_activeDrugListFragment_to_confirmAcquisitionFragment)
 }

@@ -193,9 +193,6 @@ fun PrescriptionItemsHistoryScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HistoryCard(pair: Pair<PrescriptionItem, Drug?>, navController: NavHostController) {
-    Log.d("Drug Alias: ", pair.second!!.alias)
-    Log.d("Drug Dosagem: ", pair.first.dosage)
-    Log.d("Drug IntakeUnit: ", pair.first!!.intakeUnit)
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)

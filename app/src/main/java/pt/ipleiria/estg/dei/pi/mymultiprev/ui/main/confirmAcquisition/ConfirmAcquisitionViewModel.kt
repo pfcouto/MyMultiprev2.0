@@ -21,6 +21,8 @@ class ConfirmAcquisitionViewModel @Inject constructor(
     private val prescriptionItemsRepository: PrescriptionItemsRepository
 ) : ViewModel() {
 
+    //TODO FALTA ECRA
+
     private val TAG = "ConfirmAcquisitionViewModel"
 
     lateinit var prescriptionItem: PrescriptionItem

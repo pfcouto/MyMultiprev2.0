@@ -125,10 +125,6 @@ class ConfirmIntakeViewModel @Inject constructor(
 
     fun registerIntake() {
         viewModelScope.launch {
-            Log.d("Aqui5", prescriptionItem.value?.id!!)
-            Log.d("Aqui5", prescriptionItem.value?.nextIntake.toString())
-            Log.d("Aqui5", sharedPreferencesRepository.getCurrentPatientId())
-            Log.d("Aqui5", registrationIntakeDateTime.value.toString())
             _response.value = intakeRepository.doIntake(
                 IntakeDTO(
                     id = null,
@@ -139,7 +135,6 @@ class ConfirmIntakeViewModel @Inject constructor(
                     took = true
                 )
             )
-            Log.d("Aqui4", _response.value.toString())
         }
     }
 }

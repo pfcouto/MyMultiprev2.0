@@ -61,7 +61,6 @@ class IntakeRepository @Inject constructor(
                     prescription.expectedIntakeCount!!
                 )
         }
-        Log.d("Aqui3", "Esteve aqui 3")
         return result
     }
 

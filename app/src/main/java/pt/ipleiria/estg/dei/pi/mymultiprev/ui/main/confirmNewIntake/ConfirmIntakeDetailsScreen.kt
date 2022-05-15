@@ -56,8 +56,6 @@ fun ConfirmIntakeDetailsScreen(
         )
     } else {
 
-        Log.d("prescriptionItem", prescriptionItem.toString())
-
         var buttonEnabled by remember { mutableStateOf(false) }
         var showError by remember { mutableStateOf(false) }
         var estadoMessage by remember { mutableStateOf("") }
@@ -72,7 +70,6 @@ fun ConfirmIntakeDetailsScreen(
 
         if (registrationIntake != null) {
             buttonEnabled = viewModel.verifyRegistrationDateTime()
-            Log.d("Button", buttonEnabled.toString())
             showError = !buttonEnabled
             if (viewModel.verifyRange()) {
                 estadoMessage = "Dentro da recomendação"
@@ -94,8 +91,6 @@ fun ConfirmIntakeDetailsScreen(
 //                loadingDialog.dismissDialog()
 
                     if (openDialog.value) {
-//                        Log.d("TAG", response.value.toString())
-//                        Log.d("TAG", response.value!!.data.toString())
                         AlertDialog(onDismissRequest = {
                             openDialog.value = false
                             navController.popBackStack()
@@ -108,9 +103,6 @@ fun ConfirmIntakeDetailsScreen(
                             },
                             confirmButton = {
                                 OutlinedButton(onClick = {
-
-//                                    Log.d("TAG", response.value.toString())
-//                                    Log.d("TAG", response.value!!.data!!.prescriptionItemId)
                                     // TODO validar isto!!!!!!!! Pode nao funcionar
                                     registerSymptomsViewModel.specificPrescriptionItemId =
                                         response.value!!.data!!.prescriptionItemId
@@ -137,6 +129,7 @@ fun ConfirmIntakeDetailsScreen(
                     }
                 }
                 is Resource.Error -> {
+                    //TODO VER ISTO
 //                loadingDialog.dismissDialog()
 //                    Util.handleError(response)
                 }
@@ -185,6 +178,7 @@ fun ConfirmIntakeDetailsScreen(
 
             }, mYear, mMonth, mDay
         )
+        // TODO Ainda tentar fazer
 //    mDatePickerDialog.datePicker.apply {
 //        minDate = prescriptionItem?.nextIntake?.toInstant(
 //            Constants.TIME_ZONE
@@ -364,7 +358,6 @@ fun ConfirmIntakeDetailsScreen(
 
             if (showDatePicker) {
                 mDatePickerDialog.show()
-                Log.d("showDatePicker", mDate.value)
             }
 
             // TODO Funciona mas talvez seja melhor procurar alternativ aahhaah
@@ -373,7 +366,6 @@ fun ConfirmIntakeDetailsScreen(
 
             if (showTimePicker) {
                 mTimePickerDialog.show()
-                Log.d("showTimePicker", mTime)
             }
 
             // TODO Funciona mas talvez seja melhor procurar alternativ aahhaah

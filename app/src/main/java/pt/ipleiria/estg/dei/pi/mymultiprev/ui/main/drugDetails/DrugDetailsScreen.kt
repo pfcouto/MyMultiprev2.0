@@ -485,7 +485,11 @@ fun InputDialog(showInputDialog: MutableState<Boolean>, onSuccess: (String) -> U
                 Text("Insert a new alias for the drug")
                 TextField(
                     value = text,
-                    onValueChange = { text = it }
+                    onValueChange = { text = it },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = MaterialTheme.colors.surface,
+                        textColor = MaterialTheme.colors.onSurface
+                    )
                 )
             }
         },
@@ -503,7 +507,7 @@ fun InputDialog(showInputDialog: MutableState<Boolean>, onSuccess: (String) -> U
                 }
                 Button(
                     onClick = {
-                        onSuccess(text)
+                        onSuccess(text.trim())
                         showInputDialog.value = false
 //                            setNewAlias(text)
                     }
