@@ -80,7 +80,6 @@ class ConfirmIntakeViewModel @Inject constructor(
 
     fun clearResponse() {
         Log.i(TAG, "Clearing Response")
-        //TODO ver isto
         _response.value = null
         _registrationIntakeDateTime.value = Clock.System.now().toLocalDateTime(Constants.TIME_ZONE)
     }

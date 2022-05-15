@@ -63,6 +63,7 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
 
     fun onQueryChanged(query: String) {
         this.searchQuery.value = query
+        filterPairs(query)
     }
 
     private fun getDrugById(id: String): Drug? {

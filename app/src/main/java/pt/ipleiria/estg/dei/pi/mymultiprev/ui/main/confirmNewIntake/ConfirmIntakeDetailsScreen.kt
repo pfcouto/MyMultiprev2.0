@@ -58,8 +58,6 @@ fun ConfirmIntakeDetailsScreen(
 
         Log.d("prescriptionItem", prescriptionItem.toString())
 
-        // TODO verificar aquele observe
-
         var buttonEnabled by remember { mutableStateOf(false) }
         var showError by remember { mutableStateOf(false) }
         var estadoMessage by remember { mutableStateOf("") }

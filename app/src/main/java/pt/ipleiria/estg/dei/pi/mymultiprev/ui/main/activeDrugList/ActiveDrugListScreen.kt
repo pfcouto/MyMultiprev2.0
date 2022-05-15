@@ -353,7 +353,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
 //                error = ImageBitmap.imageResource(R.drawable.error_image)
 //            )
 
-            //TODO alterar imagem, mas coloquei so para ficar bonito
+
             Image(
                 modifier = Modifier
                     .size(80.dp)

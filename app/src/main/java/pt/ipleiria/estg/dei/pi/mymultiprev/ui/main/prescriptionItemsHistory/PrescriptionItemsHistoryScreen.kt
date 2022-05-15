@@ -2,6 +2,7 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,8 +15,18 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -24,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.skydoves.landscapist.glide.GlideImage
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
@@ -46,6 +58,7 @@ fun PrescriptionItemsHistoryScreen(
 
     val keyboardFocusManager = LocalFocusManager.current
 
+
     when (prescriptionItems.value) {
         is Resource.Success -> {
             if (pairs.isEmpty()) {
@@ -66,7 +79,6 @@ fun PrescriptionItemsHistoryScreen(
             Log.i(TAG, "Resource Error")
         }
     }
-
 
     if (!drugs.value?.data.isNullOrEmpty()) {
         if (pairs.isEmpty()) {
@@ -98,10 +110,16 @@ fun PrescriptionItemsHistoryScreen(
     }
 
 
-    Column() {
+    Column(modifier = Modifier.pointerInput(Unit) {
+        detectTapGestures(onTap = {
+            keyboardFocusManager.clearFocus()
+        })
+    }) {
         TextField(
             value = query,
-            onValueChange = { newValue -> viewModel.onQueryChanged(newValue) },
+            onValueChange = { newValue ->
+                viewModel.onQueryChanged(newValue)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
@@ -119,7 +137,7 @@ fun PrescriptionItemsHistoryScreen(
                 }
             },
             trailingIcon = {
-                Log.d("Aqui7", query.isNullOrEmpty().toString())
+
                 if (!query.isNullOrEmpty()) {
                     IconButton(
                         onClick = {
@@ -146,7 +164,6 @@ fun PrescriptionItemsHistoryScreen(
                 backgroundColor = MaterialTheme.colors.surface,
                 textColor = MaterialTheme.colors.onSurface
             )
-
         )
 
         if (resourceSuccessNoItems) {
@@ -203,16 +220,20 @@ fun HistoryCard(pair: Pair<PrescriptionItem, Drug?>, navController: NavHostContr
                     text = "${pair.first.intakesTakenCount ?: 0} doses tomadas"
                 )
             }
-            // TODO ver com imagem tirada na camara
-            Image(
+
+            GlideImage(
                 modifier = Modifier
                     .padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
                     .width(60.dp)
                     .height(60.dp)
                     .weight(0.4f),
-
-                painter = painterResource(id = R.drawable.default_img),
-                contentDescription = "Imagem do Medicamento"
+                imageModel = pair.first.imageLocation,
+                // Crop, Fit, Inside, FillHeight, FillWidth, None
+                contentScale = ContentScale.FillBounds,
+                // shows a placeholder while loading the image.
+//                placeHolder = ImageBitmap.imageResource(R.drawable.loading),
+                // shows an error ImageBitmap when the request failed.
+                error = ImageBitmap.imageResource(R.drawable.default_img),
             )
         }
     }
