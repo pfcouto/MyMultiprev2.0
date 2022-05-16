@@ -56,63 +56,44 @@ fun PrescriptionItemsHistoryScreen(
 
     var query = viewModel.searchQuery.value
 
-    val keyboardFocusManager = LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
 
-
-    when (prescriptionItems.value) {
-        is Resource.Success -> {
-            if (pairs.isEmpty()) {
-                Log.i(TAG, "Resource Success")
-                if (!prescriptionItems.value?.data.isNullOrEmpty()) {
-                    viewModel.updatePairs()
-                    resourceSuccessNoItems = false
-                } else {
-                    resourceSuccessNoItems = true
-                }
-            }
-
-        }
-        is Resource.Loading -> {
-            Log.i(TAG, "Resource Loading")
-        }
-        else -> {
-            Log.i(TAG, "Resource Error")
-        }
-    }
-
-    if (!drugs.value?.data.isNullOrEmpty()) {
-        if (pairs.isEmpty()) {
-            viewModel.updatePairs()
-        }
-    }
 
     if (pairs.isEmpty()) {
-
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .size(68.dp)
-                    .fillMaxSize()
-            )
-        }
-
         when (prescriptionItems.value) {
             is Resource.Success -> {
-                Log.i(TAG, "Pairs are NULL - Displaying No Prescription Items text")
-                resourceSuccessNoItems = true
+                Log.i(TAG, "Resource Success")
+                Log.i(TAG, "Pairs are empty - Displaying No Prescription Items text")
+                resourceSuccessNoItems = if (!prescriptionItems.value?.data.isNullOrEmpty()) {
+                    Log.i(TAG, ">>-----<<  GOING TO UPDATE PAIRS  >>-----<<")
+                    viewModel.updatePairs()
+                    false
+                } else {
+                    true
+                }
+            }
+            else -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(68.dp)
+                            .fillMaxSize()
+                    )
+                }
             }
         }
     } else {
+        Log.i(TAG, "Pairs are not empty")
         resourceSuccessNoItems = false
     }
 
 
     Column(modifier = Modifier.pointerInput(Unit) {
         detectTapGestures(onTap = {
-            keyboardFocusManager.clearFocus()
+            focusManager.clearFocus()
         })
     }) {
         TextField(
@@ -130,7 +111,7 @@ fun PrescriptionItemsHistoryScreen(
                 IconButton(
                     onClick = {
                         viewModel.filterPairs(query)
-                        keyboardFocusManager.clearFocus()
+                        focusManager.clearFocus()
                     }) {
 
                     Icon(Icons.Filled.Search, contentDescription = "Botão para pesquisar")
@@ -142,8 +123,8 @@ fun PrescriptionItemsHistoryScreen(
                     IconButton(
                         onClick = {
                             viewModel.onQueryChanged("")
-                            viewModel.updatePairs()
-                            keyboardFocusManager.clearFocus()
+//                            viewModel.updatePairs()
+                            focusManager.clearFocus()
                         }) {
 
                         Icon(Icons.Filled.Close, contentDescription = "Botão para apagar o texto")
@@ -157,7 +138,7 @@ fun PrescriptionItemsHistoryScreen(
             keyboardActions = KeyboardActions(
                 onSearch = {
                     viewModel.filterPairs(query)
-                    keyboardFocusManager.clearFocus()
+                    focusManager.clearFocus()
                 }
             ),
             colors = TextFieldDefaults.textFieldColors(
@@ -193,12 +174,16 @@ fun PrescriptionItemsHistoryScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HistoryCard(pair: Pair<PrescriptionItem, Drug?>, navController: NavHostController) {
+    val focusManager = LocalFocusManager.current
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
             .fillMaxWidth(),
         elevation = 10.dp,
-        onClick = { navController.navigate("descricaoAntibiotico/" + pair.first.id + "/" + pair.second!!.id) }) {
+        onClick = {
+            focusManager.clearFocus()
+            navController.navigate("descricaoAntibiotico/" + pair.first.id + "/" + pair.second!!.id)
+        }) {
 
         Row() {
             Column(modifier = Modifier.weight(1f)) {
