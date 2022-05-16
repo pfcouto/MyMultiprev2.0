@@ -19,10 +19,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,7 +29,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.skydoves.landscapist.glide.GlideImage
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
@@ -341,7 +338,8 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 )
             } else {
                 Image(
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier
+                        .size(80.dp)
                         .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
                     painter = painterResource(id = R.drawable.default_img),
                     contentDescription = "",
@@ -539,7 +537,11 @@ private fun onDetailsAndConfirmButtonClick(
     seeDetailsViewModel: SeeDetailsViewModel
 ) {
     if (item.first.acquiredAt == null) {
-        onConfirmAcquisitionClick(pair = item, confirmViewModel = confirmViewModel)
+        onConfirmAcquisitionClick(
+            pair = item,
+            confirmViewModel = confirmViewModel,
+            navController = navController
+        )
     } else {
         if (item.first.nextIntake != null) {
             if (item.first.isOverdue) {
@@ -607,9 +609,11 @@ fun onConfirmDoseClick(
 
 fun onConfirmAcquisitionClick(
     pair: Pair<PrescriptionItem, Drug?>,
-    confirmViewModel: ConfirmAcquisitionViewModel
+    confirmViewModel: ConfirmAcquisitionViewModel,
+    navController: NavHostController
 ) {
 
     confirmViewModel.setPrescriptionItemDrugPair(pair)
+    navController.navigate("confirmAcquisitionScreen")
 //        findNavController().navigate(R.id.action_activeDrugListFragment_to_confirmAcquisitionFragment)
 }

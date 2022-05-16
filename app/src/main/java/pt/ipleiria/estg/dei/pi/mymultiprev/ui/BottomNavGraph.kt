@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugListScreen
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcquisitionScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory.PrescriptionItemsHistoryScreen
@@ -123,6 +124,10 @@ fun BottomNavGraph(
 //                drugId = drugId!!,
                 navController = navController
             )
+        }
+
+        composable(route = "confirmAcquisitionScreen") {
+            ConfirmAcquisitionScreen(navController = navController)
         }
     }
 }

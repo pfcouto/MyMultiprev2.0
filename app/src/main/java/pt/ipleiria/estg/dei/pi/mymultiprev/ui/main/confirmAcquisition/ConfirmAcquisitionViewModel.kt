@@ -1,6 +1,9 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,10 +28,20 @@ class ConfirmAcquisitionViewModel @Inject constructor(
 
     private val TAG = "ConfirmAcquisitionViewModel"
 
-    lateinit var prescriptionItem: PrescriptionItem
-    lateinit var drug: Drug
-    lateinit var scheduleIntakeDate: LocalDate
-    private lateinit var scheduleIntakeDateTime: LocalDateTime
+    private val _drug: MutableState<Drug?> = mutableStateOf(null)
+    val drug: State<Drug?> = _drug
+
+    private val _prescriptionItem: MutableState<PrescriptionItem?> = mutableStateOf(null)
+    val prescriptionItem: State<PrescriptionItem?> = _prescriptionItem
+
+//    lateinit var prescriptionItem: PrescriptionItem
+//    lateinit var drug: Drug
+//    lateinit var scheduleIntakeDate: LocalDate
+//    private lateinit var scheduleIntakeDateTime: LocalDateTime
+
+    private var _scheduleIntakeDateTime: MutableLiveData<LocalDateTime> =
+        MutableLiveData(Clock.System.now().toLocalDateTime(Constants.TIME_ZONE))
+    val scheduleIntakeDateTime: LiveData<LocalDateTime> get() = _scheduleIntakeDateTime
 
     private var _response: MutableLiveData<Resource<PrescriptionItemDTO>> = MutableLiveData()
     val response: LiveData<Resource<PrescriptionItemDTO>>
@@ -39,24 +52,24 @@ class ConfirmAcquisitionViewModel @Inject constructor(
         get() = _predictDates
 
     fun setPrescriptionItemDrugPair(pair: Pair<PrescriptionItem, Drug?>) {
-        prescriptionItem = pair.first
+        _prescriptionItem.value = pair.first
         if (pair.second != null) {
-            drug = pair.second!!
+            _drug.value = pair.second!!
         }
     }
 
-    fun setDate(year: Int, month: Int, dayOfMonth: Int) {
-        Log.i(TAG, "Date = $dayOfMonth/$month/$year")
-        scheduleIntakeDate = LocalDate(year, month + 1, dayOfMonth)
-    }
-
-    fun setTime(hourOfDay: Int, minute: Int) {
+    fun setTime(year: Int, month: Int, dayOfMonth: Int, hourOfDay: Int, minute: Int) {
+        Log.d(
+            "Data",
+            year.toString() + "/" + month.toString() + "/" + dayOfMonth.toString() + " " + hourOfDay.toString() + ":" + minute.toString()
+        )
         Log.i(TAG, "Time = $hourOfDay/$minute")
-        scheduleIntakeDateTime = LocalDateTime(
-            scheduleIntakeDate.year,
-            scheduleIntakeDate.monthNumber,
-            scheduleIntakeDate.dayOfMonth,
-            hourOfDay, minute
+        _scheduleIntakeDateTime.value = LocalDateTime(
+            year,
+            month,
+            dayOfMonth,
+            hourOfDay,
+            minute
         )
     }
 
@@ -67,32 +80,36 @@ class ConfirmAcquisitionViewModel @Inject constructor(
     }
 
     fun recalculatePredictionDates(frequency: Int) {
-        if (!this::scheduleIntakeDateTime.isInitialized)
+        if (_scheduleIntakeDateTime.value == null)
             return
 
-        var aux = scheduleIntakeDateTime.toInstant(Constants.TIME_ZONE)
+        var aux = _scheduleIntakeDateTime.value?.toInstant(Constants.TIME_ZONE)
         val predictionDates = ArrayList<LocalDateTime>()
         val numberOfPredictions = Constants.HOURS_OF_DAY / frequency
 
-        predictionDates.add(aux.toLocalDateTime(Constants.TIME_ZONE))
-        for (i in 1..numberOfPredictions) {
-            aux = aux.plus(frequency, DateTimeUnit.HOUR)
+        if (aux != null) {
             predictionDates.add(aux.toLocalDateTime(Constants.TIME_ZONE))
+        }
+        for (i in 1..numberOfPredictions) {
+            if (aux != null) {
+                aux = aux.plus(frequency, DateTimeUnit.HOUR)
+                predictionDates.add(aux.toLocalDateTime(Constants.TIME_ZONE))
+            }
         }
         _predictDates.value = predictionDates
     }
 
     fun confirmAcquisition(pathology: String?, frequency: Int) {
-        val updatedPrescriptionItem = prescriptionItem
-        updatedPrescriptionItem.pathology = pathology
-        updatedPrescriptionItem.nextIntake = scheduleIntakeDateTime
-        updatedPrescriptionItem.acquiredAt =
+        val updatedPrescriptionItem = _prescriptionItem
+        updatedPrescriptionItem.value?.pathology = pathology
+        updatedPrescriptionItem.value?.nextIntake = _scheduleIntakeDateTime.value
+        updatedPrescriptionItem.value?.acquiredAt =
             Clock.System.now().toLocalDateTime(Constants.TIME_ZONE)
-        updatedPrescriptionItem.frequency = frequency
+        updatedPrescriptionItem.value?.frequency = frequency
         viewModelScope.launch {
             _response.value = prescriptionItemsRepository.updatePrescription(
-                prescriptionItem.id,
-                updatedPrescriptionItem
+                _prescriptionItem.value!!.id,
+                updatedPrescriptionItem.value!!
             )
         }
     }
