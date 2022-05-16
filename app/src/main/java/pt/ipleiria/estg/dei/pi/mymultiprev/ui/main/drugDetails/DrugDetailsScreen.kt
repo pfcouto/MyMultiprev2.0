@@ -7,6 +7,8 @@ import android.content.Intent
 import android.text.InputType
 import android.util.Log
 import android.widget.EditText
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -121,8 +123,8 @@ fun AppBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(300.dp)
-    ) {
-        if (drugState.value == null) {
+        ) {
+        if (drugState.value == null || prescriptionState.value == null) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -131,12 +133,12 @@ fun AppBar(
                 CircularProgressIndicator(modifier = Modifier.size(56.dp))
             }
         } else {
-
             Card {
                 GlideImage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
+
                     imageModel = prescriptionState.value!!.imageLocation,
                     // Crop, Fit, Inside, FillHeight, FillWidth, None
                     contentScale = ContentScale.FillBounds,
