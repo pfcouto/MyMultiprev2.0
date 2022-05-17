@@ -133,9 +133,10 @@ fun ConfirmAcquisitionScreen(
                 NumberPicker(
                     value = pickerValue,
                     onValueChange = {
-                        pickerValue = it; viewModel.recalculatePredictionDates(
-                        pickerValue
-                    )
+                        pickerValue = it;
+                        //TODO provavelmente nao pode ficar aqui
+                        // fazer como no ConfirmIntake
+                        viewModel.recalculatePredictionDates(pickerValue)
                     },
                     range = prescriptionItem.value!!.frequency - 2..prescriptionItem.value!!.frequency + 2
                 )
