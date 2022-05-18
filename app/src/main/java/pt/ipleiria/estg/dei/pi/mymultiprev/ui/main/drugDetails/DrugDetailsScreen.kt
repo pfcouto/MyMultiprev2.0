@@ -1,17 +1,13 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.content.DialogInterface
-import android.content.Intent
-import android.text.InputType
 import android.util.Log
-import android.widget.EditText
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -19,11 +15,13 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -113,7 +111,7 @@ fun AppBar(
     val showInputDialog = remember { mutableStateOf(false) }
 
     if (showInputDialog.value) {
-        InputDialog(showInputDialog) {
+        InputDialog(alias = drugState.value!!.alias, showInputDialog = showInputDialog) {
             viewModel.setPrescriptionItemAlias(drugState.value!!.id, it)
         }
     }
@@ -123,7 +121,7 @@ fun AppBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(300.dp)
-        ) {
+    ) {
         if (drugState.value == null || prescriptionState.value == null) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -151,14 +149,24 @@ fun AppBar(
                 IconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(top = 10.dp, end = 10.dp),
+                        .padding(top = 4.dp, end = 4.dp),
                     onClick = {
 //                        navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id + "/" + drugState.value!!.id)
                         navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id)
                     }) {
+                    Box(
+                        modifier = Modifier
+                            .border(
+                                BorderStroke(100.dp, Color.White),
+                                shape = CircleShape
+                            )
+                            .size(42.dp)
+                    )
                     Icon(
                         tint = Color.Black,
                         imageVector = Icons.Filled.PhotoCamera,
+                        modifier = Modifier
+                            .size(32.dp),
                         contentDescription = "Camera"
                     )
                     // TODO ver a cor que queremos
@@ -167,39 +175,57 @@ fun AppBar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomStart)
-                        .padding(bottom = 18.dp, start = 18.dp, end = 18.dp),
+                        .padding(bottom = 0.dp, start = 0.dp, end = 0.dp)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    Color.White
+                                ), tileMode = TileMode.Clamp
+                            )
+                        ),
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Column(
+                        modifier = Modifier
+                            .padding(all = 18.dp)
                     ) {
-                        Text(
-                            maxLines = 1,
-                            color = Color.Black,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            text = drugState.value!!.name
-                        )
-                        if (drugState.value!!.alias.isNotBlank() && drugState.value!!.alias != drugState.value!!.name) {
-
+                        Spacer(modifier = Modifier.size(40.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.Bottom
+                        ) {
                             Text(
                                 maxLines = 1,
                                 color = Color.Black,
-                                fontSize = 25.sp,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                text = drugState.value!!.name,
+                                softWrap = true
+                            )
+                            IconButton(
+                                onClick = {
+                                    showInputDialog.value = true
+                                }) {
+                                Icon(
+                                    tint = Color.Black,
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Edit_Pencil"
+                                )
+                            }
+                        }
+                        if (drugState.value!!.alias.isNotBlank() && drugState.value!!.alias != drugState.value!!.name) {
+
+                            Text(
+                                maxLines = 2,
+                                color = Color.Black,
+                                fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 text = drugState.value!!.alias
                             )
                         }
-                    }
-                    Spacer(modifier = Modifier.size(14.dp))
-                    IconButton(onClick = {
-                        showInputDialog.value = true
-                    }) {
-                        Icon(
-                            tint = Color.Black,
-                            imageVector = Icons.Filled.Edit,
-                            contentDescription = "Edit_Pencil"
-                        )
                     }
                 }
             }
@@ -471,8 +497,12 @@ fun Toma(intake: Intake, nIntake: Int) {
 }
 
 @Composable
-fun InputDialog(showInputDialog: MutableState<Boolean>, onSuccess: (String) -> Unit) {
-    var text by remember { mutableStateOf("") }
+fun InputDialog(
+    alias: String,
+    showInputDialog: MutableState<Boolean>,
+    onSuccess: (String) -> Unit
+) {
+    var text by remember { mutableStateOf(alias) }
 
 
     AlertDialog(

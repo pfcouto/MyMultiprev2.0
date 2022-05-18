@@ -51,7 +51,7 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
     val pairs: State<List<Pair<PrescriptionItem, Drug?>>> = _pairs
 
     fun updatePairs() {
-        Log.i(TAG,"onQueryChanged()")
+        Log.i(TAG, "onQueryChanged()")
         val prescriptions = prescriptionItems.value?.data
         val list: MutableList<Pair<PrescriptionItem, Drug?>> = mutableListOf()
         if (!prescriptions.isNullOrEmpty()) {
@@ -66,11 +66,9 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
     }
 
     fun onQueryChanged(query: String) {
-        Log.i(TAG,"onQueryChanged() : '$query'")
+        Log.i(TAG, "onQueryChanged() : '$query'")
         this.searchQuery.value = query.lowercase(Locale.getDefault())
-        if (query.isNullOrEmpty() || query.trim().length > 2) {
-            filterPairs(query)
-        }
+        filterPairs(query)
     }
 
     private fun getDrugById(id: String): Drug? {
@@ -81,8 +79,8 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
     }
 
     fun filterPairs(newText: String?) {
-        Log.i(TAG,"filterPairs() : '$newText'")
-        if (newText.isNullOrEmpty()) {
+        Log.i(TAG, "filterPairs() : '$newText'")
+        if (newText.isNullOrEmpty() || newText.trim().length < 3) {
             _pairs.value = _allPairs.value
         } else {
             searchQuery.value = searchQuery.value.lowercase(Locale.getDefault())

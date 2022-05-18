@@ -12,10 +12,7 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Lens
 import androidx.compose.runtime.Composable
@@ -50,6 +47,8 @@ fun CameraScreen(
     prescriptionId: String,
     navController: NavHostController
 ) {
+
+    var isTakingPhoto by remember { mutableStateOf(false) }
 
     val lensFacing = CameraSelector.LENS_FACING_BACK
     val context = LocalContext.current
@@ -130,36 +129,43 @@ fun CameraScreen(
 
     }
 
-    var takePhotoEnabled by remember { mutableStateOf(true) }
-
 
     when (cameraPermissionState.status) {
         // If the camera permission is granted, then show screen with the feature enabled
         PermissionStatus.Granted -> {
-            // 3
             Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
                 AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
-                IconButton(
-                    modifier = Modifier.padding(bottom = 20.dp),
-                    enabled = takePhotoEnabled,
-                    onClick = {
-                        Log.i("PhotoScreen", "Button Clicked")
-                        takePhotoEnabled = false
-                        takePhoto()
-                    },
-                    content = {
-                        Icon(
-                            imageVector = Icons.Sharp.Lens,
-                            contentDescription = "Take picture",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .padding(1.dp)
-                                .border(1.dp, Color.White, CircleShape)
-                        )
+                if (isTakingPhoto) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.size(56.dp))
                     }
-                )
+                } else {
+                    IconButton(
+                        modifier = Modifier.padding(bottom = 20.dp),
+                        enabled = !isTakingPhoto,
+                        onClick = {
+                            Log.i("PhotoScreen", "Button Clicked")
+                            isTakingPhoto = true
+                            takePhoto()
+                        },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Sharp.Lens,
+                                contentDescription = "Take picture",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .padding(1.dp)
+                                    .border(1.dp, Color.White, CircleShape)
+                            )
+                        }
+                    )
+                }
             }
         }
         is PermissionStatus.Denied -> {
