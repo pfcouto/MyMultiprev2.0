@@ -1,7 +1,16 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Context.ALARM_SERVICE
+import android.content.Intent
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,27 +28,29 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.skydoves.landscapist.glide.GlideImage
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
+import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
+import pt.ipleiria.estg.dei.pi.mymultiprev.service.RingtoneService
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.MyAlarm
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcquisitionViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.seeDetails.SeeDetailsViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagerApi::class)
@@ -55,6 +66,8 @@ fun ActiveDrugListScreen(
 ) {
 
     val TAG = "ActiveDrugListScreen"
+
+    createNotificationChannel(LocalContext.current)
 
     val showByColumnList = remember { mutableStateOf(true) }
 
@@ -78,6 +91,7 @@ fun ActiveDrugListScreen(
             Log.d(TAG, "Resource Success")
             if (!(listOfPrescriptions as Resource.Success<List<PrescriptionItem>>).data.isNullOrEmpty()) {
                 viewModel.updatePairs()
+                Log.d(TAG, "Esteve aqui")
                 viewModel.updateNextAlarm()
             }
         }
@@ -189,6 +203,7 @@ fun ActiveDrugListScreen(
                         AntibioticCard_Prescription_Item_Full_Item(
                             navController = navController,
                             item = item,
+                            viewModel = viewModel,
                             seeDetailsViewModel = seeDetailsViewModel,
                             confirmIntakeViewModel = confirmIntakeViewModel,
                             confirmViewModel = confirmViewModel,
@@ -341,7 +356,8 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 )
             } else {
                 Image(
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier
+                        .size(80.dp)
                         .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
                     painter = painterResource(id = R.drawable.default_img),
                     contentDescription = "",
@@ -389,6 +405,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
 fun AntibioticCard_Prescription_Item_Full_Item(
     item: Pair<PrescriptionItem, Drug?>,
     navController: NavHostController,
+    viewModel: ActiveDrugListViewModel,
     seeDetailsViewModel: SeeDetailsViewModel,
     confirmIntakeViewModel: ConfirmIntakeViewModel,
     confirmViewModel: ConfirmAcquisitionViewModel,
@@ -398,15 +415,13 @@ fun AntibioticCard_Prescription_Item_Full_Item(
     itemFullText: String
 ) {
 
-    val alarmOn = remember { mutableStateOf(true) }
-
     val context = LocalContext.current
 
-    val icon = if (alarmOn.value)
+    val icon = if (item.first.alarm)
         Icons.Filled.AlarmOn
     else Icons.Filled.AlarmOff
 
-    val color = if (alarmOn.value)
+    val color = if (item.first.alarm)
         Color.Green
     else Color.Red
 
@@ -465,10 +480,12 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                     IconButton(
                         modifier = Modifier.padding(end = 11.dp),
 
-                        // TODO passar o que esta dentro do onclick para uma funcao
                         onClick = {
-                            alarmOn.value = !alarmOn.value;
-                            if (alarmOn.value)
+
+                                setAlarm(context)
+//                            onAlarmClick(viewModel = viewModel, prescriptionItem = item.first)
+
+                            if (!item.first.alarm)
                                 Toast.makeText(context, "Notificacao Ativada", Toast.LENGTH_SHORT)
                                     .show()
                             else
@@ -481,7 +498,6 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
                     }
                 }
-                // TODO, quando o card sai da vista o ecra crasha
 
                 if (item.first.imageLocation != null) {
                     val painter = rememberImagePainter(data = item.first.imageLocation)
@@ -501,19 +517,6 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         contentScale = ContentScale.FillBounds
                     )
                 }
-
-//                CoilImage(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(225.dp),
-//                    imageModel = ,
-//                    // Crop, Fit, Inside, FillHeight, FillWidth, None
-//                    contentScale = ContentScale.FillBounds,
-//                    // shows a placeholder while loading the image.
-////                    placeHolder = ImageBitmap.imageResource(R.drawable.loading),
-//                    // shows an error ImageBitmap when the request failed.
-//                    error = ImageBitmap.imageResource(R.drawable.default_img),
-//                )
 
                 TextButton(onClick = {
                     onDetailsAndConfirmButtonClick(
@@ -557,29 +560,11 @@ private fun onDetailsAndConfirmButtonClick(
 
 
 fun onSeeDetailsClick(
-//    imageview: ImageView?,
     pair: Pair<PrescriptionItem, Drug?>,
     seeDetailsViewModel: SeeDetailsViewModel,
     navController: NavHostController
 ) {
-//    seeDetailsViewModel.setPrescriptionItemDrugPair(pair)
     navController.navigate("descricaoAntibiotico/" + pair.first.id + "/" + pair.second!!.id)
-
-//        if (imageview != null) {
-//            val args =
-//                bundleOf(Constants.PRESCRIPTION_ITEM_IMAGE_TRANSITION to imageview.transitionName)
-//            val extras = FragmentNavigatorExtras(imageview to imageview.transitionName)
-//            findNavController().navigate(
-//                R.id.action_activeDrugListFragment_to_drugDetailsFragment,
-//                args,
-//                null,
-//                extras
-//            )
-//        } else {
-//            findNavController().navigate(
-//                R.id.action_activeDrugListFragment_to_drugDetailsFragment
-//            )
-//        }
 
 }
 
@@ -593,17 +578,30 @@ fun onConfirmDoseClick(
 
 }
 
-//    fun onAlarmClick(prescriptionItem: PrescriptionItem) {
-//        viewModel.prescriptionItems.value?.data?.find { prescriptionItem.id == it.id }?.alarm =
-//            prescriptionItem.alarm
-//        val alarmState = prescriptionItem.alarm
-//        viewModel.setAlarm(alarmState, prescriptionItem.id)
-//        val restId = when (alarmState) {
-//            true -> R.string.alarm_on
-//            else -> R.string.alarm_off
-//        }
-//        com.google.android.material.snackbar.Snackbar.make(binding.root, restId, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT)
-//            .setAction(getString(R.string.OK)) {}.show()\
+private fun setAlarm(context: Context) {
+    val timeSec = System.currentTimeMillis() + 1000
+    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
+    val intent = Intent(context, AlarmReceiver::class.java)
+    val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+    alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
+}
+
+
+fun onAlarmClick(
+    prescriptionItem: PrescriptionItem,
+    viewModel: ActiveDrugListViewModel
+) {
+//    viewModel.prescriptionItems.value?.data?.find { prescriptionItem.id == it.id }?.alarm =
+//        prescriptionItem.alarm
+
+    val alarmState = !prescriptionItem.alarm
+    Log.d("AQUI8", "Deles - ${alarmState}")
+//    Log.d("AQUI8", "Nosso - ${alarmOn.value}")
+    viewModel.setAlarm(alarmState, prescriptionItem.id)
+
+}
+
+
 
 fun onConfirmAcquisitionClick(
     pair: Pair<PrescriptionItem, Drug?>,
@@ -611,5 +609,49 @@ fun onConfirmAcquisitionClick(
 ) {
 
     confirmViewModel.setPrescriptionItemDrugPair(pair)
-//        findNavController().navigate(R.id.action_activeDrugListFragment_to_confirmAcquisitionFragment)
 }
+
+private fun createNotificationChannel(context: Context) {
+    // Create the NotificationChannel, but only on API 26+ because
+    // the NotificationChannel class is new and not in the support library
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        //val name = getString(R.string.channel_name)
+        val name = "notifications_channel"
+        //val descriptionText = getString(R.string.channel_description)
+        val descriptionText = "Channel for Alarm notifications"
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val channel =
+            NotificationChannel(Constants.NOTIFICATIONS_CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+        // Register the channel with the system
+        val notificationManager: NotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+}
+
+//fun createNotificationChannel(context: Context) {
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//        val name = "MyMultiPrev"
+//        val desc = "MyMultiPrev Alarm Notifications"
+//        val importance = NotificationManager.IMPORTANCE_DEFAULT
+//        val channel = NotificationChannel(Constants.NOTIFICATIONS_CHANNEL_ID, name, importance).apply {
+//            description = desc
+//        }
+//        val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//        notificationManager.createNotificationChannel(channel)
+//    }
+//}
+
+//private fun dismissNotifications() {
+//    val notificationId = intent.getIntExtra(Constants.NOTIFICATION_ID, -1)
+//    if (notificationId == -1) {
+//        return
+//    }
+//    val manager = getSystemService(AppCompatActivity.NOTIFICATION_SERVICE) as NotificationManager
+//    manager.cancel(notificationId)
+//    val intent = Intent(this, RingtoneService::class.java)
+//    intent.action = Constants.ACTION_PAUSE
+//    startService(intent)
+//}

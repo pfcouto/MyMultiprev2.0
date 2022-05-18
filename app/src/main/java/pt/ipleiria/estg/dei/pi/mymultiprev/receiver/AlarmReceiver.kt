@@ -1,9 +1,16 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.receiver
 
 //import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainActivity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
@@ -12,6 +19,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.daos.AlarmDao
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Alarm
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
@@ -21,6 +29,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesReposit
 import pt.ipleiria.estg.dei.pi.mymultiprev.service.AlarmService
 import pt.ipleiria.estg.dei.pi.mymultiprev.service.RingtoneService
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.RandomIntUtil
 import java.util.*
 import javax.inject.Inject
 
@@ -43,6 +52,9 @@ class AlarmReceiver :
         //get the time when the alarm was scheduled
         val wakeUpTimeInMillis = intent.getLongExtra(Constants.EXTRACT_ALARM_TIME, 0L)
 
+        Log.d("Alarm", "Esteve aquii 1")
+
+
         GlobalScope.launch {
             val currentAlarmPrescriptionItems: LinkedList<PrescriptionItem> = LinkedList()
             var nextAlarmTimestamp: Long = Long.MAX_VALUE
@@ -53,16 +65,19 @@ class AlarmReceiver :
                 prescriptionItemsRepository.getActivePrescriptionItems(sharedPreferencesRepository.getCurrentPatientId())
                     .first().data
             if (!prescriptionItems.isNullOrEmpty()) {
+
                 prescriptionItems.forEach lit@{ prescriptionItem ->
+
                     val nextIntake = prescriptionItem.nextIntake
                     if (nextIntake != null && prescriptionItem.alarm) {
-                        val nextIntakeMillis =
-                            nextIntake.toInstant(TimeZone.currentSystemDefault())
-                                .toEpochMilliseconds()
+                        val nextIntakeMillis = nextIntake.toInstant(TimeZone.currentSystemDefault())
+                            .toEpochMilliseconds()
                         //if there's still alarms to be triggered in this timeInMillis, drug(s) are added to currentAlarm list (multiple drugs can be assigned to one unique alarm)
+
                         if (nextIntakeMillis == wakeUpTimeInMillis) {
                             isExact = true
                         }
+                        Log.d("Alarm", "$nextIntakeMillis <= $wakeUpTimeInMillis")
                         if (nextIntakeMillis <= wakeUpTimeInMillis) {
                             currentAlarmPrescriptionItems.add(prescriptionItem)
                             return@lit
@@ -77,11 +92,15 @@ class AlarmReceiver :
 
             manageNextAlarm(nextAlarmTimestamp, context)
 
+            Log.d("Alarm", currentAlarmPrescriptionItems.isNotEmpty().toString())
+
             //if there's still assigned alarm's to this broadcast. we should trigger the notification
             if (currentAlarmPrescriptionItems.isNotEmpty() && isExact) {
                 //multiple drugs
-
+                Log.d("Alarm", currentAlarmPrescriptionItems.size.toString())
                 if (currentAlarmPrescriptionItems.size > 1) {
+                    Log.d("Alarm", "Esteve aquii 2")
+
                     var drugsAux = ""
                     var count = 0
                     currentAlarmPrescriptionItems.forEach { prescriptionItem ->
@@ -99,20 +118,22 @@ class AlarmReceiver :
                         }
 
                     }
-//                    buildNotification(
-//                        context,
-//                        context.getString(R.string.taking_medicines),
-//                        context.getString(R.string.time_to_take_medicines) + drugsAux
-//                    )
+
+                    buildNotification(
+                        context,
+                        context.getString(R.string.taking_medicines),
+                        context.getString(R.string.time_to_take_medicines)+" " + drugsAux
+                    )
                     //single drug
                 } else {
                     val drugName = drugRepository.getDrugById(currentAlarmPrescriptionItems[0].drug)
                         .first().data?.name
-//                    buildNotification(
-//                        context,
-//                        context.getString(R.string.taking_medicin),
-//                        context.getString(R.string.time_to_take_medicin) + drugName
-//                    )
+                    Log.d("Alarm", "Esteve aquii 3")
+                    buildNotification(
+                        context,
+                        context.getString(R.string.taking_medicin),
+                        context.getString(R.string.time_to_take_medicin) + drugName
+                    )
                 }
                 val i = Intent(context, RingtoneService::class.java)
                 context.startService(i)
@@ -139,9 +160,9 @@ class AlarmReceiver :
         sharedPreferencesRepository.saveAlarm(nextAlarmTimestamp)
     }
 
-//    private fun buildNotification(context: Context, title: String, message: String) {
-//        val notificationID = RandomIntUtil.getRandomInt()
-//        // Create an Intent for the activity you want to start
+    private fun buildNotification(context: Context, title: String, message: String) {
+        val notificationID = RandomIntUtil.getRandomInt()
+        // Create an Intent for the activity you want to start
 //        val mainActivityIntent = Intent(context, MainActivity::class.java)
 //        mainActivityIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
 //        // Create the TaskStackBuilder
@@ -151,23 +172,22 @@ class AlarmReceiver :
 //            // Get the PendingIntent containing the entire back stack
 //            getPendingIntent(RandomIntUtil.getRandomInt(), PendingIntent.FLAG_UPDATE_CURRENT)
 //        }
-//
-//        val pauseIntent = Intent(context, RingtoneService::class.java)
-//        pauseIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
-//        pauseIntent.action = Constants.ACTION_PAUSE
-//        val pausePendingIntent = PendingIntent.getService(
-//            context,
-//            RandomIntUtil.getRandomInt(), pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT
-//        )
-//
-//
-//        val builder = NotificationCompat.Builder(context, Constants.NOTIFICATIONS_CHANNEL_ID)
-//            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
-//            .setContentTitle(title)
-//            .setContentText(message)
-//            .setPriority(NotificationCompat.PRIORITY_HIGH)
-//            .setContentIntent(mainActivityPendingIntent)
-//            .setDefaults(NotificationCompat.DEFAULT_ALL)
+
+        val pauseIntent = Intent(context, RingtoneService::class.java)
+        pauseIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
+        pauseIntent.action = Constants.ACTION_PAUSE
+        val pausePendingIntent = PendingIntent.getService(
+            context,
+            RandomIntUtil.getRandomInt(), pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+
+        val builder = NotificationCompat.Builder(context, Constants.NOTIFICATIONS_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
 //            .addAction(
 //                R.drawable.ic_baseline_alarm_on_24,
 //                context.getString(R.string.confirm),
@@ -178,8 +198,11 @@ class AlarmReceiver :
 //                context.getString(R.string.stop),
 //                pausePendingIntent
 //            )
-//        with(NotificationManagerCompat.from(context)) {
-//            notify(notificationID, builder.build())
-//        }
-//    }
+
+        with(NotificationManagerCompat.from(context)) {
+            notify(notificationID, builder.build())
+        }
+    }
+
+
 }

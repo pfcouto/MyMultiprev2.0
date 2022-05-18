@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">MyMultiPrev</string>
+
+    <!-- Notifications -->
+    <string name="confirm">Confirmar</string>
+    <string name="stop">Parar</string>
+    <string name="taking_medicines">Toma de Medicamentos</string>
+    <string name="time_to_take_medicines">Está na hora de tomar os medicamentos: </string>
+    <string name="taking_medicin">Toma de Medicamento</string>
+    <string name="time_to_take_medicin">Está na hora de tomar o medicamento: </string>
 </resources>

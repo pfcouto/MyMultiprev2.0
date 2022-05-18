@@ -85,6 +85,7 @@ class ActiveDrugListViewModel @Inject constructor(
         var nextAlarm = getNextAlarmFromSP(currentTime)
         val initialAlarm = nextAlarm
         nextAlarm = getNextAlarmFromActivePrescriptions(currentTime, nextAlarm)
+        Log.d("UpdateNextAlarm", "NextAlarm: $nextAlarm")
         viewModelScope.launch {
             alarmDao.deleteExpiredAlarms(
                 Instant.fromEpochMilliseconds(currentTime).toLocalDateTime(Constants.TIME_ZONE)
