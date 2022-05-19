@@ -25,6 +25,10 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
 
     val symptoms = remember { mutableStateListOf<Pair<String, Boolean>>() }
 
+    fun clearSurvey() {
+        surveyScreenNumber = 0
+        symptoms.clear()
+    }
 
     if (surveyScreenNumber > 0) {
         Row(
@@ -47,7 +51,7 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
 
             }
 
-            Button(onClick = { surveyScreenNumber = 0 }) {
+            Button(onClick = { clearSurvey() }) {
                 Text(
                     text = "Cancelar",
                     fontSize = 18.sp,

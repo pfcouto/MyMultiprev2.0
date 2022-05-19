@@ -29,7 +29,7 @@ fun SymptomsScreen(
     symptoms: SnapshotStateList<Pair<String, Boolean>>,
     onNext: () -> Unit
 ) {
-//    if (symptoms.isEmpty()) {
+//    if (symptoms.size < symptomsTypes.size) {
 //        symptomsTypes.forEachIndexed { idx, element ->
 //            symptoms.add(idx, element.id to false)
 //        }
@@ -53,6 +53,7 @@ fun SymptomsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         symptomsTypes.forEachIndexed { idx, element ->
+            Log.i("SymptomsScreen","idx: $idx")
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -61,8 +62,13 @@ fun SymptomsScreen(
                         detectTapGestures(
                             onTap = {
                                 if (symptoms.getOrNull(idx) == null) {
-                                    symptoms.add(idx, element.id to true)
+                                    Log.i("SymptomsScreen", "if: $idx")
+                                    Log.i("SymptomsScreen", "if: ${symptoms.indices}")
+                                    symptoms[idx] = element.id to true
                                 } else {
+                                    Log.i("SymptomsScreen", "else: $idx")
+                                    Log.i("SymptomsScreen", "else: ${symptoms.indices}")
+
                                     symptoms[idx] = element.id to !symptoms[idx].second
                                 }
                             }
