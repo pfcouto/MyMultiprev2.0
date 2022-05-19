@@ -17,6 +17,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList.ActiveDrugList
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory.PrescriptionItemsHistoryScreen
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsScreen
 
 
 @Composable
@@ -40,11 +41,6 @@ fun BottomNavGraph(
         }
 
         composable(route = BottomBarScreen.Sintomas.route) {
-            val context = LocalContext.current
-
-
-            Text(text = "SINTOMAS")
-
             if (!mainViewModel.isNetworkAvailable()) {
 //                Toast.makeText(
 //                    context,
@@ -54,6 +50,8 @@ fun BottomNavGraph(
                 Snackbar() {
                     Text(text = "No Internet Connection! Please, reconnect and try again")
                 }
+            }else{
+                RegisterSymptomsScreen()
             }
         }
 
