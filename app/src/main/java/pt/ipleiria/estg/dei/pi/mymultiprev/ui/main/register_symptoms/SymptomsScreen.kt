@@ -11,8 +11,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +51,10 @@ fun SymptomsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         symptomsTypes.forEachIndexed { idx, element ->
-            Log.i("SymptomsScreen","idx: $idx")
+            Log.i("SymptomsScreen", "idx: $idx")
+            if (symptoms.getOrNull(idx) == null) {
+                symptoms.add(idx, element.id to false)
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -61,16 +62,10 @@ fun SymptomsScreen(
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onTap = {
-                                if (symptoms.getOrNull(idx) == null) {
-                                    Log.i("SymptomsScreen", "if: $idx")
-                                    Log.i("SymptomsScreen", "if: ${symptoms.indices}")
-                                    symptoms[idx] = element.id to true
-                                } else {
-                                    Log.i("SymptomsScreen", "else: $idx")
-                                    Log.i("SymptomsScreen", "else: ${symptoms.indices}")
+                                Log.i("SymptomsScreen", idx.toString())
+                                Log.i("SymptomsScreen", symptoms.indices.toString())
 
-                                    symptoms[idx] = element.id to !symptoms[idx].second
-                                }
+                                symptoms[idx] = element.id to !symptoms[idx].second
                             }
                         )
                     },
