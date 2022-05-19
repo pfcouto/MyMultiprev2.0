@@ -27,12 +27,6 @@ fun SymptomsScreen(
     symptoms: SnapshotStateList<Pair<String, Boolean>>,
     onNext: () -> Unit
 ) {
-//    if (symptoms.size < symptomsTypes.size) {
-//        symptomsTypes.forEachIndexed { idx, element ->
-//            symptoms.add(idx, element.id to false)
-//        }
-//    }
-
 
     Text(
         text = "Efeitos Secundários",
@@ -50,6 +44,7 @@ fun SymptomsScreen(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Divider(color = Color.Gray, thickness = 1.dp)
         symptomsTypes.forEachIndexed { idx, element ->
             Log.i("SymptomsScreen", "idx: $idx")
             if (symptoms.getOrNull(idx) == null) {
@@ -62,9 +57,6 @@ fun SymptomsScreen(
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onTap = {
-                                Log.i("SymptomsScreen", idx.toString())
-                                Log.i("SymptomsScreen", symptoms.indices.toString())
-
                                 symptoms[idx] = element.id to !symptoms[idx].second
                             }
                         )
@@ -86,13 +78,12 @@ fun SymptomsScreen(
                     )
                 }
             }
-            if (idx + 1 < symptomsTypes.size) {
-                Divider(color = Color.Gray, thickness = 1.dp)
-            }
+            Divider(color = Color.Gray, thickness = 1.dp)
         }
     }
     Spacer(modifier = Modifier.size(48.dp))
     Button(
+        enabled = symptoms.firstOrNull() { it.second } != null,
         border = BorderStroke(1.dp, Color.Gray),
         onClick = { onNext() }) {
         Text(text = "Seguinte", fontSize = 26.sp)

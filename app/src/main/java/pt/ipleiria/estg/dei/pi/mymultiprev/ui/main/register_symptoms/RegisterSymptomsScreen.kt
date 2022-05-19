@@ -24,9 +24,14 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
     viewModel.getSymptomTypeItems()
 
     val symptoms = remember { mutableStateListOf<Pair<String, Boolean>>() }
+    val activeEvolutionType = remember { mutableStateOf(-1) }
+    val evolutionTypes = remember { mutableStateListOf<String>() }
 
     fun clearSurvey() {
         surveyScreenNumber = 0
+        activeEvolutionType.value = -1
+        evolutionTypes.clear()
+        evolutionTypes.addAll(setOf("Em Recuperação", "Curado"))
         symptoms.clear()
     }
 
@@ -51,7 +56,7 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
 
             }
 
-            Button(onClick = { clearSurvey() }) {
+            Button(onClick = { surveyScreenNumber = 0 }) {
                 Text(
                     text = "Cancelar",
                     fontSize = 18.sp,
@@ -69,6 +74,7 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
     ) {
         when (surveyScreenNumber) {
             0 -> {
+                clearSurvey()
                 StartScreen { surveyScreenNumber++ }
             }
             1 -> {
@@ -78,7 +84,10 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
                 ) { surveyScreenNumber++ }
             }
             2 -> {
-                EvolutionScreen { surveyScreenNumber++ }
+                EvolutionScreen(
+                    evolutionTypes,
+                    activeEvolutionType,
+                ) { surveyScreenNumber++ }
             }
             3 -> {
                 DrugsScreen { surveyScreenNumber++ }
