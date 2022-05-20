@@ -1,10 +1,7 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
@@ -101,7 +98,21 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
         when (surveyScreenNumber) {
             0 -> {
                 clearSurvey()
-                StartScreen { surveyScreenNumber++ }
+                val sympState = viewModel.symptomTypesListResponse.observeAsState()
+                val prescState = viewModel.prescriptionItems.observeAsState()
+                val drugsState = viewModel.drugs.observeAsState()
+                if (sympState.value == null
+                    || prescState.value == null
+                    || drugsState.value == null
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(68.dp)
+                            .fillMaxSize()
+                    )
+                } else {
+                    StartScreen { surveyScreenNumber++ }
+                }
             }
             1 -> {
                 SymptomsScreen(

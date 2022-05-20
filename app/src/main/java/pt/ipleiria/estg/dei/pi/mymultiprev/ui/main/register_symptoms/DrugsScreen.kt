@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_drugs
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -47,7 +46,10 @@ fun DrugsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Divider(color = Color.Gray, thickness = 1.dp)
-        drugTypes.forEachIndexed { idx, element ->
+        prescriptionItems.forEachIndexed { idx, element ->
+            val drug = drugTypes.firstOrNull {
+                it.id == element.drug
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -67,7 +69,7 @@ fun DrugsScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    element.name,
+                    drug!!.alias.ifEmpty { drug.commercialName },
                     color = if (idx == activeDrug.value) Color.Cyan else Color.DarkGray,
                     fontSize = 28.sp
                 )
