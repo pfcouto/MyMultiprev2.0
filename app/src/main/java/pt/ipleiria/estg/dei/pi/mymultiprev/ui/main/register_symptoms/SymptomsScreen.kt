@@ -27,7 +27,6 @@ fun SymptomsScreen(
     symptoms: SnapshotStateList<Pair<String, Boolean>>,
     onNext: () -> Unit
 ) {
-
     Text(
         text = "Efeitos Secundários",
         fontSize = 38.sp,
