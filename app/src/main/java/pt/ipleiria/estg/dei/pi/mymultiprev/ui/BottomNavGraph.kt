@@ -1,11 +1,9 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 
-import android.util.Log
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -18,7 +16,6 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntak
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory.PrescriptionItemsHistoryScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsScreen
-
 
 @Composable
 fun BottomNavGraph(
@@ -50,8 +47,8 @@ fun BottomNavGraph(
                 Snackbar() {
                     Text(text = "No Internet Connection! Please, reconnect and try again")
                 }
-            }else{
-                RegisterSymptomsScreen()
+            } else {
+                RegisterSymptomsScreen(navHostController = navController)
             }
         }
 

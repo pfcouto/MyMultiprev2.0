@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,15 +14,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toLocalDateTime
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Symptom
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.enums.SymptomRegistrationSituation
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_drugs.DrugsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 
 @Composable
-fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel()) {
+fun RegisterSymptomsScreen(
+    viewModel: RegisterSymptomsViewModel = hiltViewModel(),
+    navHostController: NavHostController
+) {
 
     var surveyScreenNumber by remember { mutableStateOf(0) }
 
@@ -57,6 +63,41 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
         responseTypes.addAll(setOf("Sim", "Não"))
         symptoms.clear()
     }
+
+    fun taskComplete() {
+        val symptomsToRegister = mutableListOf<Symptom>()
+
+        val drugIdToSend: String
+        val registrationSituation: SymptomRegistrationSituation
+        if (viewModel.specificPrescriptionItemId.isEmpty()) {
+            registrationSituation = SymptomRegistrationSituation.ThroughOutTheDay
+            drugIdToSend = prescriptionItems.value?.data!![activeDrug.value].drug
+        } else {
+            registrationSituation = SymptomRegistrationSituation.DuringIntake
+            drugIdToSend = viewModel.specificPrescriptionItem.value!!.drug
+        }
+        symptoms.forEach {
+            Log.i("REGISTANDO", it.first)
+            if (!it.second) return@forEach
+            Log.i("REGISTANDO", it.second.toString())
+            symptomsToRegister.add(
+                Symptom(
+                    patientId = viewModel.patientId,
+                    typeId = it.first,
+                    registratedSituation = registrationSituation,
+                    drugId = drugIdToSend,
+                    registeredAt = Clock.System.now()
+                        .toLocalDateTime(Constants.TIME_ZONE).toString()
+                )
+            )
+        }
+
+        viewModel.addSymptomsToRegister(symptomsToRegister)
+        viewModel.registerSymptoms()
+        viewModel.clearData()
+//        findNavController().navigate(R.id.action_registerSymptomsFragment_to_activeDrugListFragment)
+    }
+
 
     if (surveyScreenNumber in 1..5) {
         Row(
@@ -145,7 +186,10 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
                 ) { surveyScreenNumber++ }
             }
             6 -> {
-                SuccessRegisterScreen { surveyScreenNumber = 0 }
+                taskComplete()
+                SuccessRegisterScreen {
+                    navHostController.navigate(BottomBarScreen.Sintomas.route)
+                }
             }
         }
     }
@@ -155,43 +199,5 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
 //        viewModel.prescriptionItems.value!!.data!!
 ////    viewModel.findDrugById(prescriptionItem.drug)!!.id
 //    }
-
-
-    //NEEDS FIXS
-    fun taskComplete(viewModel: RegisterSymptomsViewModel) {
-        val symptoms = mutableListOf<Symptom>()
-        val sympTypeId: MutableList<String?> = mutableListOf()
-        var drugId: String? = null
-
-        //Add all symptoms registered
-        sympTypeId.add("")
-
-        val drugIdToSend: String
-        val registrationSituation: SymptomRegistrationSituation
-        if (viewModel.specificPrescriptionItemId.isEmpty()) {
-            registrationSituation = SymptomRegistrationSituation.ThroughOutTheDay
-            drugIdToSend = drugId!!
-        } else {
-            registrationSituation = SymptomRegistrationSituation.DuringIntake
-            drugIdToSend = viewModel.specificPrescriptionItem.value!!.drug
-        }
-        sympTypeId.forEach {
-            symptoms.add(
-                Symptom(
-                    patientId = viewModel.patientId,
-                    typeId = it!!,
-                    registratedSituation = registrationSituation,
-                    drugId = drugIdToSend,
-                    registeredAt = Clock.System.now()
-                        .toLocalDateTime(Constants.TIME_ZONE).toString()
-                )
-            )
-        }
-
-        viewModel.addSymptomsToRegister(symptoms)
-        viewModel.registerSymptoms()
-        viewModel.clearData()
-//        findNavController().navigate(R.id.action_registerSymptomsFragment_to_activeDrugListFragment)
-    }
 }
 
