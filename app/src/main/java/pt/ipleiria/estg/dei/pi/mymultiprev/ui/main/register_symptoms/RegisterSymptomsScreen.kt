@@ -45,6 +45,7 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
     val evolutionTypes = remember { mutableStateListOf<String>() }
     val responseTypes = remember { mutableStateListOf<String>() }
     val activeDrug = remember { mutableStateOf(-1) }
+    val age = remember { mutableStateOf(35) }
 
 
     fun clearSurvey() {
@@ -52,6 +53,7 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
         activeEvolutionType.value = -1
         activeResponse.value = -1
         activeDrug.value = -1
+        age.value = 35
         evolutionTypes.clear()
         evolutionTypes.addAll(setOf("Em Recuperação", "Curado"))
         responseTypes.clear()
@@ -123,7 +125,7 @@ fun RegisterSymptomsScreen(viewModel: RegisterSymptomsViewModel = hiltViewModel(
                 }
             }
             4 -> {
-                AgeScreen { surveyScreenNumber++ }
+                AgeScreen(age) { surveyScreenNumber++ }
             }
             5 -> {
                 DoctorScreen(
