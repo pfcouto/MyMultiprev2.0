@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 
+import android.util.Log
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -37,18 +38,40 @@ fun BottomNavGraph(
             }
         }
 
-        composable(route = BottomBarScreen.Sintomas.route) {
+        composable(
+            route = BottomBarScreen.Sintomas.route
+        ) {
             if (!mainViewModel.isNetworkAvailable()) {
-//                Toast.makeText(
-//                    context,
-//                    "No Internet Connection! Please, reconnect and try again",
-//                    Toast.LENGTH_SHORT
-//                )
                 Snackbar() {
                     Text(text = "No Internet Connection! Please, reconnect and try again")
                 }
             } else {
                 RegisterSymptomsScreen(navHostController = navController)
+            }
+        }
+
+        composable(
+            route = BottomBarScreen.Sintomas.route + "/{prescItemId}",
+            arguments = listOf(
+                navArgument("prescItemId") {
+                    type = NavType.StringType
+                })
+        ) {
+            var prescItemId = remember {
+                it.arguments?.getString("prescItemId")
+            }
+            Log.i("TESTE ROUTE", BottomBarScreen.Sintomas.route)
+            Log.i("TESTE VAR", prescItemId.toString())
+
+            if (!mainViewModel.isNetworkAvailable()) {
+                Snackbar() {
+                    Text(text = "No Internet Connection! Please, reconnect and try again")
+                }
+            } else {
+                RegisterSymptomsScreen(
+                    navHostController = navController,
+                    prescriptionItemId = prescItemId
+                )
             }
         }
 

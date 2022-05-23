@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toLocalDateTime
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Symptom
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.enums.SymptomRegistrationSituation
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
@@ -25,22 +26,15 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 
 @Composable
 fun RegisterSymptomsScreen(
-    viewModel: RegisterSymptomsViewModel = hiltViewModel(),
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    prescriptionItemId: String? = "",
+    viewModel: RegisterSymptomsViewModel = hiltViewModel()
 ) {
-
     var surveyScreenNumber by remember { mutableStateOf(0) }
+    Log.i("RegisterSymptomsScreen", prescriptionItemId.toString())
 
-    DisposableEffect(Unit) {
-        viewModel.getSymptomTypeItems()
-        viewModel.getPatient()
-        viewModel.getSpecificPrescriptionItem()
-        viewModel.getDrugs()
-        onDispose {}
-    }
 
     val prescriptionItems = viewModel.prescriptionItems.observeAsState()
-
 
     val symptoms = remember { mutableStateListOf<Pair<String, Boolean>>() }
     val activeEvolutionType = remember { mutableStateOf(-1) }
@@ -52,6 +46,7 @@ fun RegisterSymptomsScreen(
 
 
     fun clearSurvey() {
+//        surveyScreenNumber = if (prescriptionItemId.isNullOrEmpty()) 0 else 1
         surveyScreenNumber = 0
         activeEvolutionType.value = -1
         activeResponse.value = -1
@@ -62,6 +57,22 @@ fun RegisterSymptomsScreen(
         responseTypes.clear()
         responseTypes.addAll(setOf("Sim", "Não"))
         symptoms.clear()
+    }
+
+
+    DisposableEffect(Unit) {
+        clearSurvey()
+        viewModel.getSymptomTypeItems()
+        viewModel.getPatient()
+        viewModel.getDrugs()
+
+        if (!prescriptionItemId.isNullOrEmpty()) {
+            Log.i("RegisterSymptomsScreen", "HERE")
+            viewModel.specificPrescriptionItemId = prescriptionItemId
+            viewModel.getSpecificPrescriptionItem()
+            surveyScreenNumber = 1
+        }
+        onDispose {}
     }
 
     fun taskComplete() {
@@ -77,9 +88,7 @@ fun RegisterSymptomsScreen(
             drugIdToSend = viewModel.specificPrescriptionItem.value!!.drug
         }
         symptoms.forEach {
-            Log.i("REGISTANDO", it.first)
             if (!it.second) return@forEach
-            Log.i("REGISTANDO", it.second.toString())
             symptomsToRegister.add(
                 Symptom(
                     patientId = viewModel.patientId,
@@ -95,7 +104,6 @@ fun RegisterSymptomsScreen(
         viewModel.addSymptomsToRegister(symptomsToRegister)
         viewModel.registerSymptoms()
         viewModel.clearData()
-//        findNavController().navigate(R.id.action_registerSymptomsFragment_to_activeDrugListFragment)
     }
 
 
@@ -108,19 +116,33 @@ fun RegisterSymptomsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            IconButton(
-                onClick = { surveyScreenNumber-- }) {
-                Icon(
-                    modifier = Modifier
-                        .size(38.dp),
-                    tint = Color.Gray,
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Return"
-                )
+            if (surveyScreenNumber in 2..5) {
+                IconButton(
+                    onClick = {
+                        if (!prescriptionItemId.isNullOrEmpty() && surveyScreenNumber == 4) {
+                            surveyScreenNumber -= 2
 
+                        } else {
+                            surveyScreenNumber--
+
+                        }
+                    }) {
+                    Icon(
+                        modifier = Modifier
+                            .size(38.dp),
+                        tint = Color.Gray,
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Return"
+                    )
+
+                }
+            } else {
+                Spacer(modifier = Modifier.size(1.dp))
             }
 
-            Button(onClick = { surveyScreenNumber = 0 }) {
+            Button(onClick = {
+                clearSurvey()
+            }) {
                 Text(
                     text = "Cancelar",
                     fontSize = 18.sp,
@@ -136,59 +158,65 @@ fun RegisterSymptomsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        when (surveyScreenNumber) {
-            0 -> {
-                clearSurvey()
-                val sympState = viewModel.symptomTypesListResponse.observeAsState()
-                val prescState = viewModel.prescriptionItems.observeAsState()
-                val drugsState = viewModel.drugs.observeAsState()
-                if (sympState.value == null
-                    || prescState.value == null
-                    || drugsState.value == null
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(68.dp)
-                            .fillMaxSize()
-                    )
-                } else {
+        val sympState = viewModel.symptomTypesListResponse.observeAsState()
+        val prescState = viewModel.prescriptionItems.observeAsState()
+        val drugsState = viewModel.drugs.observeAsState()
+        if (sympState.value == null
+            || prescState.value == null
+            || drugsState.value == null
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(68.dp)
+                    .fillMaxSize()
+            )
+        } else {
+            when (surveyScreenNumber) {
+                0 -> {
                     StartScreen { surveyScreenNumber++ }
                 }
-            }
-            1 -> {
-                SymptomsScreen(
-                    viewModel.symptomTypesListResponse.value!!,
-                    symptoms
-                ) { surveyScreenNumber++ }
-            }
-            2 -> {
-                EvolutionScreen(
-                    evolutionTypes,
-                    activeEvolutionType,
-                ) { surveyScreenNumber++ }
-            }
-            3 -> {
-                DrugsScreen(
-                    viewModel.drugs.value!!,
-                    prescriptionItems.value?.data!!,
-                    activeDrug
-                ) {
-                    surveyScreenNumber++
+                1 -> {
+                    SymptomsScreen(
+                        viewModel.symptomTypesListResponse.value!!,
+                        symptoms
+                    ) { surveyScreenNumber++ }
                 }
-            }
-            4 -> {
-                AgeScreen(age) { surveyScreenNumber++ }
-            }
-            5 -> {
-                DoctorScreen(
-                    responseTypes,
-                    activeResponse,
-                ) { surveyScreenNumber++ }
-            }
-            6 -> {
-                taskComplete()
-                SuccessRegisterScreen {
-                    navHostController.navigate(BottomBarScreen.Sintomas.route)
+                2 -> {
+                    EvolutionScreen(
+                        evolutionTypes,
+                        activeEvolutionType,
+                    ) {
+                        if (viewModel.specificPrescriptionItemId.isNotEmpty()) {
+                            surveyScreenNumber += 2
+                        } else {
+                            surveyScreenNumber++
+                        }
+
+                    }
+                }
+                3 -> {
+                    DrugsScreen(
+                        viewModel.drugs.value!!,
+                        prescriptionItems.value?.data!!,
+                        activeDrug
+                    ) {
+                        surveyScreenNumber++
+                    }
+                }
+                4 -> {
+                    AgeScreen(age) { surveyScreenNumber++ }
+                }
+                5 -> {
+                    DoctorScreen(
+                        responseTypes,
+                        activeResponse,
+                    ) { surveyScreenNumber++ }
+                }
+                6 -> {
+                    taskComplete()
+                    SuccessRegisterScreen {
+                        navHostController.navigate(BottomBarScreen.Sintomas.route)
+                    }
                 }
             }
         }
