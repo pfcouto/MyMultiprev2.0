@@ -30,6 +30,8 @@
         <receiver android:name=".receiver.AlarmReceiver"
             android:enabled="true"
             android:exported="true"/>
+
+        <service android:name=".service.Alarme" />
     </application>
 
 </manifest>

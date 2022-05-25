@@ -52,7 +52,7 @@ class AlarmReceiver :
         //get the time when the alarm was scheduled
         val wakeUpTimeInMillis = intent.getLongExtra(Constants.EXTRACT_ALARM_TIME, 0L)
 
-        Log.d("Alarm", "Esteve aquii 1")
+        Log.d("Alarm1", "Alarm Esteve aquii 1")
 
 
         GlobalScope.launch {
@@ -77,7 +77,7 @@ class AlarmReceiver :
                         if (nextIntakeMillis == wakeUpTimeInMillis) {
                             isExact = true
                         }
-                        Log.d("Alarm", "$nextIntakeMillis <= $wakeUpTimeInMillis")
+                        Log.d("Alarm1", "Alarm $nextIntakeMillis <= $wakeUpTimeInMillis")
                         if (nextIntakeMillis <= wakeUpTimeInMillis) {
                             currentAlarmPrescriptionItems.add(prescriptionItem)
                             return@lit
@@ -92,14 +92,14 @@ class AlarmReceiver :
 
             manageNextAlarm(nextAlarmTimestamp, context)
 
-            Log.d("Alarm", currentAlarmPrescriptionItems.isNotEmpty().toString())
+            Log.d("Alarm1", "Alarm " + currentAlarmPrescriptionItems.isNotEmpty().toString())
 
             //if there's still assigned alarm's to this broadcast. we should trigger the notification
             if (currentAlarmPrescriptionItems.isNotEmpty() && isExact) {
                 //multiple drugs
-                Log.d("Alarm", currentAlarmPrescriptionItems.size.toString())
+                Log.d("Alarm1","Alarm " + currentAlarmPrescriptionItems.size.toString())
                 if (currentAlarmPrescriptionItems.size > 1) {
-                    Log.d("Alarm", "Esteve aquii 2")
+                    Log.d("Alarm1", "Alarm Esteve aquii 2")
 
                     var drugsAux = ""
                     var count = 0
@@ -128,7 +128,7 @@ class AlarmReceiver :
                 } else {
                     val drugName = drugRepository.getDrugById(currentAlarmPrescriptionItems[0].drug)
                         .first().data?.name
-                    Log.d("Alarm", "Esteve aquii 3")
+                    Log.d("Alarm1", "Alarm Esteve aquii 3")
                     buildNotification(
                         context,
                         context.getString(R.string.taking_medicin),
@@ -173,13 +173,13 @@ class AlarmReceiver :
 //            getPendingIntent(RandomIntUtil.getRandomInt(), PendingIntent.FLAG_UPDATE_CURRENT)
 //        }
 
-        val pauseIntent = Intent(context, RingtoneService::class.java)
-        pauseIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
-        pauseIntent.action = Constants.ACTION_PAUSE
-        val pausePendingIntent = PendingIntent.getService(
-            context,
-            RandomIntUtil.getRandomInt(), pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT
-        )
+//        val pauseIntent = Intent(context, RingtoneService::class.java)
+//        pauseIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
+//        pauseIntent.action = Constants.ACTION_PAUSE
+//        val pausePendingIntent = PendingIntent.getService(
+//            context,
+//            RandomIntUtil.getRandomInt(), pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT
+//        )
 
 
         val builder = NotificationCompat.Builder(context, Constants.NOTIFICATIONS_CHANNEL_ID)

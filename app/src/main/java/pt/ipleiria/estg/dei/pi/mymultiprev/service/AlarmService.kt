@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.RandomIntUtil
@@ -15,6 +16,7 @@ class AlarmService(private val context: Context) {
 
 
     fun setExactAlarm(timeInMillis: Long) {
+        Log.d("Alarm1", "Alarm Pelo menos esteve no servico 1")
         setAlarm(timeInMillis, getPendingIntent(getIntent().apply {
             action = Constants.ACTION_SET_EXACT_ALARM
             putExtra(Constants.EXTRACT_ALARM_TIME, timeInMillis)
@@ -22,6 +24,7 @@ class AlarmService(private val context: Context) {
     }
 
     private fun setAlarm(timeInMillis: Long, pendingIntent: PendingIntent) {
+        Log.d("Alarm1", "Alarm Pelo menos esteve no servico 2")
         alarmManager?.let {
             //assure the exact alarm during the doze mode
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

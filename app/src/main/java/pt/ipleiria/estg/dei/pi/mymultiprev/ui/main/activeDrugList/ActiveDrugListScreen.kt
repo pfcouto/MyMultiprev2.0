@@ -67,6 +67,8 @@ fun ActiveDrugListScreen(
 
     val TAG = "ActiveDrugListScreen"
 
+    Log.d("Aqui2", "Passou")
+
     createNotificationChannel(LocalContext.current)
 
     val showByColumnList = remember { mutableStateOf(true) }
@@ -91,7 +93,7 @@ fun ActiveDrugListScreen(
             Log.d(TAG, "Resource Success")
             if (!(listOfPrescriptions as Resource.Success<List<PrescriptionItem>>).data.isNullOrEmpty()) {
                 viewModel.updatePairs()
-                Log.d(TAG, "Esteve aqui")
+
                 viewModel.updateNextAlarm()
             }
         }
@@ -482,8 +484,8 @@ fun AntibioticCard_Prescription_Item_Full_Item(
 
                         onClick = {
 
-                                setAlarm(context)
-//                            onAlarmClick(viewModel = viewModel, prescriptionItem = item.first)
+//                                setAlarm(context)
+                            onAlarmClick(viewModel = viewModel, prescriptionItem = item.first)
 
                             if (!item.first.alarm)
                                 Toast.makeText(context, "Notificacao Ativada", Toast.LENGTH_SHORT)
@@ -578,13 +580,13 @@ fun onConfirmDoseClick(
 
 }
 
-private fun setAlarm(context: Context) {
-    val timeSec = System.currentTimeMillis() + 1000
-    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
-    val intent = Intent(context, AlarmReceiver::class.java)
-    val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-    alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
-}
+//private fun setAlarm(context: Context) {
+//    val timeSec = System.currentTimeMillis() + 1000
+//    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
+//    val intent = Intent(context, AlarmReceiver::class.java)
+//    val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+//    alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
+//}
 
 
 fun onAlarmClick(
@@ -595,8 +597,6 @@ fun onAlarmClick(
 //        prescriptionItem.alarm
 
     val alarmState = !prescriptionItem.alarm
-    Log.d("AQUI8", "Deles - ${alarmState}")
-//    Log.d("AQUI8", "Nosso - ${alarmOn.value}")
     viewModel.setAlarm(alarmState, prescriptionItem.id)
 
 }
@@ -612,6 +612,7 @@ fun onConfirmAcquisitionClick(
 }
 
 private fun createNotificationChannel(context: Context) {
+    Log.d("Aqui2", "Canal criado")
     // Create the NotificationChannel, but only on API 26+ because
     // the NotificationChannel class is new and not in the support library
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

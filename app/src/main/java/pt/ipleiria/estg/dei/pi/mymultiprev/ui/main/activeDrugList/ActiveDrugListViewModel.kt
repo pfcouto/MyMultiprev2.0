@@ -81,26 +81,32 @@ class ActiveDrugListViewModel @Inject constructor(
     }
 
     fun updateNextAlarm() {
+        Log.d("Alarm1", "Screen Entrou update")
         val currentTime = Clock.System.now().toEpochMilliseconds()
         var nextAlarm = getNextAlarmFromSP(currentTime)
         val initialAlarm = nextAlarm
         nextAlarm = getNextAlarmFromActivePrescriptions(currentTime, nextAlarm)
-        Log.d("UpdateNextAlarm", "NextAlarm: $nextAlarm")
         viewModelScope.launch {
             alarmDao.deleteExpiredAlarms(
                 Instant.fromEpochMilliseconds(currentTime).toLocalDateTime(Constants.TIME_ZONE)
             )
             val currentAlarms = alarmDao.getAlarms()
+            Log.d("Alarm1", "Screen nextAlarm - $nextAlarm")
+            Log.d("Alarm1", "Screen initialAlarm - $initialAlarm")
+            Log.d("Alarm1", "Screen currentAlarms - $currentAlarms")
+
             val nextAlarmLocalDateTime = Instant.fromEpochMilliseconds(
                 nextAlarm
             ).toLocalDateTime(Constants.TIME_ZONE)
             if (nextAlarm != initialAlarm && currentAlarms.find {
                     it.alarm == nextAlarmLocalDateTime
                 } == null) {
+                Log.d("Alarm1", "Screen Entrou no IF !! IMPORTANTE")
                 alarmService.setExactAlarm(
                     nextAlarm
                 )
                 sharedPreferencesRepository.saveAlarm(nextAlarm)
+                Log.d("Alarm1", "Screen Alarme Criado")
                 alarmDao.addAlarm(Alarm(0, nextAlarmLocalDateTime))
             }
         }
@@ -109,6 +115,7 @@ class ActiveDrugListViewModel @Inject constructor(
     private fun getNextAlarmFromSP(currentTime: Long): Long {
         var nextAlarm = sharedPreferencesRepository.getAlarm()
         val alarmExpired = nextAlarm != Constants.SP_DEFAULT_LONG && nextAlarm < currentTime
+
 
         if (alarmExpired) {
             sharedPreferencesRepository.removeAlarm()
@@ -128,6 +135,10 @@ class ActiveDrugListViewModel @Inject constructor(
                 val prescriptionNextIntakeInMillis =
                     prescriptionItem.nextIntake!!.toInstant(TimeZone.currentSystemDefault())
                         .toEpochMilliseconds()
+                Log.d("Alarm1", "Screen Nome: " +  (prescriptionItem.id))
+                Log.d("Alarm1", "Screen if- pres " +  (prescriptionNextIntakeInMillis).toString())
+                Log.d("Alarm1", "Screen if- curT " +  (currentTime + 1).toString())
+                Log.d("Alarm1", "Screen if- curA " +  (currentAlarm).toString())
                 if (prescriptionNextIntakeInMillis in currentTime + 1..currentAlarm) {
                     currentAlarm = prescriptionNextIntakeInMillis
                 }
