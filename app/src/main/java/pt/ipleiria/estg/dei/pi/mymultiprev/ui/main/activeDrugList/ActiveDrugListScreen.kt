@@ -19,10 +19,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,7 +29,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.skydoves.landscapist.glide.GlideImage
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
@@ -121,11 +118,11 @@ fun ActiveDrugListScreen(
                     var prescriptionAcquisitionConfirmed = remember { mutableStateOf(false) }
                     val prescriptionIsOverdue = remember { mutableStateOf(false) }
 
-                    val itemFullText =
-                        if (!prescriptionIsOverdue.value)
-                            "Ver Detalhes"
-                        else
-                            "Confirmar Toma"
+//                    val itemFullText =
+//                        if (!prescriptionIsOverdue.value)
+//                            "Ver Detalhes"
+//                        else
+//                            "Confirmar Toma"
 
                     // TODO ver isto
                     if (item.first.acquiredAt == null) {
@@ -194,8 +191,7 @@ fun ActiveDrugListScreen(
                             confirmViewModel = confirmViewModel,
                             prescriptionAcquisitionConfirmed = prescriptionAcquisitionConfirmed,
                             prescriptionIsOverdue = prescriptionIsOverdue,
-                            timeTextText = timeTextText,
-                            itemFullText = itemFullText
+                            timeTextText = timeTextText
                         )
                     }
                 }
@@ -341,7 +337,8 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 )
             } else {
                 Image(
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier
+                        .size(80.dp)
                         .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
                     painter = painterResource(id = R.drawable.default_img),
                     contentDescription = "",
@@ -394,8 +391,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
     confirmViewModel: ConfirmAcquisitionViewModel,
     prescriptionAcquisitionConfirmed: MutableState<Boolean>,
     prescriptionIsOverdue: MutableState<Boolean>,
-    timeTextText: String,
-    itemFullText: String
+    timeTextText: String
 ) {
 
     val alarmOn = remember { mutableStateOf(true) }
@@ -461,11 +457,11 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                             text = timeTextText
                         )
                     }
-//                    Spacer(modifier = Modifier.weight(1f))
+
                     IconButton(
                         modifier = Modifier.padding(end = 11.dp),
 
-                        // TODO passar o que esta dentro do onclick para uma funcao
+
                         onClick = {
                             alarmOn.value = !alarmOn.value;
                             if (alarmOn.value)
@@ -481,7 +477,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
                     }
                 }
-                // TODO, quando o card sai da vista o ecra crasha
+
 
                 if (item.first.imageLocation != null) {
                     val painter = rememberImagePainter(data = item.first.imageLocation)
@@ -502,18 +498,6 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                     )
                 }
 
-//                CoilImage(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(225.dp),
-//                    imageModel = ,
-//                    // Crop, Fit, Inside, FillHeight, FillWidth, None
-//                    contentScale = ContentScale.FillBounds,
-//                    // shows a placeholder while loading the image.
-////                    placeHolder = ImageBitmap.imageResource(R.drawable.loading),
-//                    // shows an error ImageBitmap when the request failed.
-//                    error = ImageBitmap.imageResource(R.drawable.default_img),
-//                )
 
                 TextButton(onClick = {
                     onDetailsAndConfirmButtonClick(
@@ -524,7 +508,12 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         seeDetailsViewModel = seeDetailsViewModel
                     )
                 }) {
-                    Text(text = itemFullText)
+                    Text(
+                        text = if (!prescriptionIsOverdue.value)
+                            "Ver Detalhes"
+                        else
+                            "Confirmar Toma"
+                    )
                 }
             }
         }
@@ -557,30 +546,11 @@ private fun onDetailsAndConfirmButtonClick(
 
 
 fun onSeeDetailsClick(
-//    imageview: ImageView?,
     pair: Pair<PrescriptionItem, Drug?>,
     seeDetailsViewModel: SeeDetailsViewModel,
     navController: NavHostController
 ) {
-//    seeDetailsViewModel.setPrescriptionItemDrugPair(pair)
     navController.navigate("descricaoAntibiotico/" + pair.first.id + "/" + pair.second!!.id)
-
-//        if (imageview != null) {
-//            val args =
-//                bundleOf(Constants.PRESCRIPTION_ITEM_IMAGE_TRANSITION to imageview.transitionName)
-//            val extras = FragmentNavigatorExtras(imageview to imageview.transitionName)
-//            findNavController().navigate(
-//                R.id.action_activeDrugListFragment_to_drugDetailsFragment,
-//                args,
-//                null,
-//                extras
-//            )
-//        } else {
-//            findNavController().navigate(
-//                R.id.action_activeDrugListFragment_to_drugDetailsFragment
-//            )
-//        }
-
 }
 
 fun onConfirmDoseClick(
