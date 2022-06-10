@@ -18,8 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import kotlinx.datetime.Clock
+import kotlinx.datetime.toInstant
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.*
 
 @Composable
@@ -331,13 +334,14 @@ fun ConfirmIntakeDetailsScreen(
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = if(prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE).toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds()) true else false,
                     onClick = { openDialog.value = true; viewModel.registerIntake() }) {
 
                     Text(
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        text = "SEGUINTE"
+                        text = "Confirmar"
                     )
                 }
 
