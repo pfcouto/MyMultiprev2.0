@@ -25,8 +25,21 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
 
     fun getAlarm() = spAlarmService.getLong(Constants.SP_NEXT_ALARM, Constants.SP_DEFAULT_LONG)
 
+    fun setNextAlarms(nextAlarms: Set<String>) {
+        spAuthEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
+    }
+
     fun removeAlarm() {
         spAlarmServiceEditor.remove(Constants.SP_NEXT_ALARM)
+        spAlarmServiceEditor.apply()
+    }
+
+    //Alarms V2
+    fun getNextAlarms() = spAlarmService.getStringSet(Constants.SP_NEXT_ALARMS, null)
+    fun removeAlarm(id: String) {
+        val nextAlarms = getNextAlarms() ?: return
+        nextAlarms.remove(id)
+        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
         spAlarmServiceEditor.apply()
     }
 
