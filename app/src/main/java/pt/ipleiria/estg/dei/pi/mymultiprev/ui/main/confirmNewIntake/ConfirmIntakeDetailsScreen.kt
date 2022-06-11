@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toInstant
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.*
@@ -107,15 +108,13 @@ fun ConfirmIntakeDetailsScreen(
                             confirmButton = {
                                 OutlinedButton(onClick = {
                                     // TODO validar isto!!!!!!!! Pode nao funcionar
-                                    registerSymptomsViewModel.specificPrescriptionItemId =
-                                        response.value!!.data!!.prescriptionItemId
+//                                    registerSymptomsViewModel.specificPrescriptionItemId =
+//                                        response.value!!.data!!.prescriptionItemId
 
                                     viewModel.clearResponse()
                                     openDialog.value = false;
 
-
-
-                                    navController.navigate("sintomas")
+                                    navController.navigate(BottomBarScreen.Sintomas.route + "/$prescriptionItemId")
                                 }) {
                                     Text(text = "Sim")
                                 }

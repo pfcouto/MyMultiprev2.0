@@ -2,15 +2,19 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Patient
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Symptom
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.ServiceBuilder
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.services.SymptomsService
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.AuthRepository
@@ -25,7 +29,7 @@ import javax.inject.Inject
 class RegisterSymptomsViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val prescriptionItemsRepository: PrescriptionItemsRepository,
-    drugRepository: DrugRepository,
+    private val drugRepository: DrugRepository,
     private val authRepository: AuthRepository,
     sharedPreferencesRepository: SharedPreferencesRepository
 ) :
@@ -70,23 +74,35 @@ class RegisterSymptomsViewModel @Inject constructor(
         }
     }
 
-    val drugs = drugRepository.getDrugs(patientId).asLiveData()
+    private var _drugs: MutableLiveData<List<Drug>> = MutableLiveData()
+    val drugs: LiveData<List<Drug>>
+        get() = _drugs
+
+    private var _drug: MutableLiveData<Drug?> = MutableLiveData()
+    val drug: MutableLiveData<Drug?>
+        get() = _drug
+
+    //    val drugs = drugRepository.getDrugs(patientId).asLiveData()
     val prescriptionItems =
         prescriptionItemsRepository.getActivePrescriptionItems(patientId)
             .asLiveData()
 
+    fun getDrugs() {
+        viewModelScope.launch {
+            _drugs.value = drugRepository.getDrugs(patientId).first().data!!
+        }
+    }
+
+
     var isFetched = false
 
-    fun findDrugById(id: String): Drug? {
-        val drugs = this.drugs.value?.data
-        if (!drugs.isNullOrEmpty()) {
-            drugs.forEach { drug ->
-                if (drug.id == id) {
-                    return drug
-                }
+    fun findDrugById(id: String): MutableLiveData<Drug?> {
+        viewModelScope.launch {
+            drugRepository.getDrugById(id).collect {
+                _drug.value = it.data
             }
         }
-        return null
+        return _drug
     }
 
 

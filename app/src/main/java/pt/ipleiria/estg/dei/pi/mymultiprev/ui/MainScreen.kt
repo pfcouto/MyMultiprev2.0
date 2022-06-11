@@ -96,5 +96,7 @@ fun RowScope.AddItem(
         selected = currentDestination?.hierarchy?.any {
             it.route == screen.route
         } == true,
-        onClick = { navController.navigate(screen.route) })
+        onClick = {
+            navController.navigate(screen.route)
+        })
 }
