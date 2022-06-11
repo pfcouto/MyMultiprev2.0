@@ -37,16 +37,16 @@ class AlarmReceiver :
 
         val title = intent.getStringExtra("title")
         val message = intent.getStringExtra("message")
+        val uniqueId = intent.getIntExtra("uniqueId", 0)
 
-
-        showNotification(context, title!!, message!!)
+        showNotification(context, title!!, message!!, uniqueId)
 
 
     }
 }
 
 
-private fun showNotification(context: Context, title: String, desc: String) {
+private fun showNotification(context: Context, title: String, desc: String, uniqueId: Int) {
     val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val channelId = "message_channel"
     val channelName = "message_name"
@@ -61,7 +61,6 @@ private fun showNotification(context: Context, title: String, desc: String) {
         .setContentTitle(title)
         .setContentText(desc)
         .setSmallIcon(R.drawable.ic_baseline_notifications_24)
-    val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
     manager.notify(uniqueId, builder.build())
 }
 

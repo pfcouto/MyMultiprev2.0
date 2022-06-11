@@ -25,7 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toInstant
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
@@ -343,7 +342,7 @@ fun ConfirmIntakeDetailsScreen(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = if(prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE).toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds()) true else false,
-                    onClick = { openDialog.value = true; /*viewModel.registerIntake();*/ setAlarm(context, prescriptionItem!!) }) {
+                    onClick = { openDialog.value = true; /*viewModel.registerIntake();*/ setAlarm(context, drug!!.name) }) {
 
                     Text(
                         color = Color.White,
@@ -391,13 +390,16 @@ fun ConfirmIntakeDetailsScreen(
     }
 }
 
-private fun setAlarm(context: Context, prescriptionItem: PrescriptionItem) {
+private fun setAlarm(context: Context, drugName: String) {
+    val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
     val timeSec = System.currentTimeMillis() + 10000
     val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
     val intent = Intent(context, AlarmReceiver::class.java)
     intent.putExtra("title", "Toma de Medicamentos")
-    intent.putExtra("message", "Está na hora de tomar o medicamento: ${prescriptionItem.drug}")
-    val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+    intent.putExtra("message", "Tomar o medicamento: $drugName")
+    intent.putExtra("uniqueId", uniqueId)
+    Log.d("Alarmes", "$drugName")
+    val pendingIntent = PendingIntent.getBroadcast(context, uniqueId, intent, 0)
     alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
     Log.d("Alarmes", "Passou aqui")
 }
