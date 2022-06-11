@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
+import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.daos.AlarmDao
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.DrugRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
@@ -59,7 +60,7 @@ private fun showNotification(context: Context, title: String, desc: String) {
     val builder = NotificationCompat.Builder(context, channelId)
         .setContentTitle(title)
         .setContentText(desc)
-        .setSmallIcon(R.drawable.ic_outline_notifications_active_24)
+        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
     val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
     manager.notify(uniqueId, builder.build())
 }
