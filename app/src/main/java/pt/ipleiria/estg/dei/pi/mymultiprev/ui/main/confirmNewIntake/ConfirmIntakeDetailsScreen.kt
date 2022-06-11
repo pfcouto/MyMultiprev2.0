@@ -394,7 +394,8 @@ private fun setAlarm(context: Context, prescriptionItem: PrescriptionItem) {
     val timeSec = System.currentTimeMillis() + 10000
     val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
     val intent = Intent(context, AlarmReceiver::class.java)
-    intent.putExtra()
+    intent.putExtra("title", "Toma de Medicamentos")
+    intent.putExtra("message", "Está na hora de tomar o medicamento: ${prescriptionItem.drug}")
     val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
     alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
 }
