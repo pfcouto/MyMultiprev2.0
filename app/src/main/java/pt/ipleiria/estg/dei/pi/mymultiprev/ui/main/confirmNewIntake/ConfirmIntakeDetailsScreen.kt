@@ -7,6 +7,7 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
+import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -342,7 +343,7 @@ fun ConfirmIntakeDetailsScreen(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = if(prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE).toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds()) true else false,
-                    onClick = { openDialog.value = true; viewModel.registerIntake(); setAlarm(context, prescriptionItem!!) }) {
+                    onClick = { openDialog.value = true; /*viewModel.registerIntake();*/ setAlarm(context, prescriptionItem!!) }) {
 
                     Text(
                         color = Color.White,
@@ -398,4 +399,5 @@ private fun setAlarm(context: Context, prescriptionItem: PrescriptionItem) {
     intent.putExtra("message", "Está na hora de tomar o medicamento: ${prescriptionItem.drug}")
     val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
     alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
+    Log.d("Alarmes", "Passou aqui")
 }
