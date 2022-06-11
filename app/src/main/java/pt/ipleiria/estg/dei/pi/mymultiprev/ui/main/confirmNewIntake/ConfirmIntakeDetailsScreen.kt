@@ -341,8 +341,14 @@ fun ConfirmIntakeDetailsScreen(
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = if(prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE).toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds()) true else false,
-                    onClick = { openDialog.value = true; /*viewModel.registerIntake();*/ setAlarm(context, drug!!.name) }) {
+                    enabled = if (prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE)
+                            .toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds()
+                    ) true else false,
+                    onClick = {
+                        openDialog.value = true
+                        /*viewModel.registerIntake();*/
+                        setAlarm(context, drug!!.name)
+                    }) {
 
                     Text(
                         color = Color.White,
