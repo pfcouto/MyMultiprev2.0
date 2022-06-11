@@ -1,8 +1,12 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
-import android.util.Log
+import android.content.Context
+import android.content.Context.ALARM_SERVICE
+import android.content.Intent
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -20,7 +24,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toInstant
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
+import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
@@ -34,6 +40,8 @@ fun ConfirmIntakeDetailsScreen(
     viewModel: ConfirmIntakeViewModel = hiltViewModel(),
     registerSymptomsViewModel: RegisterSymptomsViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
 
     DisposableEffect(key1 = Unit) {
         if (!drugId.isNullOrBlank()) {
@@ -334,7 +342,7 @@ fun ConfirmIntakeDetailsScreen(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = if(prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE).toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds()) true else false,
-                    onClick = { openDialog.value = true; viewModel.registerIntake() }) {
+                    onClick = { openDialog.value = true; viewModel.registerIntake(); setAlarm(context, prescriptionItem!!) }) {
 
                     Text(
                         color = Color.White,
@@ -380,6 +388,13 @@ fun ConfirmIntakeDetailsScreen(
         }
 
     }
+}
 
-
+private fun setAlarm(context: Context, prescriptionItem: PrescriptionItem) {
+    val timeSec = System.currentTimeMillis() + 10000
+    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
+    val intent = Intent(context, AlarmReceiver::class.java)
+    intent.putExtra()
+    val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+    alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
 }

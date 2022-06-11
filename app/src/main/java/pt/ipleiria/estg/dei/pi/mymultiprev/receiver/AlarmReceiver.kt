@@ -41,103 +41,103 @@ class AlarmReceiver :
 
     override fun onReceive(context: Context, intent: Intent) {
         //get the time when the alarm was scheduled
-        val wakeUpTimeInMillis = intent.getLongExtra(Constants.EXTRACT_ALARM_TIME, 0L)
-
-        GlobalScope.launch {
-            val currentAlarmPrescriptionItems: LinkedList<PrescriptionItem> = LinkedList()
-            var nextAlarmTimestamp: Long = Long.MAX_VALUE
-            var isExact = false
-            //verifies if the alarm is supposed to still be triggered
-
-            val prescriptionItems =
-                prescriptionItemsRepository.getActivePrescriptionItems(sharedPreferencesRepository.getCurrentPatientId())
-                    .first().data
-            if (!prescriptionItems.isNullOrEmpty()) {
-                prescriptionItems.forEach lit@{ prescriptionItem ->
-                    val nextIntake = prescriptionItem.nextIntake
-                    if (nextIntake != null && prescriptionItem.alarm) {
-                        val nextIntakeMillis =
-                            nextIntake.toInstant(TimeZone.currentSystemDefault())
-                                .toEpochMilliseconds()
-                        //if there's still alarms to be triggered in this timeInMillis, drug(s) are added to currentAlarm list (multiple drugs can be assigned to one unique alarm)
-                        if (nextIntakeMillis == wakeUpTimeInMillis) {
-                            isExact = true
-                        }
-                        if (nextIntakeMillis <= wakeUpTimeInMillis) {
-                            currentAlarmPrescriptionItems.add(prescriptionItem)
-                            return@lit
-                        }
-                        //find when's the next alarm
-                        if (nextIntakeMillis in (wakeUpTimeInMillis + 1)..nextAlarmTimestamp) {
-                            nextAlarmTimestamp = nextIntakeMillis
-                        }
-                    }
-                }
-            }
-
-            manageNextAlarm(nextAlarmTimestamp, context)
-
-            //if there's still assigned alarm's to this broadcast. we should trigger the notification
-            if (currentAlarmPrescriptionItems.isNotEmpty() && isExact) {
-                //multiple drugs
-
-                if (currentAlarmPrescriptionItems.size > 1) {
-                    var drugsAux = ""
-                    var count = 0
-                    currentAlarmPrescriptionItems.forEach { prescriptionItem ->
-                        count++
-                        val drugName =
-                            drugRepository.getDrugById(prescriptionItem.drug).first().data?.name
-                        if (currentAlarmPrescriptionItems.size != count && count != 1) {
-                            drugsAux += ", "
-                        }
-                        if (currentAlarmPrescriptionItems.size == count) {
-                            drugsAux += " e "
-                        }
-                        if (drugName != null) {
-                            drugsAux += drugName
-                        }
-
-                    }
-//                    buildNotification(
-//                        context,
-//                        context.getString(R.string.taking_medicines),
-//                        context.getString(R.string.time_to_take_medicines) + drugsAux
-//                    )
-                    //single drug
-                } else {
-                    val drugName = drugRepository.getDrugById(currentAlarmPrescriptionItems[0].drug)
-                        .first().data?.name
-//                    buildNotification(
-//                        context,
-//                        context.getString(R.string.taking_medicin),
-//                        context.getString(R.string.time_to_take_medicin) + drugName
-//                    )
-                }
-                val i = Intent(context, RingtoneService::class.java)
-                context.startService(i)
-            }
-        }
-    }
-
-    private suspend fun manageNextAlarm(nextAlarmTimestamp: Long, context: Context) {
-        if (nextAlarmTimestamp == Long.MAX_VALUE) {
-            sharedPreferencesRepository.removeAlarm()
-            return
-        }
-        val currentAlarms = alarmDao.getAlarms()
-        val nextAlarmLocalDateTime = Instant.fromEpochMilliseconds(
-            nextAlarmTimestamp
-        ).toLocalDateTime(Constants.TIME_ZONE)
-        if (currentAlarms.find {
-                it.alarm == nextAlarmLocalDateTime
-            } == null) {
-            AlarmService(context).setExactAlarm(nextAlarmTimestamp)
-
-            alarmDao.addAlarm(Alarm(0, nextAlarmLocalDateTime))
-        }
-        sharedPreferencesRepository.saveAlarm(nextAlarmTimestamp)
-    }
+//        val wakeUpTimeInMillis = intent.getLongExtra(Constants.EXTRACT_ALARM_TIME, 0L)
+//
+//        GlobalScope.launch {
+//            val currentAlarmPrescriptionItems: LinkedList<PrescriptionItem> = LinkedList()
+//            var nextAlarmTimestamp: Long = Long.MAX_VALUE
+//            var isExact = false
+//            //verifies if the alarm is supposed to still be triggered
+//
+//            val prescriptionItems =
+//                prescriptionItemsRepository.getActivePrescriptionItems(sharedPreferencesRepository.getCurrentPatientId())
+//                    .first().data
+//            if (!prescriptionItems.isNullOrEmpty()) {
+//                prescriptionItems.forEach lit@{ prescriptionItem ->
+//                    val nextIntake = prescriptionItem.nextIntake
+//                    if (nextIntake != null && prescriptionItem.alarm) {
+//                        val nextIntakeMillis =
+//                            nextIntake.toInstant(TimeZone.currentSystemDefault())
+//                                .toEpochMilliseconds()
+//                        //if there's still alarms to be triggered in this timeInMillis, drug(s) are added to currentAlarm list (multiple drugs can be assigned to one unique alarm)
+//                        if (nextIntakeMillis == wakeUpTimeInMillis) {
+//                            isExact = true
+//                        }
+//                        if (nextIntakeMillis <= wakeUpTimeInMillis) {
+//                            currentAlarmPrescriptionItems.add(prescriptionItem)
+//                            return@lit
+//                        }
+//                        //find when's the next alarm
+//                        if (nextIntakeMillis in (wakeUpTimeInMillis + 1)..nextAlarmTimestamp) {
+//                            nextAlarmTimestamp = nextIntakeMillis
+//                        }
+//                    }
+//                }
+//            }
+//
+//            manageNextAlarm(nextAlarmTimestamp, context)
+//
+//            //if there's still assigned alarm's to this broadcast. we should trigger the notification
+//            if (currentAlarmPrescriptionItems.isNotEmpty() && isExact) {
+//                //multiple drugs
+//
+//                if (currentAlarmPrescriptionItems.size > 1) {
+//                    var drugsAux = ""
+//                    var count = 0
+//                    currentAlarmPrescriptionItems.forEach { prescriptionItem ->
+//                        count++
+//                        val drugName =
+//                            drugRepository.getDrugById(prescriptionItem.drug).first().data?.name
+//                        if (currentAlarmPrescriptionItems.size != count && count != 1) {
+//                            drugsAux += ", "
+//                        }
+//                        if (currentAlarmPrescriptionItems.size == count) {
+//                            drugsAux += " e "
+//                        }
+//                        if (drugName != null) {
+//                            drugsAux += drugName
+//                        }
+//
+//                    }
+////                    buildNotification(
+////                        context,
+////                        context.getString(R.string.taking_medicines),
+////                        context.getString(R.string.time_to_take_medicines) + drugsAux
+////                    )
+//                    //single drug
+//                } else {
+//                    val drugName = drugRepository.getDrugById(currentAlarmPrescriptionItems[0].drug)
+//                        .first().data?.name
+////                    buildNotification(
+////                        context,
+////                        context.getString(R.string.taking_medicin),
+////                        context.getString(R.string.time_to_take_medicin) + drugName
+////                    )
+//                }
+//                val i = Intent(context, RingtoneService::class.java)
+//                context.startService(i)
+//            }
+//        }
+//    }
+//
+//    private suspend fun manageNextAlarm(nextAlarmTimestamp: Long, context: Context) {
+//        if (nextAlarmTimestamp == Long.MAX_VALUE) {
+//            sharedPreferencesRepository.removeAlarm()
+//            return
+//        }
+//        val currentAlarms = alarmDao.getAlarms()
+//        val nextAlarmLocalDateTime = Instant.fromEpochMilliseconds(
+//            nextAlarmTimestamp
+//        ).toLocalDateTime(Constants.TIME_ZONE)
+//        if (currentAlarms.find {
+//                it.alarm == nextAlarmLocalDateTime
+//            } == null) {
+//            AlarmService(context).setExactAlarm(nextAlarmTimestamp)
+//
+//            alarmDao.addAlarm(Alarm(0, nextAlarmLocalDateTime))
+//        }
+//        sharedPreferencesRepository.saveAlarm(nextAlarmTimestamp)
+//    }
 
 //    private fun buildNotification(context: Context, title: String, message: String) {
 //        val notificationID = RandomIntUtil.getRandomInt()
@@ -181,5 +181,5 @@ class AlarmReceiver :
 //        with(NotificationManagerCompat.from(context)) {
 //            notify(notificationID, builder.build())
 //        }
-//    }
+    }
 }

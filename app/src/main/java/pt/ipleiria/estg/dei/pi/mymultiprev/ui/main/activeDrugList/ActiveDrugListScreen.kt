@@ -75,7 +75,7 @@ fun ActiveDrugListScreen(
             Log.d(TAG, "Resource Success")
             if (!(listOfPrescriptions as Resource.Success<List<PrescriptionItem>>).data.isNullOrEmpty()) {
                 viewModel.updatePairs()
-                viewModel.updateNextAlarm()
+//                viewModel.updateNextAlarm()
             }
         }
         is Resource.Loading -> {
