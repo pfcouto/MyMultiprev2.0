@@ -135,9 +135,9 @@ class ActiveDrugListViewModel @Inject constructor(
 //        return currentAlarm
 //    }
 //
-//    fun setAlarm(alarmState: Boolean, prescriptionItemId: String) {
-//        viewModelScope.launch {
-//            alarmDao.setAlarmState(alarmState, prescriptionItemId)
-//        }
-//    }
+    fun setAlarm(alarmState: Boolean, prescriptionItemId: String) {
+        viewModelScope.launch {
+            alarmDao.setAlarmState(alarmState, prescriptionItemId)
+        }
+    }
 }

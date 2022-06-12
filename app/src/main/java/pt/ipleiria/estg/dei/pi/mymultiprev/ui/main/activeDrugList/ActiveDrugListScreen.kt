@@ -186,6 +186,7 @@ fun ActiveDrugListScreen(
                         AntibioticCard_Prescription_Item_Full_Item(
                             navController = navController,
                             item = item,
+                            viewModel = viewModel,
                             seeDetailsViewModel = seeDetailsViewModel,
                             confirmIntakeViewModel = confirmIntakeViewModel,
                             confirmViewModel = confirmViewModel,
@@ -324,7 +325,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
         backgroundColor = cardBackgroundColor
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-
+            Log.d("Imagens", "${item.first.imageLocation}")
             if (item.first.imageLocation != null) {
                 val painter = rememberImagePainter(data = item.first.imageLocation)
                 Image(
@@ -386,6 +387,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
 fun AntibioticCard_Prescription_Item_Full_Item(
     item: Pair<PrescriptionItem, Drug?>,
     navController: NavHostController,
+    viewModel: ActiveDrugListViewModel,
     seeDetailsViewModel: SeeDetailsViewModel,
     confirmIntakeViewModel: ConfirmIntakeViewModel,
     confirmViewModel: ConfirmAcquisitionViewModel,
@@ -398,11 +400,11 @@ fun AntibioticCard_Prescription_Item_Full_Item(
 
     val context = LocalContext.current
 
-    val icon = if (alarmOn.value)
+    val icon = if (item.first.alarm)
         Icons.Filled.AlarmOn
     else Icons.Filled.AlarmOff
 
-    val color = if (alarmOn.value)
+    val color = if (item.first.alarm)
         Color.Green
     else Color.Red
 
@@ -463,8 +465,9 @@ fun AntibioticCard_Prescription_Item_Full_Item(
 
 
                         onClick = {
-                            alarmOn.value = !alarmOn.value;
-                            if (alarmOn.value)
+                            onAlarmClick(viewModel = viewModel, prescriptionItem = item.first)
+
+                            if (!item.first.alarm)
                                 Toast.makeText(context, "Notificacao Ativada", Toast.LENGTH_SHORT)
                                     .show()
                             else
@@ -563,17 +566,17 @@ fun onConfirmDoseClick(
 
 }
 
-//    fun onAlarmClick(prescriptionItem: PrescriptionItem) {
-//        viewModel.prescriptionItems.value?.data?.find { prescriptionItem.id == it.id }?.alarm =
-//            prescriptionItem.alarm
-//        val alarmState = prescriptionItem.alarm
-//        viewModel.setAlarm(alarmState, prescriptionItem.id)
-//        val restId = when (alarmState) {
-//            true -> R.string.alarm_on
-//            else -> R.string.alarm_off
-//        }
-//        com.google.android.material.snackbar.Snackbar.make(binding.root, restId, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT)
-//            .setAction(getString(R.string.OK)) {}.show()\
+fun onAlarmClick(
+    prescriptionItem: PrescriptionItem,
+    viewModel: ActiveDrugListViewModel
+) {
+//    viewModel.prescriptionItems.value?.data?.find { prescriptionItem.id == it.id }?.alarm =
+//        prescriptionItem.alarm
+
+    val alarmState = !prescriptionItem.alarm
+    viewModel.setAlarm(alarmState, prescriptionItem.id)
+
+}
 
 fun onConfirmAcquisitionClick(
     pair: Pair<PrescriptionItem, Drug?>,
