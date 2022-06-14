@@ -13,13 +13,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.MainScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.login.LoginViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MyMultiPrevTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            MyMultiPrevTheme {
                 MyMultiPrev()
             }
         }
