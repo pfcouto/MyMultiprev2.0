@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.repositories
 
 import android.content.Context
+import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import javax.inject.Inject
@@ -26,7 +27,7 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
     fun getAlarm() = spAlarmService.getLong(Constants.SP_NEXT_ALARM, Constants.SP_DEFAULT_LONG)
 
     fun setNextAlarms(nextAlarms: Set<String>) {
-        spAuthEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
+        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
     }
 
     fun removeAlarm() {
@@ -34,13 +35,61 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
         spAlarmServiceEditor.apply()
     }
 
+
     //Alarms V2
-    fun getNextAlarms() = spAlarmService.getStringSet(Constants.SP_NEXT_ALARMS, null)
+    fun getNextAlarms(): MutableSet<String>? =
+        spAlarmService.getStringSet(Constants.SP_NEXT_ALARMS, null)
+
     fun removeAlarm(id: String) {
         val nextAlarms = getNextAlarms() ?: return
-        nextAlarms.remove(id)
-        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
+        Log.d("NOTIFICATIONS", "removeAlarm - $id")
+        Log.d("NOTIFICATIONS", "removeAlarm before remove  alarms - $nextAlarms")
+        var alarmToRemove: String? = null
+        nextAlarms.forEach {
+            if (it.split(";")[1] == id) {
+                alarmToRemove = it
+                return@forEach
+            }
+        }
+        if (alarmToRemove != null) {
+            nextAlarms.remove(alarmToRemove)
+            spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
+            spAlarmServiceEditor.commit()
+        }
+        Log.d("NOTIFICATIONS", "removeAlarm after remove alarms - $nextAlarms")
+    }
+
+    fun removeAllAlarm(id: String) {
+        val nextAlarms = getNextAlarms() ?: return
+        Log.d("NOTIFICATIONS", "removeAlarm - $id")
+        Log.d("NOTIFICATIONS", "removeAlarm before remove  alarms - $nextAlarms")
+
+        var nextAlarmsClean = mutableListOf<String>()
+        nextAlarms.forEach {
+            if (it.split(";")[1] != id) {
+                nextAlarmsClean.add(it)
+            }
+        }
+        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarmsClean.toSet())
+        spAlarmServiceEditor.commit()
+        Log.d("NOTIFICATIONS", "removeAlarm after remove alarms - $nextAlarmsClean")
+    }
+
+    fun addAlarm(newAlarm: String) {
+        Log.d("NOTIFICATIONS", "Shared preferences - add alarm")
+
+        val stringSet = spAlarmService.getStringSet(Constants.SP_NEXT_ALARMS, null)
+
+        val newSet = mutableSetOf<String>()
+        if (stringSet != null) {
+            Log.d("NOTIFICATIONS", "Shared preferences - adding previous alarms")
+            newSet.addAll(stringSet)
+        }
+        newSet.add(newAlarm)
+
+        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, newSet.toSet())
         spAlarmServiceEditor.apply()
+        Log.d("NOTIFICATIONS", "Shared preferences - Alarm added '$newAlarm'")
     }
 
     //Auth

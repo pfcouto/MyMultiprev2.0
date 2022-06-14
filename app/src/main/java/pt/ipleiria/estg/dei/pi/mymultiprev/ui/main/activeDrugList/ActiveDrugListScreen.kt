@@ -1,16 +1,12 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Context.ALARM_SERVICE
-import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -34,18 +30,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import pt.ipleiria.estg.dei.pi.mymultiprev.NotificationsManager
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
-import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
-import pt.ipleiria.estg.dei.pi.mymultiprev.service.RingtoneService
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.MyAlarm
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcquisitionViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeViewModel
@@ -53,6 +48,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.seeDetails.SeeDetailsViewMode
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.concurrent.TimeUnit
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ActiveDrugListScreen(
@@ -403,6 +399,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AntibioticCard_Prescription_Item_Full_Item(
     item: Pair<PrescriptionItem, Drug?>,
@@ -485,6 +482,20 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         onClick = {
 
 //                                setAlarm(context)
+                            Log.d("NOTIFICATIONS","1")
+                            val nM = NotificationsManager()
+                            if (!item.first.alarm && item.first.nextIntake != null) {
+                                Log.d("NOTIFICATIONS","2")
+                                nM.addAlarm(
+                                    context,
+                                    item.first.nextIntake!!.toInstant(TimeZone.currentSystemDefault())
+                                        .toEpochMilliseconds().toString(),
+                                    item.first.id,
+                                    item.second!!.commercialName
+                                )
+                            } else {
+
+                            }
                             onAlarmClick(viewModel = viewModel, prescriptionItem = item.first)
 
                             if (!item.first.alarm)
@@ -600,7 +611,6 @@ fun onAlarmClick(
     viewModel.setAlarm(alarmState, prescriptionItem.id)
 
 }
-
 
 
 fun onConfirmAcquisitionClick(
