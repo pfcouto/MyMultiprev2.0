@@ -10,7 +10,7 @@ sealed class BottomBarScreen(
     val route: String,
     val title: String,
     val icon: ImageVector,
-    val badgeCount: Int
+    var badgeCount: Int
     //  TODO ver como alterar o badgeCount de acordo com o numero de Items no ActiveDrugListScreen
 ) {
     object Antibioticos : BottomBarScreen(

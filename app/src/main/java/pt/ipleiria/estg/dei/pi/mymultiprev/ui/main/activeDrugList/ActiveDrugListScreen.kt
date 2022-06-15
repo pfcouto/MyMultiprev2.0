@@ -145,11 +145,11 @@ fun ActiveDrugListScreen(
                     var prescriptionAcquisitionConfirmed = remember { mutableStateOf(false) }
                     val prescriptionIsOverdue = remember { mutableStateOf(false) }
 
-                    val itemFullText =
-                        if (!prescriptionIsOverdue.value)
-                            "Ver Detalhes"
-                        else
-                            "Confirmar Toma"
+//                    val itemFullText =
+//                        if (!prescriptionIsOverdue.value)
+//                            "Ver Detalhes"
+//                        else
+//                            "Confirmar Toma"
 
                     // TODO ver isto
                     if (item.first.acquiredAt == null) {
@@ -219,8 +219,7 @@ fun ActiveDrugListScreen(
                             confirmViewModel = confirmViewModel,
                             prescriptionAcquisitionConfirmed = prescriptionAcquisitionConfirmed,
                             prescriptionIsOverdue = prescriptionIsOverdue,
-                            timeTextText = timeTextText,
-                            itemFullText = itemFullText
+                            timeTextText = timeTextText
                         )
                     }
                 }
@@ -422,8 +421,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
     confirmViewModel: ConfirmAcquisitionViewModel,
     prescriptionAcquisitionConfirmed: MutableState<Boolean>,
     prescriptionIsOverdue: MutableState<Boolean>,
-    timeTextText: String,
-    itemFullText: String
+    timeTextText: String
 ) {
 
     val context = LocalContext.current
@@ -487,7 +485,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                             text = timeTextText
                         )
                     }
-//                    Spacer(modifier = Modifier.weight(1f))
+
                     IconButton(
                         modifier = Modifier.padding(end = 11.dp),
 
@@ -542,7 +540,12 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         seeDetailsViewModel = seeDetailsViewModel
                     )
                 }) {
-                    Text(text = itemFullText)
+                    Text(
+                        text = if (!prescriptionIsOverdue.value)
+                            "Ver Detalhes"
+                        else
+                            "Confirmar Toma"
+                    )
                 }
             }
         }
@@ -580,7 +583,6 @@ fun onSeeDetailsClick(
     navController: NavHostController
 ) {
     navController.navigate("descricaoAntibiotico/" + pair.first.id + "/" + pair.second!!.id)
-
 }
 
 fun onConfirmDoseClick(
