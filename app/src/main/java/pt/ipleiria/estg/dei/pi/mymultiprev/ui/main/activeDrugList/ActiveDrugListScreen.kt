@@ -122,7 +122,6 @@ fun ActiveDrugListScreen(
                     var timeTextText by remember { mutableStateOf("") }
 
 
-                    // TODO ver isto
                     if (item.first.acquiredAt == null) {
                         prescriptionAcquisitionConfirmed.value = false
                         timeTextText = "Confirmar Aquisição"
@@ -157,7 +156,7 @@ fun ActiveDrugListScreen(
                             }
                         }
                     }
-                    
+
                     if (showByColumnList.value) {
                         AntibioticCard_Prescription_Item_Short_Item(
                             navController = navController,

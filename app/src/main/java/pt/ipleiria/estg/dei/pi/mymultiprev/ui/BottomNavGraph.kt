@@ -24,9 +24,6 @@ fun BottomNavGraph(
     navControllerLogin: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
-    //TODO VER NAVS CONTROLLERS (2 para 1)
-
-
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Antibioticos.route

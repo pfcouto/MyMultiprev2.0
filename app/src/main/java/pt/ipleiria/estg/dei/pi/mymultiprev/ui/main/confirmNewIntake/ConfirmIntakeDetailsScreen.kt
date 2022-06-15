@@ -118,9 +118,6 @@ fun ConfirmIntakeDetailsScreen(
                             },
                             confirmButton = {
                                 OutlinedButton(onClick = {
-                                    // TODO validar isto!!!!!!!! Pode nao funcionar
-//                                    registerSymptomsViewModel.specificPrescriptionItemId =
-//                                        response.value!!.data!!.prescriptionItemId
 
                                     viewModel.clearResponse()
                                     openDialog.value = false;

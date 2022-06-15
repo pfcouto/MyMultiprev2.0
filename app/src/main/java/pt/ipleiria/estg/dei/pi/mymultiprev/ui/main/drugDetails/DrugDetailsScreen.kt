@@ -169,7 +169,6 @@ fun AppBar(
                             .size(32.dp),
                         contentDescription = "Camera"
                     )
-                    // TODO ver a cor que queremos
                 }
                 Row(
                     modifier = Modifier
