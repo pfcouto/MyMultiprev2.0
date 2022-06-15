@@ -309,12 +309,16 @@ fun ConfirmIntakeDetailsScreen(
 
             Row() {
                 Button(
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
+                    border = BorderStroke(1.dp, Teal200),
                     modifier = Modifier.padding(start = 32.dp, top = 24.dp, end = 16.dp),
                     onClick = { showDatePicker = true }) {
                     Text(fontSize = 15.sp, text = "EDITAR DATA")
                 }
 
                 Button(
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
+                    border = BorderStroke(1.dp, Teal200),
                     modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 32.dp),
                     onClick = { showTimePicker = true }) {
                     Text(fontSize = 15.sp, text = "EDITAR HORA")

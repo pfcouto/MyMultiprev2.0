@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.util.Log
 import android.widget.DatePicker
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
@@ -13,10 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -30,6 +28,7 @@ import androidx.navigation.NavHostController
 import com.chargemap.compose.numberpicker.NumberPicker
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 import java.util.*
 
@@ -150,6 +149,8 @@ fun ConfirmAcquisitionScreen(
             }
 
             Button(
+                colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
+                border = BorderStroke(1.dp, Teal200),
                 modifier = Modifier.padding(start = 32.dp, end = 32.dp),
                 onClick = { showDatePicker = true }) {
                 Text(
@@ -171,16 +172,9 @@ fun ConfirmAcquisitionScreen(
             }
 
             Row(modifier = Modifier.padding(top = 24.dp)) {
-                OutlinedButton(
-                    modifier = Modifier.padding(
-                        start = 32.dp,
-                        end = 4.dp,
-                        bottom = 8.dp
-                    ), onClick = { navController.popBackStack() }) {
-                    Text(fontSize = 18.sp, fontWeight = FontWeight.Bold, text = "CANCELAR")
-                }
-
-                OutlinedButton(
+                Button(
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
+                    border= BorderStroke(1.dp, Teal200),
                     modifier = Modifier.padding(
                         start = 32.dp,
                         end = 4.dp,
@@ -192,6 +186,17 @@ fun ConfirmAcquisitionScreen(
                         )
                     }) {
                     Text(fontSize = 18.sp, fontWeight = FontWeight.Bold, text = "CONFIRMAR")
+                }
+
+                OutlinedButton(
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor =  Teal200),
+                    border= BorderStroke(1.dp, Teal200),
+                    modifier = Modifier.padding(
+                        start = 32.dp,
+                        end = 4.dp,
+                        bottom = 8.dp
+                    ), onClick = { navController.popBackStack() }) {
+                    Text(fontSize = 18.sp, fontWeight = FontWeight.Bold, text = "CANCELAR")
                 }
             }
         }

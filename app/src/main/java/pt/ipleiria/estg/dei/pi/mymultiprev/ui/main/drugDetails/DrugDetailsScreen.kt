@@ -489,7 +489,7 @@ fun Toma(intake: Intake, nIntake: Int) {
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                     style = MaterialTheme.typography.body2,
                     fontSize = 18.sp,
-                    color = if (intake.took) MaterialTheme.myColors.darkGreen else MaterialTheme.myColors.darkRed,
+                    color = if (intake.took) MaterialTheme.myColors.darkGreen else MaterialTheme.myColors.messageOverdue,
                     text = if (intake.took) "Tomado" else "Falhou Toma"
                 )
             }

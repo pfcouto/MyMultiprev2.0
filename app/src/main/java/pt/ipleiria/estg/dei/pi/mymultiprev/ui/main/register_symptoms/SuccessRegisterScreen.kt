@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
 
 @Composable
 fun SuccessRegisterScreen(onNext: () -> Unit) {
@@ -38,7 +40,8 @@ fun SuccessRegisterScreen(onNext: () -> Unit) {
     )
     Spacer(modifier = Modifier.size(48.dp))
     Button(
-        border = BorderStroke(1.dp, Color.Gray),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor =  Teal200),
+        border= BorderStroke(1.dp, Teal200),
         onClick = { onNext() }) {
         Text(text = "Terminar", fontSize = 26.sp)
     }
