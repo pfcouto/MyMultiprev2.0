@@ -85,10 +85,21 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
             Log.d("NOTIFICATIONS", "Shared preferences - adding previous alarms")
             newSet.addAll(stringSet)
         }
+
+        newSet.forEach {
+            Log.d("NOTIFICATIONS", "Adding - Verifying Duplicated alarms")
+            Log.d("NOTIFICATIONS", "$it - $newAlarm")
+            if (it == newAlarm) {
+                Log.d("NOTIFICATIONS", "equals found - newAlarm not being added")
+                return
+            }
+        }
+
+        Log.d("NOTIFICATIONS", "equals not found - newAlarm being added")
         newSet.add(newAlarm)
 
         spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, newSet.toSet())
-        spAlarmServiceEditor.apply()
+        spAlarmServiceEditor.commit()
         Log.d("NOTIFICATIONS", "Shared preferences - Alarm added '$newAlarm'")
     }
 

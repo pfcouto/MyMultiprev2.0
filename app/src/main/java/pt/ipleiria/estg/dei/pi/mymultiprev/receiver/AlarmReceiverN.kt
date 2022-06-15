@@ -13,12 +13,15 @@ import dagger.hilt.android.AndroidEntryPoint
 import pt.ipleiria.estg.dei.pi.mymultiprev.NotificationsManager
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
+import java.time.Instant.now
 
 @AndroidEntryPoint
 class AlarmReceiverN : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
         try {
+            Log.d("RECEIVING ALARM", "RECEIVING ALARM : ${now()}")
+
             val drugName = intent.getStringExtra(Constants.NOTIFICATIONS_DRUG_NAME)
             showNotification(context, "MultiPrev - $drugName", drugName.toString())
             val notificationsManager = NotificationsManager()

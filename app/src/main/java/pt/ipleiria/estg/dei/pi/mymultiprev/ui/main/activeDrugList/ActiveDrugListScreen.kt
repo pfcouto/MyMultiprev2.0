@@ -34,8 +34,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
 import pt.ipleiria.estg.dei.pi.mymultiprev.NotificationsManager
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
@@ -75,11 +73,25 @@ fun ActiveDrugListScreen(
 
     var loadingData by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
 
     AlertDialogLogout(openDialog = openDialog, { openDialog = false }) {
         mainViewModel.deleteAppData()
         logout()
+    }
+
+    if (!listOfPairs.isNullOrEmpty()) {
+        DisposableEffect(key1 = Unit) {
+            val nM = NotificationsManager()
+            listOfPairs!!.forEach {
+                if (it.first.alarm) {
+                    nM.addAlarms(context, it.first, it.second!!)
+                } else {
+                    nM.removeAlarms(context, it.first.id)
+                }
+            }
+            onDispose { }
+        }
     }
 
 
@@ -481,22 +493,12 @@ fun AntibioticCard_Prescription_Item_Full_Item(
 
                         onClick = {
 
-//                                setAlarm(context)
-                            Log.d("NOTIFICATIONS","1")
-                            val nM = NotificationsManager()
-                            if (!item.first.alarm && item.first.nextIntake != null) {
-                                Log.d("NOTIFICATIONS","2")
-                                nM.addAlarm(
-                                    context,
-                                    item.first.nextIntake!!.toInstant(TimeZone.currentSystemDefault())
-                                        .toEpochMilliseconds().toString(),
-                                    item.first.id,
-                                    item.second!!.commercialName
-                                )
-                            } else {
-
-                            }
-                            onAlarmClick(viewModel = viewModel, prescriptionItem = item.first)
+                            onAlarmClick(
+                                context = context,
+                                viewModel = viewModel,
+                                prescriptionItem = item.first,
+                                drug = item.second
+                            )
 
                             if (!item.first.alarm)
                                 Toast.makeText(context, "Notificacao Ativada", Toast.LENGTH_SHORT)
@@ -600,15 +602,28 @@ fun onConfirmDoseClick(
 //}
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun onAlarmClick(
+    context: Context,
     prescriptionItem: PrescriptionItem,
+    drug: Drug?,
     viewModel: ActiveDrugListViewModel
 ) {
-//    viewModel.prescriptionItems.value?.data?.find { prescriptionItem.id == it.id }?.alarm =
-//        prescriptionItem.alarm
 
     val alarmState = !prescriptionItem.alarm
     viewModel.setAlarm(alarmState, prescriptionItem.id)
+
+
+    val nM = NotificationsManager()
+    if (drug == null) return
+    if (alarmState) {
+        Log.d("NOTIFICATIONS", "2")
+        nM.addAlarms(context, prescriptionItem, drug)
+    } else {
+        nM.removeAlarms(
+            context, prescriptionItem.id
+        )
+    }
 
 }
 
