@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
@@ -349,7 +351,7 @@ fun ConfirmIntakeDetailsScreen(
                         Log.d("Alarmes", "${prescriptionItem!!.alarm}")
                         if (prescriptionItem!!.alarm) {
 
-                            setAlarm(context, drug!!.name)
+                            setAlarm(context, drug!!.name, prescriptionItem!!)
                         }
                     }) {
 
@@ -399,9 +401,10 @@ fun ConfirmIntakeDetailsScreen(
     }
 }
 
-private fun setAlarm(context: Context, drugName: String) {
+private fun setAlarm(context: Context, drugName: String, prescriptionItem: PrescriptionItem) {
     val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
-    val timeSec = System.currentTimeMillis() + 10000
+//    val timeSec = System.currentTimeMillis() + 10000
+    val timeSec = prescriptionItem.nextIntake!!.toInstant(TimeZone.UTC).toEpochMilliseconds() - Clock.System.now().toEpochMilliseconds()
     val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
     val intent = Intent(context, AlarmReceiver::class.java)
     intent.putExtra("title", "Toma de Medicamentos")

@@ -37,6 +37,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcquisitionViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.seeDetails.SeeDetailsViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagerApi::class)
@@ -304,16 +305,6 @@ fun AntibioticCard_Prescription_Item_Short_Item(
     timeTextText: String
 ) {
 
-    val cardBackgroundColor = if (!prescriptionAcquisitionConfirmed.value)
-        Color.LightGray
-    else MaterialTheme.colors.surface
-
-    val timeTextColor = if (prescriptionIsOverdue.value)
-        Color.Red
-    else
-        Color.DarkGray
-
-
     Card(
         modifier = Modifier
             .padding(start = 24.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)
@@ -322,7 +313,9 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id)
             },
         elevation = 8.dp,
-        backgroundColor = cardBackgroundColor
+        backgroundColor = if (!prescriptionAcquisitionConfirmed.value)
+            Color.LightGray
+        else MaterialTheme.colors.surface
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Log.d("Imagens", "${item.first.imageLocation}")
@@ -358,9 +351,9 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 Spacer(modifier = Modifier.height(1.dp))
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W300,
-                    color = timeTextColor,
+                    fontSize = 16.sp,
+                    color = if (prescriptionIsOverdue.value)
+                        MaterialTheme.myColors.messageOverdue else MaterialTheme.myColors.gray,
                     text = timeTextText
                 )
             }
@@ -396,26 +389,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
     timeTextText: String
 ) {
 
-    val alarmOn = remember { mutableStateOf(true) }
-
     val context = LocalContext.current
-
-    val icon = if (item.first.alarm)
-        Icons.Filled.AlarmOn
-    else Icons.Filled.AlarmOff
-
-    val color = if (item.first.alarm)
-        Color.Green
-    else Color.Red
-
-    val cardBackgroundColor = if (!prescriptionAcquisitionConfirmed.value)
-        Color.LightGray
-    else MaterialTheme.colors.surface
-
-    val timeTextColor = if (prescriptionIsOverdue.value)
-        Color.Red
-    else
-        Color.DarkGray
 
     Column(
         modifier = Modifier
@@ -428,7 +402,9 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                 .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
                 .clickable { navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id) },
             elevation = 10.dp,
-            backgroundColor = cardBackgroundColor
+            backgroundColor = if (!prescriptionAcquisitionConfirmed.value)
+                Color.LightGray
+            else MaterialTheme.colors.surface
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -453,9 +429,9 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                         Text(
                             modifier = Modifier
                                 .padding(start = 16.dp),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W300,
-                            color = timeTextColor,
+                            fontSize = 16.sp,
+                            color = if (prescriptionIsOverdue.value)
+                                MaterialTheme.myColors.messageOverdue else MaterialTheme.myColors.gray,
                             text = timeTextText
                         )
                     }
@@ -477,7 +453,11 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                                     Toast.LENGTH_SHORT
                                 ).show()
                         }) {
-                        Icon(imageVector = icon, contentDescription = "Loggout", tint = color)
+                        Icon(
+                            imageVector = if (item.first.alarm) Icons.Filled.AlarmOn else Icons.Filled.AlarmOff,
+                            contentDescription = "Alarm",
+                            tint = if (item.first.alarm) MaterialTheme.myColors.darkGreen else MaterialTheme.myColors.darkRed
+                        )
                     }
                 }
 
