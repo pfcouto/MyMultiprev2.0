@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -40,6 +39,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 
 
@@ -236,12 +236,18 @@ fun AppBar(
 
 @Composable
 fun TabHome(selectIndex: Int, onSelect: (TabPage) -> Unit) {
-    TabRow(selectedTabIndex = selectIndex) {
+    TabRow(selectedTabIndex = selectIndex, backgroundColor = MaterialTheme.colors.surface, contentColor = MaterialTheme.colors.onSurface) {
         TabPage.values().forEachIndexed { index, tabPage ->
             Tab(
                 selected = index == selectIndex,
                 onClick = { onSelect(tabPage) },
-                text = { Text(text = if (index != 2) tabPage.name else "Mais Informação") })
+                text = {
+                    Text(
+                        fontWeight = FontWeight.W700,
+                        fontSize = 16.sp,
+                        text = if (index != 2) tabPage.name else "Mais Informação"
+                    )
+                })
         }
     }
 }
@@ -475,7 +481,7 @@ fun Toma(intake: Intake, nIntake: Int) {
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                     style = MaterialTheme.typography.body2,
                     fontSize = 18.sp,
-                    color = if (intake.took) Color.Green else Color.Red,
+                    color = if (intake.took) MaterialTheme.myColors.darkGreen else MaterialTheme.myColors.darkRed,
                     text = if (intake.took) "Tomado" else "Falhou Toma"
                 )
             }

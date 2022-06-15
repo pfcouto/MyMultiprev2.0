@@ -19,7 +19,7 @@ data class MyColors(
     val messageOverdue: Color,
     val gray: Color
 ) {
-    val primary: Color get() = material.primary
+    val primary: Color get() = Teal200
     val primaryVariant: Color get() = material.primaryVariant
     val secondary: Color get() = material.secondary
     val secondaryVariant: Color get() = material.secondaryVariant
@@ -77,7 +77,7 @@ val MaterialTheme.myColors: MyColors
     @ReadOnlyComposable
     get() = LocalColors.current
 
-val LocalColors = compositionLocalOf<MyColors> { error("No active user found!") }
+val LocalColors = compositionLocalOf<MyColors> { error("No colors found!") }
 
 @Composable
 fun MyMultiPrevTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {

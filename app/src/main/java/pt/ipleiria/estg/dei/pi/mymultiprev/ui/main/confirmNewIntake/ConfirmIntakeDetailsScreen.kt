@@ -31,6 +31,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.*
 
@@ -150,13 +151,6 @@ fun ConfirmIntakeDetailsScreen(
                 }
             }
         }
-
-
-        var estadoCor = if (estadoColorVerde)
-            Color.Green
-        else
-            Color.Red
-
 
 //    viewModel.displayStatus()
         // Fetching the Local Context
@@ -283,7 +277,10 @@ fun ConfirmIntakeDetailsScreen(
                         .weight(1f),
                     textAlign = TextAlign.End,
                     fontSize = 18.sp,
-                    color = estadoCor,
+                    color = if (estadoColorVerde)
+                        MaterialTheme.myColors.darkGreen
+                    else
+                        MaterialTheme.myColors.darkRed,
                     text = estadoMessage
                 )
             }
@@ -341,10 +338,10 @@ fun ConfirmIntakeDetailsScreen(
                     .fillMaxWidth()
             ) {
                 Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.onSurface),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE)
-                            .toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds(),
+                        .toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds(),
                     onClick = {
                         openDialog.value = true
                         viewModel.registerIntake()
@@ -356,7 +353,7 @@ fun ConfirmIntakeDetailsScreen(
                     }) {
 
                     Text(
-                        color = Color.White,
+                        color = MaterialTheme.colors.surface,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         text = "Confirmar"
@@ -364,13 +361,13 @@ fun ConfirmIntakeDetailsScreen(
                 }
 
                 Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .fillMaxWidth(),
                     onClick = { navController.popBackStack() }) {
                     Text(
-                        color = Color.Black,
+                        color = MaterialTheme.colors.onSurface,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         text = "CANCELAR"
@@ -404,7 +401,7 @@ fun ConfirmIntakeDetailsScreen(
 private fun setAlarm(context: Context, drugName: String, prescriptionItem: PrescriptionItem) {
     val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
 //    val timeSec = System.currentTimeMillis() + 10000
-    val timeSec = prescriptionItem.nextIntake!!.toInstant(TimeZone.UTC).toEpochMilliseconds() - Clock.System.now().toEpochMilliseconds()
+    val timeSec = prescriptionItem.nextIntake!!.toInstant(TimeZone.UTC).toEpochMilliseconds()
     val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
     val intent = Intent(context, AlarmReceiver::class.java)
     intent.putExtra("title", "Toma de Medicamentos")
