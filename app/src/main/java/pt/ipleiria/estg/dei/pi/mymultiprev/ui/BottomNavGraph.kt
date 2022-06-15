@@ -5,7 +5,6 @@ import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -18,7 +17,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcq
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory.PrescriptionItemsHistoryScreen
-
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsScreen
 
 @Composable
 fun BottomNavGraph(
@@ -26,9 +25,6 @@ fun BottomNavGraph(
     navControllerLogin: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
-    //TODO VER NAVS CONTROLLERS (2 para 1)
-
-
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Antibioticos.route
@@ -40,21 +36,40 @@ fun BottomNavGraph(
             }
         }
 
-        composable(route = BottomBarScreen.Sintomas.route) {
-            val context = LocalContext.current
-
-
-            Text(text = "SINTOMAS")
-
+        composable(
+            route = BottomBarScreen.Sintomas.route
+        ) {
             if (!mainViewModel.isNetworkAvailable()) {
-//                Toast.makeText(
-//                    context,
-//                    "No Internet Connection! Please, reconnect and try again",
-//                    Toast.LENGTH_SHORT
-//                )
                 Snackbar() {
                     Text(text = "No Internet Connection! Please, reconnect and try again")
                 }
+            } else {
+                RegisterSymptomsScreen(navHostController = navController)
+            }
+        }
+
+        composable(
+            route = BottomBarScreen.Sintomas.route + "/{prescItemId}",
+            arguments = listOf(
+                navArgument("prescItemId") {
+                    type = NavType.StringType
+                })
+        ) {
+            var prescItemId = remember {
+                it.arguments?.getString("prescItemId")
+            }
+            Log.i("TESTE ROUTE", BottomBarScreen.Sintomas.route)
+            Log.i("TESTE VAR", prescItemId.toString())
+
+            if (!mainViewModel.isNetworkAvailable()) {
+                Snackbar() {
+                    Text(text = "No Internet Connection! Please, reconnect and try again")
+                }
+            } else {
+                RegisterSymptomsScreen(
+                    navHostController = navController,
+                    prescriptionItemId = prescItemId
+                )
             }
         }
 

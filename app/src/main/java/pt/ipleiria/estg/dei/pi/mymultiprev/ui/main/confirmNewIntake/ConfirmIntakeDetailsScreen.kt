@@ -1,7 +1,12 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Context.ALARM_SERVICE
+import android.content.Intent
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.*
@@ -18,8 +23,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
+import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.*
 
 @Composable
@@ -30,6 +43,8 @@ fun ConfirmIntakeDetailsScreen(
     viewModel: ConfirmIntakeViewModel = hiltViewModel(),
     registerSymptomsViewModel: RegisterSymptomsViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
 
     DisposableEffect(key1 = Unit) {
         if (!drugId.isNullOrBlank()) {
@@ -103,16 +118,11 @@ fun ConfirmIntakeDetailsScreen(
                             },
                             confirmButton = {
                                 OutlinedButton(onClick = {
-                                    // TODO validar isto!!!!!!!! Pode nao funcionar
-                                    registerSymptomsViewModel.specificPrescriptionItemId =
-                                        response.value!!.data!!.prescriptionItemId
 
                                     viewModel.clearResponse()
                                     openDialog.value = false;
 
-
-
-                                    navController.navigate("sintomas")
+                                    navController.navigate(BottomBarScreen.Sintomas.route + "/$prescriptionItemId")
                                 }) {
                                     Text(text = "Sim")
                                 }
@@ -138,13 +148,6 @@ fun ConfirmIntakeDetailsScreen(
                 }
             }
         }
-
-
-        var estadoCor = if (estadoColorVerde)
-            Color.Green
-        else
-            Color.Red
-
 
 //    viewModel.displayStatus()
         // Fetching the Local Context
@@ -271,7 +274,10 @@ fun ConfirmIntakeDetailsScreen(
                         .weight(1f),
                     textAlign = TextAlign.End,
                     fontSize = 18.sp,
-                    color = estadoCor,
+                    color = if (estadoColorVerde)
+                        MaterialTheme.myColors.darkGreen
+                    else
+                        MaterialTheme.myColors.darkRed,
                     text = estadoMessage
                 )
             }
@@ -329,26 +335,36 @@ fun ConfirmIntakeDetailsScreen(
                     .fillMaxWidth()
             ) {
                 Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.onSurface),
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { openDialog.value = true; viewModel.registerIntake() }) {
+                    enabled = prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE)
+                        .toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds(),
+                    onClick = {
+                        openDialog.value = true
+                        viewModel.registerIntake()
+                        Log.d("Alarmes", "${prescriptionItem!!.alarm}")
+                        if (prescriptionItem!!.alarm) {
+
+                            setAlarm(context, drug!!.name, prescriptionItem!!)
+                        }
+                    }) {
 
                     Text(
-                        color = Color.White,
+                        color = MaterialTheme.colors.surface,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        text = "SEGUINTE"
+                        text = "Confirmar"
                     )
                 }
 
                 Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .fillMaxWidth(),
                     onClick = { navController.popBackStack() }) {
                     Text(
-                        color = Color.Black,
+                        color = MaterialTheme.colors.onSurface,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         text = "CANCELAR"
@@ -377,6 +393,19 @@ fun ConfirmIntakeDetailsScreen(
         }
 
     }
+}
 
-
+private fun setAlarm(context: Context, drugName: String, prescriptionItem: PrescriptionItem) {
+    val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
+//    val timeSec = System.currentTimeMillis() + 10000
+    val timeSec = prescriptionItem.nextIntake!!.toInstant(TimeZone.UTC).toEpochMilliseconds()
+    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
+    val intent = Intent(context, AlarmReceiver::class.java)
+    intent.putExtra("title", "Toma de Medicamentos")
+    intent.putExtra("message", "Tomar o medicamento: $drugName")
+    intent.putExtra("uniqueId", uniqueId)
+    Log.d("Alarmes", "$drugName")
+    val pendingIntent = PendingIntent.getBroadcast(context, uniqueId, intent, 0)
+    alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
+    Log.d("Alarmes", "Passou aqui")
 }

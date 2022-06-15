@@ -51,10 +51,11 @@ fun LoginScreen(
 
 
     Text(
-        text = "Welcome",
+        text = "Bem-Vindo",
         modifier = Modifier.padding(start = 32.dp, top = 32.dp),
         fontSize = 32.sp,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colors.onSurface
     )
     Text(
         text = test,
@@ -83,7 +84,7 @@ fun LoginScreen(
                 isError = isErrorUsername,
                 singleLine = true,
                 label = {
-                    Text(text = "Username")
+                    Text(text = "Nome de Utilizador")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,21 +98,19 @@ fun LoginScreen(
                     isErrorPassword = it.isEmpty()
                 },
                 label = {
-                    Text(text = "Password")
+                    Text(text = "Palavra-Passe")
                 },
                 singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
 
                 trailingIcon = {
-                    val image = if (passwordVisible)
-                        Icons.Filled.Visibility
-                    else Icons.Filled.VisibilityOff
-
-                    // Please provide localized description for accessibility services
-                    val description = if (passwordVisible) "Hide password" else "Show password"
-
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, description)
+                        Icon(
+                            imageVector = if (passwordVisible)
+                                Icons.Filled.Visibility
+                            else Icons.Filled.VisibilityOff,
+                            if (passwordVisible) "Hide password" else "Show password"
+                        )
                     }
                 },
                 modifier = Modifier

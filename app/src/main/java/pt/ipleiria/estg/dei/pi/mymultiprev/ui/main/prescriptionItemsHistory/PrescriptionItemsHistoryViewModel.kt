@@ -37,7 +37,8 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
         prescriptionItemsRepository.getCompletedPrescriptionItems(patientId)
             .asLiveData()
 
-    private var _allPairs: MutableState<List<Pair<PrescriptionItem, Drug?>>> = mutableStateOf(ArrayList())
+    private var _allPairs: MutableState<List<Pair<PrescriptionItem, Drug?>>> =
+        mutableStateOf(ArrayList())
 
 //    private var _pairs: MutableLiveData<List<Pair<PrescriptionItem, Drug?>>> = MutableLiveData(
 //        listOf()
@@ -45,10 +46,12 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
 //    val pairs: LiveData<List<Pair<PrescriptionItem, Drug?>>>
 //        get() = _pairs
 
-    private var _pairs: MutableState<List<Pair<PrescriptionItem, Drug?>>> = mutableStateOf(ArrayList())
+    private var _pairs: MutableState<List<Pair<PrescriptionItem, Drug?>>> =
+        mutableStateOf(ArrayList())
     val pairs: State<List<Pair<PrescriptionItem, Drug?>>> = _pairs
 
     fun updatePairs() {
+        Log.i(TAG, "onQueryChanged()")
         val prescriptions = prescriptionItems.value?.data
         val list: MutableList<Pair<PrescriptionItem, Drug?>> = mutableListOf()
         if (!prescriptions.isNullOrEmpty()) {
@@ -57,12 +60,14 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
                 list.add(prescription to drug)
             }
             _allPairs.value = Collections.unmodifiableList(list)
-            _pairs.value = _allPairs.value
+//            _pairs.value = _allPairs.value
+            filterPairs(searchQuery.value)
         }
     }
 
     fun onQueryChanged(query: String) {
-        this.searchQuery.value = query
+        Log.i(TAG, "onQueryChanged() : '$query'")
+        this.searchQuery.value = query.lowercase(Locale.getDefault())
         filterPairs(query)
     }
 
@@ -74,16 +79,15 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
     }
 
     fun filterPairs(newText: String?) {
-        searchQuery.value = newText ?: ""
-        if (newText != null) {
-        }
-        if (searchQuery.value.isNotBlank()) {
+        Log.i(TAG, "filterPairs() : '$newText'")
+        if (newText.isNullOrEmpty() || newText.trim().length < 3) {
+            _pairs.value = _allPairs.value
+        } else {
             searchQuery.value = searchQuery.value.lowercase(Locale.getDefault())
             _pairs.value = _allPairs.value.filter { pair ->
                 containsString(pair)
             }
-        } else
-            _pairs.value = _allPairs.value
+        }
     }
 
     private fun containsString(pair: Pair<PrescriptionItem, Drug?>): Boolean {
