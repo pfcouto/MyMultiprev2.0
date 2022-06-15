@@ -9,6 +9,7 @@ import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.util.Log
 import android.widget.DatePicker
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -31,6 +32,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.*
@@ -211,6 +213,7 @@ fun ConfirmIntakeDetailsScreen(
             Text(
                 modifier = Modifier.padding(start = 32.dp, top = 32.dp, end = 32.dp),
                 fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
                 text = drug!!.name
             )
 
@@ -335,7 +338,8 @@ fun ConfirmIntakeDetailsScreen(
                     .fillMaxWidth()
             ) {
                 Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.onSurface),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
+                    border= BorderStroke(1.dp, Teal200),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE)
                         .toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds(),
@@ -353,12 +357,13 @@ fun ConfirmIntakeDetailsScreen(
                         color = MaterialTheme.colors.surface,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        text = "Confirmar"
+                        text = "CONFIRMAR"
                     )
                 }
 
-                Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
+                OutlinedButton(
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor =  Teal200),
+                    border= BorderStroke(1.dp, Teal200),
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .fillMaxWidth(),

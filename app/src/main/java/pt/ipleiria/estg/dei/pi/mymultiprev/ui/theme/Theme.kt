@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.compositionLocalOf
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 fun darkColors(
     primary: Color = Color(0xFFBB86FC),
@@ -108,8 +109,15 @@ val MaterialTheme.myColors: MyColors
 
 val LocalColors = compositionLocalOf<MyColors> { error("No colors found!") }
 
+
+
 @Composable
 fun MyMultiPrevTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(
+        color = Teal200
+    )
+
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {

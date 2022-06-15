@@ -150,4 +150,7 @@ dependencies {
 
     //NumberPicker
     implementation "com.chargemap.compose:numberpicker:latestVersion"
+
+    // Change status bar color
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
 }
