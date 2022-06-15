@@ -509,9 +509,9 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                 }) {
                     Text(
                         text = if (!prescriptionIsOverdue.value)
-                            "Ver Detalhes"
+                            "VER DETALHES"
                         else
-                            "Confirmar Toma"
+                            "CONFIRMAR TOMA"
                     )
                 }
             }
