@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.ListAlt
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,7 +55,7 @@ fun ActiveDrugListScreen(
 
     val TAG = "ActiveDrugListScreen"
 
-    val showByColumnList = remember { mutableStateOf(true) }
+    val showByColumnList = rememberSaveable { mutableStateOf(true) }
 
     val listOfDrugs by viewModel.drugs.observeAsState()
     val listOfPairs by viewModel.pairs.observeAsState()
