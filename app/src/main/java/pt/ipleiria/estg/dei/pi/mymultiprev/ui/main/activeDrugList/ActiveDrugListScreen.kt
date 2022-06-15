@@ -119,31 +119,19 @@ fun ActiveDrugListScreen(
                     var prescriptionAcquisitionConfirmed = remember { mutableStateOf(false) }
                     val prescriptionIsOverdue = remember { mutableStateOf(false) }
 
-//                    val itemFullText =
-//                        if (!prescriptionIsOverdue.value)
-//                            "Ver Detalhes"
-//                        else
-//                            "Confirmar Toma"
+                    var timeTextText by remember { mutableStateOf("") }
+
 
                     // TODO ver isto
                     if (item.first.acquiredAt == null) {
                         prescriptionAcquisitionConfirmed.value = false
+                        timeTextText = "Confirmar Aquisição"
+
                     } else {
                         prescriptionAcquisitionConfirmed.value = true
                         if (item.first.nextIntake != null) {
                             if (item.first.isOverdue) {
                                 prescriptionIsOverdue.value = true
-                            }
-                        }
-                    }
-
-                    var timeTextText by remember { mutableStateOf("") }
-
-                    if (item.first.acquiredAt == null) {
-                        timeTextText = "Confirmar Aquisição"
-                    } else {
-                        if (item.first.nextIntake != null) {
-                            if (item.first.isOverdue) {
                                 timeTextText = "Toma em Atraso"
                             } else {
                                 val diffMillis = item.first.timeUntil()
@@ -169,9 +157,7 @@ fun ActiveDrugListScreen(
                             }
                         }
                     }
-
-
-
+                    
                     if (showByColumnList.value) {
                         AntibioticCard_Prescription_Item_Short_Item(
                             navController = navController,
