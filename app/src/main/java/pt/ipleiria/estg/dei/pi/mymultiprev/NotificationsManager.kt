@@ -44,9 +44,11 @@ class NotificationsManager() {
         updateNext(context)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun removeAlarms(context: Context, prescId: String) {
         val sharedPreferences = SharedPreferencesRepository(context)
         sharedPreferences.removeAllAlarm(prescId)
+        updateNext(context)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

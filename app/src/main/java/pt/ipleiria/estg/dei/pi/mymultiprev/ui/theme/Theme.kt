@@ -11,6 +11,35 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.compositionLocalOf
 
+fun darkColors(
+    primary: Color = Color(0xFFBB86FC),
+    primaryVariant: Color = Color(0xFF3700B3),
+    secondary: Color = Color(0xFF03DAC6),
+    secondaryVariant: Color = secondary,
+    background: Color = Color(0xFF121212),
+    surface: Color = Color(0xFF121212),
+    error: Color = Color(0xFFCF6679),
+    onPrimary: Color = Color.Black,
+    onSecondary: Color = Color.Black,
+    onBackground: Color = Color.White,
+    onSurface: Color = Color.White,
+    onError: Color = Color.Black
+): Colors = Colors(
+    primary,
+    primaryVariant,
+    secondary,
+    secondaryVariant,
+    background,
+    surface,
+    error,
+    onPrimary,
+    onSecondary,
+    onBackground,
+    onSurface,
+    onError,
+    false
+)
+
 
 data class MyColors(
     val material: Colors,
@@ -19,7 +48,7 @@ data class MyColors(
     val messageOverdue: Color,
     val gray: Color
 ) {
-    val primary: Color get() = Teal200
+    val primary: Color get() = material.primary
     val primaryVariant: Color get() = material.primaryVariant
     val secondary: Color get() = material.secondary
     val secondaryVariant: Color get() = material.secondaryVariant
@@ -35,7 +64,7 @@ data class MyColors(
 }
 
 private val LightColorPalette = MyColors(
-    material = lightColors(),
+    material = lightColors(primary = Teal200),
     darkRed = DarkRed,
     darkGreen = DarkGreen,
     messageOverdue = MessageOverdue,
@@ -86,6 +115,7 @@ fun MyMultiPrevTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compo
     } else {
         LightColorPalette
     }
+
     CompositionLocalProvider(LocalColors provides colors) {
         MaterialTheme(
             colors = colors.material,

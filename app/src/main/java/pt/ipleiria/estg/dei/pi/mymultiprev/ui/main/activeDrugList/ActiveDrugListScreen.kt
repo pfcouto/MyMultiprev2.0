@@ -44,6 +44,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcquisitionViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.seeDetails.SeeDetailsViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.concurrent.TimeUnit
@@ -354,6 +355,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
                     fontSize = 18.sp,
                     maxLines = 1,
+                    color = MaterialTheme.colors.onSurface,
                     fontWeight = FontWeight.W600,
                     text = "${if (item.second?.alias.isNullOrEmpty()) item.second?.name else item.second?.alias}"
                 )
@@ -370,6 +372,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
             Button(modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
                 onClick = {
                     onDetailsAndConfirmButtonClick(
                         item = item,

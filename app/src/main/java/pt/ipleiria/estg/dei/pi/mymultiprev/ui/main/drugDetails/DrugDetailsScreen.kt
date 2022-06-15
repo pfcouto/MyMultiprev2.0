@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -179,7 +180,8 @@ fun AppBar(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
                                     Color.Transparent,
-                                    Color.White
+                                    if (isSystemInDarkTheme())
+                                        MaterialTheme.colors.surface else Color.White
                                 ), tileMode = TileMode.Clamp
                             )
                         ),
@@ -209,7 +211,8 @@ fun AppBar(
                                     showInputDialog.value = true
                                 }) {
                                 Icon(
-                                    tint = Color.Black,
+                                    tint = if (isSystemInDarkTheme())
+                                        Color.White else Color.Black,
                                     imageVector = Icons.Filled.Edit,
                                     contentDescription = "Edit_Pencil"
                                 )
@@ -235,7 +238,11 @@ fun AppBar(
 
 @Composable
 fun TabHome(selectIndex: Int, onSelect: (TabPage) -> Unit) {
-    TabRow(selectedTabIndex = selectIndex, backgroundColor = MaterialTheme.colors.surface, contentColor = MaterialTheme.colors.onSurface) {
+    TabRow(
+        selectedTabIndex = selectIndex,
+        backgroundColor = MaterialTheme.colors.surface,
+        contentColor = MaterialTheme.colors.onSurface
+    ) {
         TabPage.values().forEachIndexed { index, tabPage ->
             Tab(
                 selected = index == selectIndex,
@@ -364,7 +371,7 @@ fun Details(drug: State<Drug?>, prescription: State<PrescriptionItem?>) {
                         .padding(end = 16.dp, top = 16.dp),
                     fontSize = 18.sp,
                     textAlign = TextAlign.End,
-                    text = prescription.value!!.intakeValue.toString() + " " + prescription.value!!.dosage
+                    text = prescription.value!!.dosage
                 )
             }
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -453,7 +460,9 @@ fun Tomas(
             itemsIndexed(
                 items = intakes.value!!
             ) { idx, item ->
-                Toma(item, idx + 1)
+                if (idx != intakes.value!!.size - 1){
+                    Toma(item, idx + 1)
+                }
             }
         }
     }
@@ -463,7 +472,7 @@ fun Tomas(
 fun Toma(intake: Intake, nIntake: Int) {
     Card(
         modifier = Modifier
-            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            .padding(top = if (nIntake == 1) 16.dp else 0.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
             .fillMaxWidth(),
         elevation = 10.dp
     ) {
