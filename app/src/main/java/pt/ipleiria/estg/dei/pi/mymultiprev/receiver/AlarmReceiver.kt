@@ -3,17 +3,31 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.receiver
 //import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainActivity
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
+import android.util.Log
+import androidx.core.app.NotificationManagerCompat
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.daos.AlarmDao
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.DrugRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesRepository
+import pt.ipleiria.estg.dei.pi.mymultiprev.service.AlarmService
+import pt.ipleiria.estg.dei.pi.mymultiprev.service.RingtoneService
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.RandomIntUtil
 import java.util.*
 import javax.inject.Inject
 
@@ -176,7 +190,7 @@ private fun showNotification(context: Context, title: String, desc: String, uniq
 //            // Get the PendingIntent containing the entire back stack
 //            getPendingIntent(RandomIntUtil.getRandomInt(), PendingIntent.FLAG_UPDATE_CURRENT)
 //        }
-//
+
 //        val pauseIntent = Intent(context, RingtoneService::class.java)
 //        pauseIntent.putExtra(Constants.NOTIFICATION_ID, notificationID)
 //        pauseIntent.action = Constants.ACTION_PAUSE
@@ -184,14 +198,13 @@ private fun showNotification(context: Context, title: String, desc: String, uniq
 //            context,
 //            RandomIntUtil.getRandomInt(), pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT
 //        )
-//
-//
+
+
 //        val builder = NotificationCompat.Builder(context, Constants.NOTIFICATIONS_CHANNEL_ID)
 //            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
 //            .setContentTitle(title)
 //            .setContentText(message)
 //            .setPriority(NotificationCompat.PRIORITY_HIGH)
-//            .setContentIntent(mainActivityPendingIntent)
 //            .setDefaults(NotificationCompat.DEFAULT_ALL)
 //            .addAction(
 //                R.drawable.ic_baseline_alarm_on_24,

@@ -80,61 +80,6 @@ class ActiveDrugListViewModel @Inject constructor(
         return drugs.value?.data!!.find { drug -> drug.id == id }
     }
 
-//    fun updateNextAlarm() {
-//        val currentTime = Clock.System.now().toEpochMilliseconds()
-//        var nextAlarm = getNextAlarmFromSP(currentTime)
-//        val initialAlarm = nextAlarm
-//        nextAlarm = getNextAlarmFromActivePrescriptions(currentTime, nextAlarm)
-//        viewModelScope.launch {
-//            alarmDao.deleteExpiredAlarms(
-//                Instant.fromEpochMilliseconds(currentTime).toLocalDateTime(Constants.TIME_ZONE)
-//            )
-//            val currentAlarms = alarmDao.getAlarms()
-//            val nextAlarmLocalDateTime = Instant.fromEpochMilliseconds(
-//                nextAlarm
-//            ).toLocalDateTime(Constants.TIME_ZONE)
-//            if (nextAlarm != initialAlarm && currentAlarms.find {
-//                    it.alarm == nextAlarmLocalDateTime
-//                } == null) {
-//                alarmService.setExactAlarm(
-//                    nextAlarm
-//                )
-//                sharedPreferencesRepository.saveAlarm(nextAlarm)
-//                alarmDao.addAlarm(Alarm(0, nextAlarmLocalDateTime))
-//            }
-//        }
-//    }
-//
-//    private fun getNextAlarmFromSP(currentTime: Long): Long {
-//        var nextAlarm = sharedPreferencesRepository.getAlarm()
-//        val alarmExpired = nextAlarm != Constants.SP_DEFAULT_LONG && nextAlarm < currentTime
-//
-//        if (alarmExpired) {
-//            sharedPreferencesRepository.removeAlarm()
-//            nextAlarm = Long.MAX_VALUE
-//        }
-//
-//        if (nextAlarm == Constants.SP_DEFAULT_LONG)
-//            nextAlarm = Long.MAX_VALUE
-//
-//        return nextAlarm
-//    }
-//
-//    private fun getNextAlarmFromActivePrescriptions(currentTime: Long, currentAlarmSP: Long): Long {
-//        var currentAlarm = currentAlarmSP
-//        prescriptionItems.value!!.data!!.forEach { prescriptionItem ->
-//            if (prescriptionItem.nextIntake != null && prescriptionItem.alarm) {
-//                val prescriptionNextIntakeInMillis =
-//                    prescriptionItem.nextIntake!!.toInstant(TimeZone.currentSystemDefault())
-//                        .toEpochMilliseconds()
-//                if (prescriptionNextIntakeInMillis in currentTime + 1..currentAlarm) {
-//                    currentAlarm = prescriptionNextIntakeInMillis
-//                }
-//            }
-//        }
-//        return currentAlarm
-//    }
-//
     fun setAlarm(alarmState: Boolean, prescriptionItemId: String) {
         viewModelScope.launch {
             alarmDao.setAlarmState(alarmState, prescriptionItemId)

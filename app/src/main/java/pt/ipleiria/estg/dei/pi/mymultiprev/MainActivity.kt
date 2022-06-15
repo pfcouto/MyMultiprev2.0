@@ -1,4 +1,4 @@
-package pt.ipleiria.estg.dei.pi.mymultiprev
+    package pt.ipleiria.estg.dei.pi.mymultiprev
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

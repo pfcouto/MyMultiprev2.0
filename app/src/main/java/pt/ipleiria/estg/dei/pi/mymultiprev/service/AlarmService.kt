@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.RandomIntUtil
