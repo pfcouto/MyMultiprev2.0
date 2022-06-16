@@ -139,12 +139,15 @@ class NotificationsManager() {
 
     private fun setAlarm(context: Context, instant: Long, drugName: String) {
 
+//        val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
         val timeSec = System.currentTimeMillis()
         Log.d("NOTIFICATIONS", "currentTime: $timeSec : ${Date(timeSec)}")
         Log.d("NOTIFICATIONS", "nextAlarmTime: $instant : ${Date(instant)}")
+
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiverN::class.java)
         intent.putExtra(Constants.NOTIFICATIONS_DRUG_NAME, drugName)
+
         val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, instant, pendingIntent)
     }

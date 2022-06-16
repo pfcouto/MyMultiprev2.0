@@ -2,6 +2,7 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.receiver
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,10 +11,12 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
+import pt.ipleiria.estg.dei.pi.mymultiprev.MainActivity
 import pt.ipleiria.estg.dei.pi.mymultiprev.NotificationsManager
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.time.Instant.now
+import java.util.*
 
 @AndroidEntryPoint
 class AlarmReceiverN : BroadcastReceiver() {
@@ -45,10 +48,20 @@ private fun showNotification(context: Context, title: String, desc: String) {
         manager.createNotificationChannel(channel)
     }
 
-    val builder = NotificationCompat.Builder(context, channelId)
+
+    val resultIntent = Intent(context, MainActivity::class.java)
+    val pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, 0)
+
+
+    val notification = NotificationCompat.Builder(context, channelId)
         .setContentTitle(title)
         .setContentText("Hey! It is time for you to take your $desc")
         .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+        .setContentIntent(pendingIntent)
+        .setAutoCancel(true)
+        .build()
 
-    manager.notify(1, builder.build())
+    val requestID = System.currentTimeMillis().toInt()
+    manager.notify(requestID, notification)
+
 }

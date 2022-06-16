@@ -22,8 +22,9 @@ object Constants {
     const val ACTION_PAUSE = "ACTION_PAUSE"
     const val NOTIFICATIONS_CHANNEL_ID = "CHANNEL_ID"
     const val NOTIFICATIONS_CHANNEL_NAME = "CHANNEL_NAME"
+    const val NOTIFICATIONS_GROUP = "NOTIFICATIONS_GROUP"
     const val SP_NEXT_ALARM = "NEXT_ALARM"
-    const val SP_NEXT_ALARMS="SP_NEXT_ALARMS"
+    const val SP_NEXT_ALARMS = "SP_NEXT_ALARMS"
     const val NOTIFICATION_ID = "NOTIFICATION_ID"
     const val SP_DEFAULT_LONG = -1L
     const val ALARM_RING_TIME = 30000L
