@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,7 +18,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toLocalDateTime
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Symptom
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.enums.SymptomRegistrationSituation
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
@@ -31,7 +31,7 @@ fun RegisterSymptomsScreen(
     prescriptionItemId: String? = "",
     viewModel: RegisterSymptomsViewModel = hiltViewModel()
 ) {
-    var surveyScreenNumber by remember { mutableStateOf(0) }
+    var surveyScreenNumber by rememberSaveable { mutableStateOf(0) }
     Log.i("RegisterSymptomsScreen", prescriptionItemId.toString())
 
 
@@ -61,7 +61,7 @@ fun RegisterSymptomsScreen(
     }
 
 
-    DisposableEffect(Unit) {
+    LaunchedEffect(Unit) {
         clearSurvey()
         viewModel.getSymptomTypeItems()
         viewModel.getPatient()
@@ -73,7 +73,7 @@ fun RegisterSymptomsScreen(
             viewModel.getSpecificPrescriptionItem()
             surveyScreenNumber = 1
         }
-        onDispose {}
+//        onDispose {}
     }
 
     fun taskComplete() {

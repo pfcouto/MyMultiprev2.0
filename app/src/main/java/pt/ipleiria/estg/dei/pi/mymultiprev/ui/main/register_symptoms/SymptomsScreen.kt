@@ -63,7 +63,7 @@ fun SymptomsScreen(
             ) {
                 Text(
                     element.name,
-                    color = if (symptoms.getOrNull(idx) != null && symptoms[idx].second) Color.Cyan else Color.DarkGray,
+                    color = if (symptoms.getOrNull(idx) != null && symptoms[idx].second) Teal200 else Color.DarkGray,
                     fontSize = 28.sp
                 )
                 if (symptoms.getOrNull(idx) != null && symptoms[idx].second) {
@@ -71,7 +71,7 @@ fun SymptomsScreen(
                         modifier = Modifier.size(32.dp),
                         imageVector = Icons.Outlined.Check,
                         contentDescription = "Selected",
-                        tint = Color.Cyan
+                        tint = Teal200
                     )
                 }
             }

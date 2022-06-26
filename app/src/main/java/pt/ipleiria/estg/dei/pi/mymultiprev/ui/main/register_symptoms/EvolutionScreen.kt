@@ -63,7 +63,7 @@ fun EvolutionScreen(
             ) {
                 Text(
                     eTypeName,
-                    color = if (idx == activeEvolutionType.value) Color.Cyan else Color.DarkGray,
+                    color = if (idx == activeEvolutionType.value) Teal200 else Color.DarkGray,
                     fontSize = 28.sp
                 )
                 if (idx == activeEvolutionType.value) {
@@ -71,7 +71,7 @@ fun EvolutionScreen(
                         modifier = Modifier.size(32.dp),
                         imageVector = Icons.Outlined.Check,
                         contentDescription = "Selected",
-                        tint = Color.Cyan
+                        tint = Teal200
                     )
                 }
             }

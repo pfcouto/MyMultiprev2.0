@@ -355,7 +355,6 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
                     fontSize = 18.sp,
                     maxLines = 1,
-                    color = MaterialTheme.colors.onSurface,
                     fontWeight = FontWeight.W600,
                     text = "${if (item.second?.alias.isNullOrEmpty()) item.second?.name else item.second?.alias}"
                 )

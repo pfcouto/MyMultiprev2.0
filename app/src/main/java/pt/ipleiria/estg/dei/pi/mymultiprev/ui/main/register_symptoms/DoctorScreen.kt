@@ -62,7 +62,7 @@ fun DoctorScreen(
             ) {
                 Text(
                     eTypeName,
-                    color = if (idx == activeResponse.value) Color.Cyan else Color.DarkGray,
+                    color = if (idx == activeResponse.value) Teal200 else Color.DarkGray,
                     fontSize = 28.sp
                 )
                 if (idx == activeResponse.value) {
@@ -70,7 +70,7 @@ fun DoctorScreen(
                         modifier = Modifier.size(32.dp),
                         imageVector = Icons.Outlined.Check,
                         contentDescription = "Selected",
-                        tint = Color.Cyan
+                        tint = Teal200
                     )
                 }
             }
