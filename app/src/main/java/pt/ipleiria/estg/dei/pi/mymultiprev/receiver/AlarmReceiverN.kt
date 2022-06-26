@@ -16,19 +16,23 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.NotificationsManager
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.time.Instant.now
-import java.util.*
 
 @AndroidEntryPoint
 class AlarmReceiverN : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
         try {
-            Log.d("RECEIVING ALARM", "RECEIVING ALARM : ${now()}")
+            Log.d("RECEIVING ALARM NOTIFICATIONS", "RECEIVING ALARM BY ${now()}")
 
             val drugName = intent.getStringExtra(Constants.NOTIFICATIONS_DRUG_NAME)
+            val alarmID = intent.getStringExtra(Constants.NOTIFICATIONS_ALARM_ID)
+
+            Log.d("RECEIVING ALARM NOTIFICATIONS", "RECEIVING ALARM $drugName")
+
             showNotification(context, "MultiPrev - $drugName", drugName.toString())
             val notificationsManager = NotificationsManager()
             Log.d("NOTIFICATIONS", "Calling update next")
+            alarmID?.let { notificationsManager.removeAlarm(context, it) }
             notificationsManager.updateNext(context)
         } catch (ex: Exception) {
             Log.d("Receive Ex", "onReceive: ${ex.printStackTrace()}")

@@ -17,6 +17,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesReposit
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.time.Instant
 import java.util.*
+import kotlin.time.ExperimentalTime
 
 class NotificationsManager() {
 
@@ -48,11 +49,20 @@ class NotificationsManager() {
     fun removeAlarms(context: Context, prescId: String) {
         val sharedPreferences = SharedPreferencesRepository(context)
         sharedPreferences.removeAllAlarm(prescId)
-        updateNext(context)
+//        updateNext(context)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    fun removeAlarm(context: Context, id: String) {
+        val sharedPreferences = SharedPreferencesRepository(context)
+        sharedPreferences.removeAlarm(id)
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addAlarms(context: Context, prescriptionItem: PrescriptionItem, drug: Drug) {
+        Log.d("NOTIFICATIONS", "INSIDE ADD ALARMS")
+
         if (prescriptionItem.drug != drug.id ||
             prescriptionItem.nextIntake == null ||
             prescriptionItem.intakesTakenCount == null ||
@@ -64,14 +74,27 @@ class NotificationsManager() {
         val sharedPreferences = SharedPreferencesRepository(context)
 
         var intakesTakenCount = prescriptionItem.intakesTakenCount!!
+        var predictIntakes = prescriptionItem.intakesTakenCount!! + 1
+
         var instant = prescriptionItem.nextIntake!!.toInstant(Constants.TIME_ZONE)
+//        val plusTimeTest =
+//            (prescriptionItem.nextIntake!!.toInstant(
+//                Constants.TIME_ZONE
+//            ).toEpochMilliseconds() - Clock.System.now().toEpochMilliseconds()) / 100
+//        var instant = Instant.ofEpochMilli(Clock.System.now().toEpochMilliseconds() + plusTimeTest)
+//            .toKotlinInstant()
+//        Log.d("NOTIFICATIONS", "plusTimeTest:$plusTimeTest")
+
 
 //        Log.d("NOTIFICATIONS", "from $intakesTakenCount to ${prescriptionItem.expectedIntakeCount} cycle")
 //        while (intakesTakenCount <= prescriptionItem.expectedIntakeCount!!) {
-        while (intakesTakenCount <= prescriptionItem.intakesTakenCount!!) {
+        Log.d("NOTIFICATIONS", "WHILE:  $intakesTakenCount to $predictIntakes")
+        while (intakesTakenCount <= predictIntakes) {
             sharedPreferences.addAlarm("${instant.toEpochMilliseconds()};${prescriptionItem.id};${drug.commercialName}")
             Log.d("NOTIFICATIONS", "alarm set to $instant")
+//            instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.HOUR)
             instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.HOUR)
+//            instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.MINUTE)
             intakesTakenCount++
         }
         updateNext(context)
@@ -98,7 +121,7 @@ class NotificationsManager() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateNext(context: Context) {
         Log.d("NOTIFICATIONS", "Updating alarms")
-        removeExpired(context)
+//        removeExpired(context)
         val sharedPreferences = SharedPreferencesRepository(context)
         val nextAlarms = sharedPreferences.getNextAlarms()?.toList()
         if (nextAlarms.isNullOrEmpty()) {
@@ -119,6 +142,8 @@ class NotificationsManager() {
 
             if (instant < Instant.now().toEpochMilli()) {
                 Log.d("NOTIFICATIONS", "alarm outdated")
+                Log.d("NOTIFICATIONS", "now: ${Instant.now()}")
+                Log.d("NOTIFICATIONS", "alarm: ${Instant.ofEpochMilli(instant)}")
 //                sharedPreferences.removeAllAlarm(id)
                 sharedPreferences.removeAlarm(id)
             } else {
@@ -145,10 +170,12 @@ class NotificationsManager() {
         Log.d("NOTIFICATIONS", "nextAlarmTime: $instant : ${Date(instant)}")
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
         val intent = Intent(context, AlarmReceiverN::class.java)
         intent.putExtra(Constants.NOTIFICATIONS_DRUG_NAME, drugName)
 
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        val pendingIntent =
+            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, instant, pendingIntent)
     }
 }
