@@ -53,6 +53,7 @@ enum class TabPage() {
 @Composable
 fun DrugDetailsScreen(
     navController: NavHostController,
+    navControllerOutsideLoginScope: NavHostController,
     viewModel: DrugDetailsViewModel = hiltViewModel(),
     drugId: String,
     prescriptionId: String
@@ -91,7 +92,7 @@ fun DrugDetailsScreen(
     Column() {
         AppBar(
             drug = drug,
-            navController = navController,
+            navControllerOutsideLoginScope = navControllerOutsideLoginScope,
             prescription = prescription,
             viewModel = viewModel
         )
@@ -103,7 +104,7 @@ fun DrugDetailsScreen(
 fun AppBar(
     drug: LiveData<Drug>,
     prescription: LiveData<PrescriptionItem>,
-    navController: NavHostController,
+    navControllerOutsideLoginScope: NavHostController,
     viewModel: DrugDetailsViewModel
 ) {
 
@@ -153,7 +154,7 @@ fun AppBar(
                         .padding(top = 4.dp, end = 4.dp),
                     onClick = {
 //                        navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id + "/" + drugState.value!!.id)
-                        navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id)
+                        navControllerOutsideLoginScope.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id)
                     }) {
                     Box(
                         modifier = Modifier

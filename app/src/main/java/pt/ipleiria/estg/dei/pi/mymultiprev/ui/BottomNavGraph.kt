@@ -1,6 +1,8 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +21,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory.PrescriptionItemsHistoryScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BottomNavGraph(
     navController: NavHostController,
@@ -97,7 +100,8 @@ fun BottomNavGraph(
             DrugDetailsScreen(
                 drugId = drugId!!,
                 prescriptionId = prescriptionId!!,
-                navController = navController
+                navController = navController,
+                navControllerOutsideLoginScope = navControllerLogin
             )
         }
 
@@ -122,24 +126,7 @@ fun BottomNavGraph(
             )
         }
 
-        composable(
-            route = "drugDetailsScreenCamera/{prescriptionId}", arguments = listOf(
-                navArgument("prescriptionId") {
-                    type = NavType.StringType
-                })
-        ) {
-            var prescriptionId = remember {
-                it.arguments?.getString("prescriptionId")
-            }
-//            var drugId = remember {
-//                it.arguments?.getString("drugId")
-//            }
-            CameraScreen(
-                prescriptionId = prescriptionId!!,
-//                drugId = drugId!!,
-                navController = navController
-            )
-        }
+
 
         composable(route = "confirmAcquisitionScreen") {
             ConfirmAcquisitionScreen(navController = navController)
