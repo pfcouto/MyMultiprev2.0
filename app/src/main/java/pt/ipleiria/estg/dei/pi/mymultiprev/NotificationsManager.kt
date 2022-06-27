@@ -21,9 +21,6 @@ import kotlin.time.ExperimentalTime
 
 class NotificationsManager() {
 
-//    fun addalarms(context:Context, prescriptionItem: PrescriptionItem){
-//        prescriptionItem.
-//    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun addAlarm(context: Context, na_instant: String, na_id: String, na_drugName: String) {
@@ -53,9 +50,9 @@ class NotificationsManager() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun removeAlarm(context: Context, id: String) {
+    fun removeAlarm(context: Context, instant: String, id: String) {
         val sharedPreferences = SharedPreferencesRepository(context)
-        sharedPreferences.removeAlarm(id)
+        sharedPreferences.removeAlarm("$instant;$id")
     }
 
     @OptIn(ExperimentalTime::class)
@@ -77,16 +74,7 @@ class NotificationsManager() {
         var predictIntakes = prescriptionItem.intakesTakenCount!! + 1
 
         var instant = prescriptionItem.nextIntake!!.toInstant(Constants.TIME_ZONE)
-//        val plusTimeTest =
-//            (prescriptionItem.nextIntake!!.toInstant(
-//                Constants.TIME_ZONE
-//            ).toEpochMilliseconds() - Clock.System.now().toEpochMilliseconds()) / 100
-//        var instant = Instant.ofEpochMilli(Clock.System.now().toEpochMilliseconds() + plusTimeTest)
-//            .toKotlinInstant()
-//        Log.d("NOTIFICATIONS", "plusTimeTest:$plusTimeTest")
 
-
-//        Log.d("NOTIFICATIONS", "from $intakesTakenCount to ${prescriptionItem.expectedIntakeCount} cycle")
 //        while (intakesTakenCount <= prescriptionItem.expectedIntakeCount!!) {
         Log.d("NOTIFICATIONS", "WHILE:  $intakesTakenCount to $predictIntakes")
         while (intakesTakenCount <= predictIntakes) {
@@ -140,20 +128,20 @@ class NotificationsManager() {
             val id = alarmParts[1]
             val drugName = alarmParts[2]
 
-            if (instant < Instant.now().toEpochMilli()) {
-                Log.d("NOTIFICATIONS", "alarm outdated")
-                Log.d("NOTIFICATIONS", "now: ${Instant.now()}")
-                Log.d("NOTIFICATIONS", "alarm: ${Instant.ofEpochMilli(instant)}")
-//                sharedPreferences.removeAllAlarm(id)
-                sharedPreferences.removeAlarm(id)
-            } else {
-                if (instant < nextAlarmTime) {
-                    Log.d("NOTIFICATIONS", "alarm newer then the previous")
-                    nextAlarmTime = instant
-                    alarmID = id
-                    nextAlarmName = drugName
-                }
+//            if (instant < Instant.now().toEpochMilli()) {
+//                Log.d("NOTIFICATIONS", "alarm outdated")
+//                Log.d("NOTIFICATIONS", "now: ${Instant.now()}")
+//                Log.d("NOTIFICATIONS", "alarm: ${Instant.ofEpochMilli(instant)}")
+////                sharedPreferences.removeAllAlarm(id)
+//                sharedPreferences.removeAlarm(id)
+//            } else {
+            if (instant < nextAlarmTime) {
+                Log.d("NOTIFICATIONS", "alarm newer then the previous")
+                nextAlarmTime = instant
+                alarmID = id
+                nextAlarmName = drugName
             }
+//            }
         }
         if (alarmID.isNotEmpty() && nextAlarmName.isNotEmpty()) {
             setAlarm(context, nextAlarmTime, nextAlarmName)

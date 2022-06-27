@@ -22,17 +22,24 @@ class AlarmReceiverN : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
         try {
-            Log.d("RECEIVING ALARM NOTIFICATIONS", "RECEIVING ALARM BY ${now()}")
+            Log.d("RECEIVING NOTIFICATIONS", "RECEIVING ALARM BY ${now()}")
 
             val drugName = intent.getStringExtra(Constants.NOTIFICATIONS_DRUG_NAME)
             val alarmID = intent.getStringExtra(Constants.NOTIFICATIONS_ALARM_ID)
+            val alarmInstant = intent.getStringExtra(Constants.NOTIFICATIONS_ALARM_INSTANT)
 
-            Log.d("RECEIVING ALARM NOTIFICATIONS", "RECEIVING ALARM $drugName")
+            Log.d("RECEIVING NOTIFICATIONS", "RECEIVING ALARM $drugName")
 
             showNotification(context, "MultiPrev - $drugName", drugName.toString())
             val notificationsManager = NotificationsManager()
             Log.d("NOTIFICATIONS", "Calling update next")
-            alarmID?.let { notificationsManager.removeAlarm(context, it) }
+            if (alarmID != null && alarmInstant != null) {
+                notificationsManager.removeAlarm(
+                    context,
+                    alarmInstant,
+                    alarmID
+                )
+            }
             notificationsManager.updateNext(context)
         } catch (ex: Exception) {
             Log.d("Receive Ex", "onReceive: ${ex.printStackTrace()}")

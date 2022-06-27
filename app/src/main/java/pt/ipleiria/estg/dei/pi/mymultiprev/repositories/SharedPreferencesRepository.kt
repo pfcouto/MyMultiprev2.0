@@ -40,13 +40,15 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
     fun getNextAlarms(): MutableSet<String>? =
         spAlarmService.getStringSet(Constants.SP_NEXT_ALARMS, null)
 
-    fun removeAlarm(id: String) {
+    fun removeAlarm(instantAndId: String) {
         val nextAlarms = getNextAlarms() ?: return
-        Log.d("NOTIFICATIONS", "removeAlarm - $id")
+        Log.d("NOTIFICATIONS", "removeAlarm - $instantAndId")
         Log.d("NOTIFICATIONS", "removeAlarm before remove  alarms - $nextAlarms")
         var alarmToRemove: String? = null
         nextAlarms.forEach {
-            if (it.split(";")[1] == id) {
+            val instantEach = it.split(";")[1]
+            val idEach = it.split(";")[1]
+            if ( "$instantEach;$idEach" == instantAndId) {
                 alarmToRemove = it
                 return@forEach
             }
