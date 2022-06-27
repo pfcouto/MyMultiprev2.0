@@ -351,10 +351,10 @@ fun ConfirmIntakeDetailsScreen(
                         openDialog.value = true
                         viewModel.registerIntake()
                         Log.d("Alarmes", "${prescriptionItem!!.alarm}")
-                        if (prescriptionItem!!.alarm) {
-
-                            setAlarm(context, drug!!.name, prescriptionItem!!)
-                        }
+//                        if (prescriptionItem!!.alarm) {
+//
+//                            setAlarm(context, drug!!.name, prescriptionItem!!)
+//                        }
                     }) {
 
                     Text(
