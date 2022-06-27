@@ -51,6 +51,8 @@ class NotificationsManager() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun removeAlarm(context: Context, instant: String, id: String) {
+        Log.d("NOTIFICATIONS", "REMOVING ALARM $instant;$id")
+
         val sharedPreferences = SharedPreferencesRepository(context)
         sharedPreferences.removeAlarm("$instant;$id")
     }
@@ -144,13 +146,13 @@ class NotificationsManager() {
 //            }
         }
         if (alarmID.isNotEmpty() && nextAlarmName.isNotEmpty()) {
-            setAlarm(context, nextAlarmTime, nextAlarmName)
+            setAlarm(context, nextAlarmTime, alarmID, nextAlarmName)
             Log.d("NOTIFICATIONS", "next alarm set - $nextAlarmTime;$alarmID;$nextAlarmName")
         }
     }
 
 
-    private fun setAlarm(context: Context, instant: Long, drugName: String) {
+    private fun setAlarm(context: Context, instant: Long, id: String, drugName: String) {
 
 //        val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
         val timeSec = System.currentTimeMillis()
@@ -161,6 +163,8 @@ class NotificationsManager() {
 
         val intent = Intent(context, AlarmReceiverN::class.java)
         intent.putExtra(Constants.NOTIFICATIONS_DRUG_NAME, drugName)
+        intent.putExtra(Constants.NOTIFICATIONS_ALARM_ID, id)
+        intent.putExtra(Constants.NOTIFICATIONS_ALARM_INSTANT, instant.toString())
 
         val pendingIntent =
             PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)

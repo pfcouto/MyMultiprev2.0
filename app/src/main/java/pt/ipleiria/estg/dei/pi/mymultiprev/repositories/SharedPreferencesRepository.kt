@@ -46,7 +46,7 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
         Log.d("NOTIFICATIONS", "removeAlarm before remove  alarms - $nextAlarms")
         var alarmToRemove: String? = null
         nextAlarms.forEach {
-            val instantEach = it.split(";")[1]
+            val instantEach = it.split(";")[0]
             val idEach = it.split(";")[1]
             if ( "$instantEach;$idEach" == instantAndId) {
                 alarmToRemove = it
