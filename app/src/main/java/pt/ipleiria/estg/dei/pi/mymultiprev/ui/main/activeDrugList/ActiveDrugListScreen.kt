@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -45,6 +46,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcquisitionViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.seeDetails.SeeDetailsViewModel
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Gray
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
@@ -334,6 +336,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
         else MaterialTheme.colors.surface
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+
             Log.d("Imagens", "${item.first.imageLocation}")
             if (item.first.imageLocation != null) {
                 val painter = rememberImagePainter(data = item.first.imageLocation)
@@ -359,6 +362,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
             Column(modifier = Modifier.width(160.dp)) {
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
+                    color = if(isSystemInDarkTheme()) Gray else Color.DarkGray,
                     fontSize = 18.sp,
                     maxLines = 1,
                     fontWeight = FontWeight.W600,
