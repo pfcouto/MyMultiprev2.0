@@ -17,7 +17,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 
 @Composable
 fun EvolutionScreen(
@@ -63,7 +63,7 @@ fun EvolutionScreen(
             ) {
                 Text(
                     eTypeName,
-                    color = if (idx == activeEvolutionType.value) Teal200 else Color.DarkGray,
+                    color = if (idx == activeEvolutionType.value) Teal else Color.DarkGray,
                     fontSize = 28.sp
                 )
                 if (idx == activeEvolutionType.value) {
@@ -71,7 +71,7 @@ fun EvolutionScreen(
                         modifier = Modifier.size(32.dp),
                         imageVector = Icons.Outlined.Check,
                         contentDescription = "Selected",
-                        tint = Teal200
+                        tint = Teal
                     )
                 }
             }
@@ -81,8 +81,8 @@ fun EvolutionScreen(
     Spacer(modifier = Modifier.size(48.dp))
     Button(
         enabled = activeEvolutionType.value > -1,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-        border = BorderStroke(1.dp, Teal200),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+        border = BorderStroke(1.dp, Teal),
         onClick = { onNext() }) {
         Text(text = "Seguinte", fontSize = 26.sp)
     }

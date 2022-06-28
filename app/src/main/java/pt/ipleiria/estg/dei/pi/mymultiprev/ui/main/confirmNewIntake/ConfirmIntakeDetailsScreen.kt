@@ -32,7 +32,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.*
@@ -309,16 +309,16 @@ fun ConfirmIntakeDetailsScreen(
 
             Row() {
                 Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-                    border = BorderStroke(1.dp, Teal200),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                    border = BorderStroke(1.dp, Teal),
                     modifier = Modifier.padding(start = 32.dp, top = 24.dp, end = 16.dp),
                     onClick = { showDatePicker = true }) {
                     Text(fontSize = 15.sp, text = "EDITAR DATA")
                 }
 
                 Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-                    border = BorderStroke(1.dp, Teal200),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                    border = BorderStroke(1.dp, Teal),
                     modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 32.dp),
                     onClick = { showTimePicker = true }) {
                     Text(fontSize = 15.sp, text = "EDITAR HORA")
@@ -342,8 +342,8 @@ fun ConfirmIntakeDetailsScreen(
                     .fillMaxWidth()
             ) {
                 Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-                    border= BorderStroke(1.dp, Teal200),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                    border= BorderStroke(1.dp, Teal),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE)
                         .toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds(),
@@ -366,8 +366,8 @@ fun ConfirmIntakeDetailsScreen(
                 }
 
                 OutlinedButton(
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor =  Teal200),
-                    border= BorderStroke(1.dp, Teal200),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor =  Teal),
+                    border= BorderStroke(1.dp, Teal),
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .fillMaxWidth(),

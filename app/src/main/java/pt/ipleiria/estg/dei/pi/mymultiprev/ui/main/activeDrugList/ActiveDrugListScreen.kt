@@ -7,6 +7,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -44,7 +45,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcquisitionViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.seeDetails.SeeDetailsViewModel
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.concurrent.TimeUnit
@@ -243,26 +244,30 @@ fun AlertDialogLogout(openDialog: Boolean, setDialogFalse: () -> Unit, logout: (
                     onDismissRequest = {
                     },
                     title = {
-                        Text(text = "LOGOUT")
+                        Text(text = "Tem a certeza de que pretende sair?")
                     },
                     text = {
-                        Text("Are you sure you want to logout?")
+                           // Just to create a spacer between the title and the buttons
                     },
                     confirmButton = {
                         Button(
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                            border = BorderStroke(1.dp, Teal),
                             onClick = {
                                 setDialogFalse()
                                 logout()
                             }) {
-                            Text("Logout")
+                            Text("Sair")
                         }
                     },
                     dismissButton = {
                         Button(
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                            border = BorderStroke(1.dp, Teal),
                             onClick = {
                                 setDialogFalse()
                             }) {
-                            Text("Cancel")
+                            Text("Cancelar")
                         }
                     }
                 )
@@ -371,7 +376,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
             Button(modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
                 onClick = {
                     onDetailsAndConfirmButtonClick(
                         item = item,

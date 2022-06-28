@@ -65,7 +65,7 @@ data class MyColors(
 }
 
 private val LightColorPalette = MyColors(
-    material = lightColors(primary = Teal200),
+    material = lightColors(primary = Teal),
     darkRed = DarkRed,
     darkGreen = DarkGreen,
     messageOverdue = MessageOverdue,
@@ -83,13 +83,13 @@ private val DarkColorPalette = MyColors(
 //private val DarkColorPalette = darkColors(
 //    primary = Purple200,
 //    primaryVariant = Purple700,
-//    secondary = Teal200,
+//    secondary = Teal,
 //)
 //
 //private val LightColorPalette = lightColors(
 //    primary = Purple500,
 //    primaryVariant = Purple700,
-//    secondary = Teal200
+//    secondary = Teal
 //
 //    /* Other default colors to override
 //    background = Color.White,
@@ -115,7 +115,7 @@ val LocalColors = compositionLocalOf<MyColors> { error("No colors found!") }
 fun MyMultiPrevTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(
-        color = Teal200
+        color = Teal
     )
 
     val colors = if (darkTheme) {

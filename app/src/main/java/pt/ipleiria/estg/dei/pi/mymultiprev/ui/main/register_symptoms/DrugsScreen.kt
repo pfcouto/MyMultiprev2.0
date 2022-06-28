@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 
 @Composable
 fun DrugsScreen(
@@ -68,7 +68,7 @@ fun DrugsScreen(
             ) {
                 Text(
                     drug!!.alias.ifEmpty { drug.commercialName },
-                    color = if (idx == activeDrug.value) Teal200 else Color.DarkGray,
+                    color = if (idx == activeDrug.value) Teal else Color.DarkGray,
                     fontSize = 28.sp
                 )
                 if (idx == activeDrug.value) {
@@ -76,7 +76,7 @@ fun DrugsScreen(
                         modifier = Modifier.size(32.dp),
                         imageVector = Icons.Outlined.Check,
                         contentDescription = "Selected",
-                        tint = Teal200
+                        tint = Teal
                     )
                 }
             }
@@ -86,8 +86,8 @@ fun DrugsScreen(
     Spacer(modifier = Modifier.size(48.dp))
     Button(
         enabled = activeDrug.value > -1,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-        border = BorderStroke(1.dp, Teal200),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+        border = BorderStroke(1.dp, Teal),
         onClick = { onNext() }) {
         Text(text = "Seguinte", fontSize = 26.sp)
     }

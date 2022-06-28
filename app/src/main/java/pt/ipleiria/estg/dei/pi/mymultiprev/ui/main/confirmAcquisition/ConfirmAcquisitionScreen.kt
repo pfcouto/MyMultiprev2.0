@@ -28,7 +28,7 @@ import androidx.navigation.NavHostController
 import com.chargemap.compose.numberpicker.NumberPicker
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 import java.util.*
 
@@ -149,8 +149,8 @@ fun ConfirmAcquisitionScreen(
             }
 
             Button(
-                colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-                border = BorderStroke(1.dp, Teal200),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                border = BorderStroke(1.dp, Teal),
                 modifier = Modifier.padding(start = 32.dp, end = 32.dp),
                 onClick = { showDatePicker = true }) {
                 Text(
@@ -173,8 +173,8 @@ fun ConfirmAcquisitionScreen(
 
             Row(modifier = Modifier.padding(top = 24.dp)) {
                 Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-                    border= BorderStroke(1.dp, Teal200),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                    border= BorderStroke(1.dp, Teal),
                     modifier = Modifier.padding(
                         start = 32.dp,
                         end = 4.dp,
@@ -189,8 +189,8 @@ fun ConfirmAcquisitionScreen(
                 }
 
                 OutlinedButton(
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor =  Teal200),
-                    border= BorderStroke(1.dp, Teal200),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor =  Teal),
+                    border= BorderStroke(1.dp, Teal),
                     modifier = Modifier.padding(
                         start = 32.dp,
                         end = 4.dp,
