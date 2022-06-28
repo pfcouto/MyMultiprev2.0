@@ -130,6 +130,7 @@ fun ConfirmAcquisitionScreen(
                     text = "Frequência:"
                 )
                 NumberPicker(
+                    dividersColor = Teal,
                     value = pickerValue,
                     onValueChange = {
                         pickerValue = it;

@@ -39,6 +39,7 @@ fun AgeScreen(
     ) {
         NumberPicker(
             value = age.value,
+            dividersColor = Teal,
             range = 0..150,
             onValueChange = {
                 age.value = it

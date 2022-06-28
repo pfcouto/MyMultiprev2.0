@@ -513,6 +513,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                     )
                 }) {
                     Text(
+                        color = Teal,
                         text = if (!prescriptionIsOverdue.value)
                             "VER DETALHES"
                         else
