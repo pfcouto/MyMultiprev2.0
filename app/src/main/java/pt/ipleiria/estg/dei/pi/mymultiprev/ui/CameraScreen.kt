@@ -15,12 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Lens
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +31,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -142,7 +138,7 @@ fun CameraScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        CircularProgressIndicator(modifier = Modifier.size(56.dp))
+                        CircularProgressIndicator(color = Teal, modifier = Modifier.size(56.dp))
                     }
                 } else {
                     IconButton(

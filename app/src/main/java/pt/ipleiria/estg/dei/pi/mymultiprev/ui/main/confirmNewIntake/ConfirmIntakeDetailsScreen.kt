@@ -67,6 +67,7 @@ fun ConfirmIntakeDetailsScreen(
 
     if (prescriptionItem == null) {
         CircularProgressIndicator(
+            color = Teal,
             modifier = Modifier
                 .size(68.dp)
                 .fillMaxSize()

@@ -40,6 +40,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 
@@ -130,7 +131,7 @@ fun AppBar(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CircularProgressIndicator(modifier = Modifier.size(56.dp))
+                CircularProgressIndicator(color = Teal,modifier = Modifier.size(56.dp))
             }
         } else {
             Card {
@@ -313,7 +314,7 @@ fun Details(drug: State<Drug?>, prescription: State<PrescriptionItem?>) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CircularProgressIndicator(modifier = Modifier.size(56.dp))
+            CircularProgressIndicator(color = Teal,modifier = Modifier.size(56.dp))
         }
     } else {
         Column(
@@ -451,7 +452,7 @@ fun Tomas(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CircularProgressIndicator(modifier = Modifier.size(56.dp))
+            CircularProgressIndicator(color = Teal,modifier = Modifier.size(56.dp))
         }
     } else {
         Log.i("HERE COUNT", intakes.value!!.size.toString())

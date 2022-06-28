@@ -32,6 +32,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 
 @Composable
 fun PrescriptionItemsHistoryScreen(
@@ -70,6 +71,7 @@ fun PrescriptionItemsHistoryScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     CircularProgressIndicator(
+                        color = Teal,
                         modifier = Modifier
                             .size(68.dp)
                             .fillMaxSize()

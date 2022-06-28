@@ -218,6 +218,7 @@ fun ActiveDrugListScreen(
                 if (loadingData) {
 
                     CircularProgressIndicator(
+                        color = Teal,
                         modifier = Modifier
                             .size(68.dp)
                             .fillMaxSize()

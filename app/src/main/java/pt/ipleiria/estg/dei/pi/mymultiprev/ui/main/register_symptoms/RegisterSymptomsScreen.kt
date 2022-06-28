@@ -167,6 +167,7 @@ fun RegisterSymptomsScreen(
             || drugsState.value == null
         ) {
             CircularProgressIndicator(
+                color = Teal,
                 modifier = Modifier
                     .size(68.dp)
                     .fillMaxSize()
