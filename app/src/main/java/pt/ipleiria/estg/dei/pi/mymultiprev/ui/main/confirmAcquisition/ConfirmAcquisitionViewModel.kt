@@ -31,8 +31,6 @@ class ConfirmAcquisitionViewModel @Inject constructor(
     private val drugRepository: DrugRepository,
 ) : ViewModel() {
 
-    //TODO FALTA ECRA
-
     private val TAG = "ConfirmAcquisitionViewModel"
 
     private val _drug: MutableState<Drug?> = mutableStateOf(null)

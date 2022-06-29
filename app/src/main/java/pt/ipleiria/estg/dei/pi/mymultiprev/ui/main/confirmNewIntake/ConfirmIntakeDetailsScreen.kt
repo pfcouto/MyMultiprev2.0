@@ -192,22 +192,6 @@ fun ConfirmIntakeDetailsScreen(
 ////        )?.toEpochMilliseconds()
 ////        maxDate = System.currentTimeMillis()
 ////    }
-//
-//        // Fetching current hour and minute
-//        val mHour = mCalendar[Calendar.HOUR_OF_DAY]
-//        val mMinute = mCalendar[Calendar.MINUTE]
-//
-//        var mTime by remember { mutableStateOf("") }
-//        val fillTime = "$mHour:$mMinute"
-//
-//        mCalendar.time = Date()
-//
-//        val mTimePickerDialog = TimePickerDialog(
-//            mContext,
-//            { _, mHour: Int, mMinute: Int ->
-//                mTime = "$mHour:$mMinute"
-//            }, mHour, mMinute, true
-//        )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -302,14 +286,8 @@ fun ConfirmIntakeDetailsScreen(
                     textAlign = TextAlign.End,
                     fontSize = 18.sp,
                     text = Util.formatDateTime(dateTime!!)
-//                    text = "${dateTime?.dayOfMonth}/${if(dateTime?.monthNumber!! < 10) "0"+dateTime?.monthNumber else dateTime?.monthNumber}/${dateTime?.year} ${dateTime?.hour}:${dateTime?.minute}"/*"${if (mDate.value.isNullOrBlank()) fillDate else mDate.value} ${if (mTime.isNullOrBlank()) fillTime else mTime}"*/
                 )
             }
-//            if (dateTime?.monthNumber!! < 10) "0" + dateTime?.monthNumber!! else dateTime?.monthNumber
-
-//            var showDatePicker by remember { mutableStateOf(false) }
-//            var showTimePicker by remember { mutableStateOf(false) }
-
 
             Row() {
                 Button(
@@ -319,14 +297,6 @@ fun ConfirmIntakeDetailsScreen(
                     onClick = { viewModel.selectDateTime(context) }) {
                     Text(fontSize = 15.sp, text = "EDITAR DATA E HORA")
                 }
-
-//                Button(
-//                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
-//                    border = BorderStroke(1.dp, Teal),
-//                    modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 32.dp),
-//                    onClick = { /*showTimePicker = true*/ }) {
-//                    Text(fontSize = 15.sp, text = "EDITAR HORA")
-//                }
             }
 
             if (showError) {
