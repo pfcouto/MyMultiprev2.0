@@ -1,5 +1,8 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -19,7 +22,9 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.DrugRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class ConfirmAcquisitionViewModel @Inject constructor(
@@ -62,10 +67,6 @@ class ConfirmAcquisitionViewModel @Inject constructor(
     }
 
     fun setTime(year: Int, month: Int, dayOfMonth: Int, hourOfDay: Int, minute: Int) {
-        Log.d(
-            "Data",
-            year.toString() + "/" + month.toString() + "/" + dayOfMonth.toString() + " " + hourOfDay.toString() + ":" + minute.toString()
-        )
         Log.i(TAG, "Time = $hourOfDay/$minute")
         _scheduleIntakeDateTime.value = LocalDateTime(
             year,
@@ -74,6 +75,7 @@ class ConfirmAcquisitionViewModel @Inject constructor(
             hourOfDay,
             minute
         )
+
     }
 
     fun getDrug(drugID: String) {
@@ -102,6 +104,34 @@ class ConfirmAcquisitionViewModel @Inject constructor(
         Log.i(TAG, "Clearing Response")
         _response = MutableLiveData()
         _predictDates = MutableLiveData()
+    }
+
+    fun selectDateTime(context: Context, frequency: Int) {
+        var time = ""
+        val currentDateTime = Calendar.getInstance()
+        val startYear = currentDateTime.get(Calendar.YEAR)
+        val startMonth = currentDateTime.get(Calendar.MONTH)
+        val startDay = currentDateTime.get(Calendar.DAY_OF_MONTH)
+        val startHour = currentDateTime.get(Calendar.HOUR_OF_DAY)
+        val startMinute = currentDateTime.get(Calendar.MINUTE)
+
+        if (_scheduleIntakeDateTime.value != null){
+            DatePickerDialog(context, { _, year, month, day ->
+                TimePickerDialog(context, { _, hour, minute ->
+                    val pickedDateTime = Calendar.getInstance()
+                    pickedDateTime.set(year, month, day, hour, minute)
+                    val monthStr: String
+                    if ((month + 1).toString().length == 1) {
+                        monthStr = "0${month + 1}"
+                    } else {
+                        monthStr = month.toString()
+                    }
+                    time = "$day - $monthStr - $year $hour:$minute"
+                    setTime(year, month, day, hour, minute)
+                    recalculatePredictionDates(frequency)
+                }, startHour, startMinute, false).show()
+            }, startYear, startMonth, startDay).show()
+        }
     }
 
     fun recalculatePredictionDates(frequency: Int) {
