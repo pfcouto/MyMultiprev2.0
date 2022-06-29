@@ -118,16 +118,8 @@ class ConfirmAcquisitionViewModel @Inject constructor(
         if (_scheduleIntakeDateTime.value != null){
             DatePickerDialog(context, { _, year, month, day ->
                 TimePickerDialog(context, { _, hour, minute ->
-                    val pickedDateTime = Calendar.getInstance()
-                    pickedDateTime.set(year, month, day, hour, minute)
-                    val monthStr: String
-                    if ((month + 1).toString().length == 1) {
-                        monthStr = "0${month + 1}"
-                    } else {
-                        monthStr = month.toString()
-                    }
-                    time = "$day - $monthStr - $year $hour:$minute"
-                    setTime(year, month, day, hour, minute)
+                    Log.d("ConfirmAcquisitionScreen", "Mes -> $month")
+                    setTime(year, month + 1, day, hour, minute)
                     recalculatePredictionDates(frequency)
                 }, startHour, startMinute, false).show()
             }, startYear, startMonth, startDay).show()

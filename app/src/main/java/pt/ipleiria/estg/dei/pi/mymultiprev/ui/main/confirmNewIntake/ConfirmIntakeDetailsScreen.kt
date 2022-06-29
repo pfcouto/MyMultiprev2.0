@@ -158,8 +158,6 @@ fun ConfirmIntakeDetailsScreen(
             }
         }
 
-//    viewModel.displayStatus()
-        // Fetching the Local Context
         val mContext = LocalContext.current
 
         // Declaring integer values

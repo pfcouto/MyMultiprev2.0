@@ -219,8 +219,5 @@ fun ConfirmAcquisitionScreen(
                 Util.handleError(response.value as Resource.Error<PrescriptionItemDTO>)
             }
         }
-
     }
-
-
 }
