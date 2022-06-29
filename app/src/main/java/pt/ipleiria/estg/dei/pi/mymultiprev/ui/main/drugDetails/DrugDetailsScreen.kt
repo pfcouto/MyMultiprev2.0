@@ -1,5 +1,6 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
+import android.Manifest
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -33,9 +34,16 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import okhttp3.internal.notify
+import okhttp3.internal.notifyAll
+import okhttp3.internal.wait
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
@@ -101,6 +109,7 @@ fun DrugDetailsScreen(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AppBar(
     drug: LiveData<Drug>,
@@ -113,12 +122,15 @@ fun AppBar(
     val prescriptionState = prescription.observeAsState()
     val showInputDialog = remember { mutableStateOf(false) }
 
+    val cameraPermissionState = rememberPermissionState(
+        Manifest.permission.CAMERA
+    )
+
     if (showInputDialog.value) {
         InputDialog(alias = drugState.value!!.alias, showInputDialog = showInputDialog) {
             viewModel.setPrescriptionItemAlias(drugState.value!!.id, it)
         }
     }
-
 
     Box(
         modifier = Modifier
@@ -154,8 +166,25 @@ fun AppBar(
                         .align(Alignment.TopEnd)
                         .padding(top = 4.dp, end = 4.dp),
                     onClick = {
+                        val mutex = Mutex()
+                        Log.d("OLA", "CLICOU")
 //                        navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id + "/" + drugState.value!!.id)
+                        cameraPermissionState.launchPermissionRequest()
                         navControllerOutsideLoginScope.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id)
+
+//
+//
+//                        when (cameraPermissionState.status) {
+//                            // If the camera permission is granted, then show screen with the feature enabled
+//                            is PermissionStatus.Granted -> {
+//                                Log.d("OLA", "ESTEVE AQUI!!")
+//
+//                            }
+//                            is PermissionStatus.Denied -> {
+//
+//                            }
+//                        }
+
                     }) {
                     Box(
                         modifier = Modifier

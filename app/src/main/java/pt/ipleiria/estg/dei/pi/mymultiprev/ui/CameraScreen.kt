@@ -1,8 +1,10 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 
+import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -59,6 +61,7 @@ fun CameraScreen(
 
     viewModel.setPrescriptionItemId(prescriptionId)
 
+
     LaunchedEffect(lensFacing) {
         val cameraProvider = ProcessCameraProvider.getInstance(context)
         cameraProvider.get().unbindAll()
@@ -75,9 +78,8 @@ fun CameraScreen(
 
     // Camera permission state
     val cameraPermissionState = rememberPermissionState(
-        android.Manifest.permission.CAMERA
+        Manifest.permission.CAMERA
     )
-
 
     fun Context.getOutputDirectory(): File {
         val mediaDir = externalMediaDirs.firstOrNull()?.let {
@@ -125,8 +127,10 @@ fun CameraScreen(
 
     }
 
+    var counter by remember { mutableStateOf(0) }
 
     when (cameraPermissionState.status) {
+
         // If the camera permission is granted, then show screen with the feature enabled
         PermissionStatus.Granted -> {
             Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
@@ -165,6 +169,7 @@ fun CameraScreen(
             }
         }
         is PermissionStatus.Denied -> {
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -176,7 +181,7 @@ fun CameraScreen(
                     if ((cameraPermissionState.status as PermissionStatus.Denied).shouldShowRationale) {
                         // If the user has denied the permission but the rationale can be shown,
                         // then gently explain why the app requires this permission
-                        "A Câmera é importante para esta aplicação. Por favaor dê permissão."
+                        "A Câmera é importante para esta aplicação. Por favor dê permissão."
                     } else {
                         // If it's the first time the user lands on this feature, or the user
                         // doesn't want to be asked again for this permission, explain that the
@@ -185,10 +190,25 @@ fun CameraScreen(
                     }
                 Text(textToShow, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
+                Button(onClick = {
+                    counter += 1
+                    if (counter != 2) {
+                        cameraPermissionState.launchPermissionRequest()
+                    } else {
+                        navController.popBackStack()
+                        Toast.makeText(
+                            context,
+                            "Terá de ir às definições do telemóvel para dar permissão. Obrigado.", Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                }) {
                     Text("OK")
                 }
             }
+        }
+        else -> {
+            Toast.makeText(context, "Esteve AQUI", Toast.LENGTH_LONG).show()
         }
     }
 }
