@@ -526,11 +526,11 @@ fun InputDialog(
             showInputDialog.value = false
         },
         title = {
-            Text(text = "New Alias")
+            Text(text = "Nova Alcunha")
         },
         text = {
             Column() {
-                Text("Insert a new alias for the drug")
+                Text("Inserira uma nova alcunha para o antibiótico:")
                 TextField(
                     value = text,
                     onValueChange = { text = it },
@@ -549,18 +549,22 @@ fun InputDialog(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                    border = BorderStroke(1.dp, Teal),
                     onClick = { showInputDialog.value = false }
                 ) {
-                    Text("Dismiss")
+                    Text("Cancelar")
                 }
                 Button(
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                    border = BorderStroke(1.dp, Teal),
                     onClick = {
                         onSuccess(text.trim())
                         showInputDialog.value = false
 //                            setNewAlias(text)
                     }
                 ) {
-                    Text("Confirm")
+                    Text("Confirmar")
                 }
             }
         }
