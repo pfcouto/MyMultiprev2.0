@@ -332,9 +332,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id)
             },
         elevation = 8.dp,
-        backgroundColor = if (!prescriptionAcquisitionConfirmed.value)
-            Color.LightGray
-        else MaterialTheme.colors.surface
+        border = if (!prescriptionAcquisitionConfirmed.value) BorderStroke(1.dp, Teal) else null
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
@@ -362,7 +360,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
 
             Column(modifier = Modifier.width(160.dp)) {
                 Text(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp),
                     color = if(isSystemInDarkTheme()) Gray else Color.DarkGray,
                     fontSize = 18.sp,
                     maxLines = 1,
@@ -371,7 +369,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 )
                 Spacer(modifier = Modifier.height(1.dp))
                 Text(
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                    modifier = Modifier.padding(start = 12.dp, end = 2.dp),
                     fontSize = 16.sp,
                     color = if (prescriptionIsOverdue.value)
                         MaterialTheme.myColors.messageOverdue else MaterialTheme.myColors.gray,
