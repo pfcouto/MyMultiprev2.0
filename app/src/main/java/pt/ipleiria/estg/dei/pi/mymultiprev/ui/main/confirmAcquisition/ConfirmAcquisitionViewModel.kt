@@ -9,19 +9,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
+import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.DrugRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import javax.inject.Inject
 
 @HiltViewModel
 class ConfirmAcquisitionViewModel @Inject constructor(
-    private val prescriptionItemsRepository: PrescriptionItemsRepository
+    private val prescriptionItemsRepository: PrescriptionItemsRepository,
+    private val drugRepository: DrugRepository,
 ) : ViewModel() {
 
     //TODO FALTA ECRA
@@ -71,6 +74,28 @@ class ConfirmAcquisitionViewModel @Inject constructor(
             hourOfDay,
             minute
         )
+    }
+
+    fun getDrug(drugID: String) {
+        viewModelScope.launch {
+            try {
+                _drug.value = drugRepository.getDrugById(drugId = drugID).first().data!!
+            } catch (e: Exception) {
+                Log.d(TAG, "EXCEPTION ${e.message}")
+            }
+        }
+    }
+
+    fun getPrescriptionItem(prescriptionItemID: String) {
+        viewModelScope.launch {
+            try {
+                _prescriptionItem.value =
+                    prescriptionItemsRepository.getPrescriptionItemById(prescriptionItemId = prescriptionItemID)
+                        .first().data!!
+            } catch (e: Exception) {
+                Log.d(TAG, "EXCEPTION ${e.message}")
+            }
+        }
     }
 
     fun clearResponse() {

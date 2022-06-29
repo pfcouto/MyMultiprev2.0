@@ -66,12 +66,18 @@ fun ConfirmIntakeDetailsScreen(
 
 
     if (prescriptionItem == null) {
-        CircularProgressIndicator(
-            color = Teal,
-            modifier = Modifier
-                .size(68.dp)
-                .fillMaxSize()
-        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator(
+                color = Teal,
+                modifier = Modifier
+                    .size(68.dp)
+                    .fillMaxSize()
+            )
+        }
     } else {
 
         var buttonEnabled by remember { mutableStateOf(false) }

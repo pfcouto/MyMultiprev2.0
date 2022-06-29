@@ -150,7 +150,7 @@ fun ActiveDrugListScreen(
                     var timeTextText by remember { mutableStateOf("") }
 
 
-                    if (item.first.acquiredAt == null) {
+                    if (item.first.acquiredAt ==  null ||item.first.intakesTakenCount == 0) {
                         prescriptionAcquisitionConfirmed.value = false
                         timeTextText = "Confirmar Aquisição"
 
@@ -536,7 +536,7 @@ private fun onDetailsAndConfirmButtonClick(
     navController: NavHostController,
     seeDetailsViewModel: SeeDetailsViewModel
 ) {
-    if (item.first.acquiredAt == null) {
+    if (item.first.acquiredAt == null || item.first.intakesTakenCount == 0) {
         onConfirmAcquisitionClick(
             pair = item,
             confirmViewModel = confirmViewModel,
@@ -575,6 +575,15 @@ fun onConfirmDoseClick(
 
 }
 
+fun onConfirmAcquisitionClick(
+    pair: Pair<PrescriptionItem, Drug?>,
+    confirmViewModel: ConfirmAcquisitionViewModel,
+    navController: NavHostController
+) {
+
+    navController.navigate("confirmAcquisitionScreen/${pair.first!!.id}/${pair.second!!.id}")
+}
+
 //private fun setAlarm(context: Context) {
 //    val timeSec = System.currentTimeMillis() + 1000
 //    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
@@ -595,7 +604,6 @@ fun onAlarmClick(
     val alarmState = !prescriptionItem.alarm
     viewModel.setAlarm(alarmState, prescriptionItem.id)
 
-
     val nM = NotificationsManager()
     if (drug == null) return
     if (alarmState) {
@@ -607,17 +615,6 @@ fun onAlarmClick(
         )
     }
 
-}
-
-
-fun onConfirmAcquisitionClick(
-    pair: Pair<PrescriptionItem, Drug?>,
-    confirmViewModel: ConfirmAcquisitionViewModel,
-    navController: NavHostController
-) {
-
-    confirmViewModel.setPrescriptionItemDrugPair(pair)
-    navController.navigate("confirmAcquisitionScreen")
 }
 
 private fun createNotificationChannel(context: Context) {

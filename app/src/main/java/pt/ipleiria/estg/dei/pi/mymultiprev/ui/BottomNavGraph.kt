@@ -113,10 +113,10 @@ fun BottomNavGraph(
                     type = NavType.StringType
                 })
         ) {
-            var drugId = remember {
+            val drugId = remember {
                 it.arguments?.getString("drug")
             }
-            var prescriptionItemId = remember {
+            val prescriptionItemId = remember {
                 it.arguments?.getString("prescriptionItem")
             }
             ConfirmIntakeDetailsScreen(
@@ -128,8 +128,24 @@ fun BottomNavGraph(
 
 
 
-        composable(route = "confirmAcquisitionScreen") {
-            ConfirmAcquisitionScreen(navController = navController)
+        composable(route = "confirmAcquisitionScreen/{prescriptionItem}/{drug}", arguments = listOf(
+            navArgument("prescriptionItem") {
+                type = NavType.StringType
+            }, navArgument("drug") {
+                type = NavType.StringType
+            })
+        ) {
+            val drugId = remember {
+                it.arguments?.getString("drug")
+            }
+            val prescriptionItemId = remember {
+                it.arguments?.getString("prescriptionItem")
+            }
+            ConfirmAcquisitionScreen(
+                navController = navController,
+                drugId = drugId!!,
+                prescriptionItemId = prescriptionItemId!!
+            )
         }
     }
 }
