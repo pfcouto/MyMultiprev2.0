@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
@@ -67,7 +68,7 @@ class NotificationsManager() {
             prescriptionItem.intakesTakenCount == null ||
             prescriptionItem.expectedIntakeCount == null
         ) {
-            Log.d("NOTIFICATIONS", "Error")
+            Log.d("NOTIFICATIONS", "ERROR")
             return
         }
         val sharedPreferences = SharedPreferencesRepository(context)
@@ -79,15 +80,23 @@ class NotificationsManager() {
 
 //        while (intakesTakenCount <= prescriptionItem.expectedIntakeCount!!) {
 //        Log.d("NOTIFICATIONS", "WHILE:  $intakesTakenCount to $predictIntakes")
+        val nowInstant = Clock.System.now()
+        var newAlarmsCount = 0
         while (intakesTakenCount <= predictIntakes) {
-            sharedPreferences.addAlarm("${instant.toEpochMilliseconds()};${prescriptionItem.id};${drug.commercialName}")
-            Log.d("NOTIFICATIONS", "alarm set to $instant")
+            if (instant >= nowInstant) {
+                val alarmToAdd = "${instant.toEpochMilliseconds()};${prescriptionItem.id};${drug.commercialName}"
+                sharedPreferences.addAlarm(alarmToAdd)
+                Log.d("NOTIFICATIONS", "$alarmToAdd ADDED TO SHARED PREFERENCES")
+                newAlarmsCount++
+            }
 //            instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.HOUR)
             instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.HOUR)
 //            instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.MINUTE)
             intakesTakenCount++
         }
-        updateNext(context)
+
+        Log.d("NOTIFICATIONS", "LEAVING ADD ALARMS - $newAlarmsCount NEW ALARMS ADDED")
+        if (newAlarmsCount > 0) updateNext(context)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
