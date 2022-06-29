@@ -1,14 +1,11 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake
 
 import android.app.AlarmManager
-import android.app.DatePickerDialog
 import android.app.PendingIntent
-import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.util.Log
-import android.widget.DatePicker
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -35,6 +32,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSym
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
+import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 import java.util.*
 
 @Composable
@@ -63,6 +61,7 @@ fun ConfirmIntakeDetailsScreen(
 
     val drug by remember { viewModel.drug }
     val prescriptionItem by remember { viewModel.prescriptionItem }
+    val dateTime by viewModel.registrationIntakeDateTime.observeAsState()
 
 
     if (prescriptionItem == null) {
@@ -158,59 +157,57 @@ fun ConfirmIntakeDetailsScreen(
             }
         }
 
-        val mContext = LocalContext.current
-
-        // Declaring integer values
-        // for year, month and day
-        val mYear: Int
-        val mMonth: Int
-        val mDay: Int
-
-        // Initializing a Calendar
-        val mCalendar = Calendar.getInstance()
-        // Fetching current year, month and day
-        mYear = mCalendar.get(Calendar.YEAR)
-        mMonth = mCalendar.get(Calendar.MONTH)
-        mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
-
-
-        // Declaring a string value to
-        // store date in string format
-        val mDate = remember { mutableStateOf("") }
-        val fillDate = "$mDay/${mMonth + 1}/$mYear"
-
-        // Declaring DatePickerDialog and setting
-        // initial values as current values (present year, month and day)
-        val mDatePickerDialog = DatePickerDialog(
-            mContext,
-            { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                mDate.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
-
-            }, mYear, mMonth, mDay
-        )
-        // TODO Ainda tentar fazer
-//    mDatePickerDialog.datePicker.apply {
-//        minDate = prescriptionItem?.nextIntake?.toInstant(
-//            Constants.TIME_ZONE
-//        )?.toEpochMilliseconds()
-//        maxDate = System.currentTimeMillis()
-//    }
-
-        // Fetching current hour and minute
-        val mHour = mCalendar[Calendar.HOUR_OF_DAY]
-        val mMinute = mCalendar[Calendar.MINUTE]
-
-        var mTime by remember { mutableStateOf("") }
-        val fillTime = "$mHour:$mMinute"
-
-        mCalendar.time = Date()
-
-        val mTimePickerDialog = TimePickerDialog(
-            mContext,
-            { _, mHour: Int, mMinute: Int ->
-                mTime = "$mHour:$mMinute"
-            }, mHour, mMinute, true
-        )
+//        // Declaring integer values
+//        // for year, month and day
+//        val mYear: Int
+//        val mMonth: Int
+//        val mDay: Int
+//
+//        // Initializing a Calendar
+//        val mCalendar = Calendar.getInstance()
+//        // Fetching current year, month and day
+//        mYear = mCalendar.get(Calendar.YEAR)
+//        mMonth = mCalendar.get(Calendar.MONTH)
+//        mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+//
+//
+//        // Declaring a string value to
+//        // store date in string format
+//        val mDate = remember { mutableStateOf("") }
+//        val fillDate = "$mDay/${mMonth + 1}/$mYear"
+//
+//        // Declaring DatePickerDialog and setting
+//        // initial values as current values (present year, month and day)
+//        val mDatePickerDialog = DatePickerDialog(
+//            mContext,
+//            { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+//                mDate.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
+//
+//            }, mYear, mMonth, mDay
+//        )
+//        // TODO Ainda tentar fazer
+////    mDatePickerDialog.datePicker.apply {
+////        minDate = prescriptionItem?.nextIntake?.toInstant(
+////            Constants.TIME_ZONE
+////        )?.toEpochMilliseconds()
+////        maxDate = System.currentTimeMillis()
+////    }
+//
+//        // Fetching current hour and minute
+//        val mHour = mCalendar[Calendar.HOUR_OF_DAY]
+//        val mMinute = mCalendar[Calendar.MINUTE]
+//
+//        var mTime by remember { mutableStateOf("") }
+//        val fillTime = "$mHour:$mMinute"
+//
+//        mCalendar.time = Date()
+//
+//        val mTimePickerDialog = TimePickerDialog(
+//            mContext,
+//            { _, mHour: Int, mMinute: Int ->
+//                mTime = "$mHour:$mMinute"
+//            }, mHour, mMinute, true
+//        )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -304,30 +301,32 @@ fun ConfirmIntakeDetailsScreen(
                         .weight(1f),
                     textAlign = TextAlign.End,
                     fontSize = 18.sp,
-                    text = "${if (mDate.value.isNullOrBlank()) fillDate else mDate.value} ${if (mTime.isNullOrBlank()) fillTime else mTime}"
+                    text = Util.formatDateTime(dateTime!!)
+//                    text = "${dateTime?.dayOfMonth}/${if(dateTime?.monthNumber!! < 10) "0"+dateTime?.monthNumber else dateTime?.monthNumber}/${dateTime?.year} ${dateTime?.hour}:${dateTime?.minute}"/*"${if (mDate.value.isNullOrBlank()) fillDate else mDate.value} ${if (mTime.isNullOrBlank()) fillTime else mTime}"*/
                 )
             }
+//            if (dateTime?.monthNumber!! < 10) "0" + dateTime?.monthNumber!! else dateTime?.monthNumber
 
-            var showDatePicker by remember { mutableStateOf(false) }
-            var showTimePicker by remember { mutableStateOf(false) }
+//            var showDatePicker by remember { mutableStateOf(false) }
+//            var showTimePicker by remember { mutableStateOf(false) }
 
 
             Row() {
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
                     border = BorderStroke(1.dp, Teal),
-                    modifier = Modifier.padding(start = 32.dp, top = 24.dp, end = 16.dp),
-                    onClick = { showDatePicker = true }) {
-                    Text(fontSize = 15.sp, text = "EDITAR DATA")
+                    modifier = Modifier.padding(start = 32.dp, top = 24.dp, end = 32.dp),
+                    onClick = { viewModel.selectDateTime(context) }) {
+                    Text(fontSize = 15.sp, text = "EDITAR DATA E HORA")
                 }
 
-                Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
-                    border = BorderStroke(1.dp, Teal),
-                    modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 32.dp),
-                    onClick = { showTimePicker = true }) {
-                    Text(fontSize = 15.sp, text = "EDITAR HORA")
-                }
+//                Button(
+//                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+//                    border = BorderStroke(1.dp, Teal),
+//                    modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 32.dp),
+//                    onClick = { /*showTimePicker = true*/ }) {
+//                    Text(fontSize = 15.sp, text = "EDITAR HORA")
+//                }
             }
 
             if (showError) {
@@ -348,7 +347,7 @@ fun ConfirmIntakeDetailsScreen(
             ) {
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
-                    border= BorderStroke(1.dp, Teal),
+                    border = BorderStroke(1.dp, Teal),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE)
                         .toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds(),
@@ -371,8 +370,8 @@ fun ConfirmIntakeDetailsScreen(
                 }
 
                 OutlinedButton(
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor =  Teal),
-                    border= BorderStroke(1.dp, Teal),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Teal),
+                    border = BorderStroke(1.dp, Teal),
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .fillMaxWidth(),
@@ -386,23 +385,23 @@ fun ConfirmIntakeDetailsScreen(
                 }
             }
 
-            if (showDatePicker) {
-                mDatePickerDialog.show()
-            }
-
-            // TODO Funciona mas talvez seja melhor procurar alternativ aahhaah
-            // serve para voltar poder a selecionar uma data
-            showDatePicker = false
-
-            if (showTimePicker) {
-                mTimePickerDialog.show()
-            }
-
-            // TODO Funciona mas talvez seja melhor procurar alternativ aahhaah
-            // serve para voltar poder a selecionar uma data
-            showTimePicker = false
-
-            viewModel.setTime(mYear, mMonth + 1, mDay, mHour, mMinute)
+//            if (showDatePicker) {
+//                mDatePickerDialog.show()
+//            }
+//
+//            // TODO Funciona mas talvez seja melhor procurar alternativ aahhaah
+//            // serve para voltar poder a selecionar uma data
+//            showDatePicker = false
+//
+//            if (showTimePicker) {
+//                mTimePickerDialog.show()
+//            }
+//
+//            // TODO Funciona mas talvez seja melhor procurar alternativ aahhaah
+//            // serve para voltar poder a selecionar uma data
+//            showTimePicker = false
+//
+//            viewModel.setTime(mYear, mMonth + 1, mDay, mHour, mMinute)
 
         }
 

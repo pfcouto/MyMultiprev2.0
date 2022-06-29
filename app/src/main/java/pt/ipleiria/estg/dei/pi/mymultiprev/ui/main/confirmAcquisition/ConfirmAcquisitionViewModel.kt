@@ -24,7 +24,6 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsReposit
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class ConfirmAcquisitionViewModel @Inject constructor(
@@ -115,15 +114,14 @@ class ConfirmAcquisitionViewModel @Inject constructor(
         val startHour = currentDateTime.get(Calendar.HOUR_OF_DAY)
         val startMinute = currentDateTime.get(Calendar.MINUTE)
 
-        if (_scheduleIntakeDateTime.value != null){
-            DatePickerDialog(context, { _, year, month, day ->
-                TimePickerDialog(context, { _, hour, minute ->
-                    Log.d("ConfirmAcquisitionScreen", "Mes -> $month")
-                    setTime(year, month + 1, day, hour, minute)
-                    recalculatePredictionDates(frequency)
-                }, startHour, startMinute, false).show()
-            }, startYear, startMonth, startDay).show()
-        }
+        DatePickerDialog(context, { _, year, month, day ->
+            TimePickerDialog(context, { _, hour, minute ->
+                Log.d("ConfirmAcquisitionScreen", "Mes -> $month")
+                setTime(year, month + 1, day, hour, minute)
+                recalculatePredictionDates(frequency)
+            }, startHour, startMinute, false).show()
+        }, startYear, startMonth, startDay).show()
+
     }
 
     fun recalculatePredictionDates(frequency: Int) {

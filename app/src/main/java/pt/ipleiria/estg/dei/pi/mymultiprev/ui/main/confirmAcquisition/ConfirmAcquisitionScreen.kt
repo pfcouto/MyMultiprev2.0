@@ -82,7 +82,10 @@ fun ConfirmAcquisitionScreen(
             onDispose { }
         }
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(modifier = Modifier.padding(top = 32.dp), fontSize = 32.sp, text = drug!!.name)
             Column(
                 modifier = Modifier
@@ -90,8 +93,10 @@ fun ConfirmAcquisitionScreen(
                         state = rememberScrollState(),
                         orientation = Orientation.Vertical
                     )
-                    .padding(start = 14.dp, top = 16.dp, bottom = 10.dp)
+                    .padding(start = 8.dp, top = 16.dp, end = 8.dp, bottom = 10.dp)
+                    .fillMaxWidth()
             ) {
+
                 Text(
                     modifier = Modifier.padding(start = 32.dp, top = 32.dp),
                     text = "Insira a patologia associada:"
@@ -109,7 +114,9 @@ fun ConfirmAcquisitionScreen(
                             cursorColor = Teal,
                             focusedLabelColor = Teal
                         ),
-                        modifier = Modifier.padding(start = 32.dp, top = 4.dp, end = 32.dp),
+                        modifier = Modifier
+                            .padding(start = 32.dp, top = 4.dp, end = 32.dp)
+                            .fillMaxWidth(),
                         value = patology,
                         onValueChange = { patology = it },
                         singleLine = true,
@@ -119,9 +126,14 @@ fun ConfirmAcquisitionScreen(
                             )
                         })
                 }
+
                 Row(
-                    modifier = Modifier.padding(top = 30.dp, bottom = 30.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .padding(top = 30.dp, bottom = 30.dp)
+                        .fillMaxWidth(),
+
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
                         modifier = Modifier.padding(start = 32.dp, end = 10.dp),
@@ -129,6 +141,7 @@ fun ConfirmAcquisitionScreen(
                         fontWeight = FontWeight.Bold,
                         text = "Frequência:"
                     )
+
                     NumberPicker(
                         dividersColor = Teal,
                         value = pickerValue,
@@ -138,6 +151,7 @@ fun ConfirmAcquisitionScreen(
                         },
                         range = prescriptionItem!!.frequency - 2..prescriptionItem!!.frequency + 2
                     )
+
                     Text(
                         modifier = Modifier.padding(start = 10.dp, end = 32.dp),
                         fontSize = 18.sp,
@@ -150,7 +164,9 @@ fun ConfirmAcquisitionScreen(
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
                     border = BorderStroke(1.dp, Teal),
-                    modifier = Modifier.padding(start = 32.dp, end = 32.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 32.dp, end = 32.dp),
                     onClick = { viewModel.selectDateTime(context = context, pickerValue) }) {
                     Text(
                         fontSize = 18.sp,
