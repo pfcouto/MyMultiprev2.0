@@ -22,7 +22,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Symptom
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.enums.SymptomRegistrationSituation
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_drugs.DrugsScreen
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 
 @Composable
@@ -141,7 +141,7 @@ fun RegisterSymptomsScreen(
                 Spacer(modifier = Modifier.size(1.dp))
             }
 
-            Button(colors = ButtonDefaults.buttonColors(backgroundColor = Teal200), onClick = {
+            Button(colors = ButtonDefaults.buttonColors(backgroundColor = Teal), onClick = {
                 clearSurvey()
             }) {
                 Text(
@@ -167,6 +167,7 @@ fun RegisterSymptomsScreen(
             || drugsState.value == null
         ) {
             CircularProgressIndicator(
+                color = Teal,
                 modifier = Modifier
                     .size(68.dp)
                     .fillMaxSize()

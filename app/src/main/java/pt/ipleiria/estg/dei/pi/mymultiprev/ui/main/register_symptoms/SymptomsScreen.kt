@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.ipleiria.estg.dei.pi.mymultiprev.responses.SymptomTypeItemResponse
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 
 @Composable
 fun SymptomsScreen(
@@ -63,7 +63,7 @@ fun SymptomsScreen(
             ) {
                 Text(
                     element.name,
-                    color = if (symptoms.getOrNull(idx) != null && symptoms[idx].second) Teal200 else Color.DarkGray,
+                    color = if (symptoms.getOrNull(idx) != null && symptoms[idx].second) Teal else Color.DarkGray,
                     fontSize = 28.sp
                 )
                 if (symptoms.getOrNull(idx) != null && symptoms[idx].second) {
@@ -71,7 +71,7 @@ fun SymptomsScreen(
                         modifier = Modifier.size(32.dp),
                         imageVector = Icons.Outlined.Check,
                         contentDescription = "Selected",
-                        tint = Teal200
+                        tint = Teal
                     )
                 }
             }
@@ -81,8 +81,8 @@ fun SymptomsScreen(
     Spacer(modifier = Modifier.size(48.dp))
     Button(
         enabled = symptoms.firstOrNull() { it.second } != null,
-        colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-        border = BorderStroke(1.dp, Teal200),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+        border = BorderStroke(1.dp, Teal),
         onClick = { onNext() }) {
         Text(text = "Seguinte", fontSize = 26.sp)
     }

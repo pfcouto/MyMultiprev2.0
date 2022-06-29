@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 
 @Composable
 fun StartScreen(onNext: () -> Unit) {
@@ -30,8 +30,8 @@ fun StartScreen(onNext: () -> Unit) {
     )
     Spacer(modifier = Modifier.size(48.dp))
     Button(
-        colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-        border = BorderStroke(1.dp, Teal200),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+        border = BorderStroke(1.dp, Teal),
         onClick = { onNext() }) {
         Text(text = "Começar", fontSize = 26.sp)
     }

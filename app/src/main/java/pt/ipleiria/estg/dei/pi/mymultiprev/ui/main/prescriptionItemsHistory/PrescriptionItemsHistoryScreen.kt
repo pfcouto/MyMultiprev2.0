@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -32,6 +34,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 
 @Composable
 fun PrescriptionItemsHistoryScreen(
@@ -70,6 +73,7 @@ fun PrescriptionItemsHistoryScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     CircularProgressIndicator(
+                        color = Teal,
                         modifier = Modifier
                             .size(68.dp)
                             .fillMaxSize()
@@ -88,56 +92,66 @@ fun PrescriptionItemsHistoryScreen(
             focusManager.clearFocus()
         })
     }) {
-        TextField(
-            value = query,
-            onValueChange = { newValue ->
-                viewModel.onQueryChanged(newValue)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            label = {
-                Text(text = "Nome do Medicamento")
-            },
-            leadingIcon = {
-                IconButton(
-                    onClick = {
-                        viewModel.filterPairs(query)
-                        focusManager.clearFocus()
-                    }) {
+        val customTextSelectionColors = TextSelectionColors(
+            handleColor = Teal,
+            backgroundColor = Teal
+        )
 
-                    Icon(Icons.Filled.Search, contentDescription = "Botão para pesquisar")
-                }
-            },
-            trailingIcon = {
-
-                if (!query.isNullOrEmpty()) {
+        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+            TextField(
+                value = query,
+                onValueChange = { newValue ->
+                    viewModel.onQueryChanged(newValue)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                label = {
+                    Text(text = "Nome do Medicamento")
+                },
+                leadingIcon = {
                     IconButton(
                         onClick = {
-                            viewModel.onQueryChanged("")
-//                            viewModel.updatePairs()
+                            viewModel.filterPairs(query)
                             focusManager.clearFocus()
                         }) {
 
-                        Icon(Icons.Filled.Close, contentDescription = "Botão para apagar o texto")
+                        Icon(Icons.Filled.Search, contentDescription = "Botão para pesquisar")
                     }
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    viewModel.filterPairs(query)
-                    focusManager.clearFocus()
-                }
-            ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.surface,
-                textColor = MaterialTheme.colors.onSurface
+                },
+                trailingIcon = {
+
+                    if (!query.isNullOrEmpty()) {
+                        IconButton(
+                            onClick = {
+                                viewModel.onQueryChanged("")
+//                            viewModel.updatePairs()
+                                focusManager.clearFocus()
+                            }) {
+
+                            Icon(Icons.Filled.Close, contentDescription = "Botão para apagar o texto")
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        viewModel.filterPairs(query)
+                        focusManager.clearFocus()
+                    }
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedIndicatorColor = Teal,
+                    backgroundColor = MaterialTheme.colors.surface,
+                    textColor = MaterialTheme.colors.onSurface,
+                    cursorColor = Teal,
+                    focusedLabelColor = Teal
+                )
             )
-        )
+        }
 
         if (resourceSuccessNoItems) {
             Column(

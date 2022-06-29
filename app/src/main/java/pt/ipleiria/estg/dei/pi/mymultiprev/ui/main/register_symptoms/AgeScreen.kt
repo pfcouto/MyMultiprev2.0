@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chargemap.compose.numberpicker.NumberPicker
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 
 @Composable
 fun AgeScreen(
@@ -39,6 +39,7 @@ fun AgeScreen(
     ) {
         NumberPicker(
             value = age.value,
+            dividersColor = Teal,
             range = 0..150,
             onValueChange = {
                 age.value = it
@@ -47,8 +48,8 @@ fun AgeScreen(
     }
     Spacer(modifier = Modifier.size(48.dp))
     Button(
-        colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
-        border = BorderStroke(1.dp, Teal200),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+        border = BorderStroke(1.dp, Teal),
         onClick = { onNext() }) {
         Text(text = "Seguinte", fontSize = 26.sp)
     }

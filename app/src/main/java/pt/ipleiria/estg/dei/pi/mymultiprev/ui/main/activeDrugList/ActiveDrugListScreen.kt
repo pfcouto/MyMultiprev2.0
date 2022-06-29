@@ -7,8 +7,10 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -44,7 +46,8 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.MainViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmAcquisition.ConfirmAcquisitionViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntakeViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.seeDetails.SeeDetailsViewModel
-import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal200
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Gray
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.concurrent.TimeUnit
@@ -148,7 +151,7 @@ fun ActiveDrugListScreen(
                     var timeTextText by remember { mutableStateOf("") }
 
 
-                    if (item.first.acquiredAt == null) {
+                    if (item.first.acquiredAt ==  null ||item.first.intakesTakenCount == 0) {
                         prescriptionAcquisitionConfirmed.value = false
                         timeTextText = "Confirmar Aquisição"
 
@@ -218,6 +221,7 @@ fun ActiveDrugListScreen(
                 if (loadingData) {
 
                     CircularProgressIndicator(
+                        color = Teal,
                         modifier = Modifier
                             .size(68.dp)
                             .fillMaxSize()
@@ -244,26 +248,30 @@ fun AlertDialogLogout(openDialog: Boolean, setDialogFalse: () -> Unit, logout: (
                     onDismissRequest = {
                     },
                     title = {
-                        Text(text = "LOGOUT")
+                        Text(text = "Tem a certeza de que pretende sair?")
                     },
                     text = {
-                        Text("Are you sure you want to logout?")
+                           // Just to create a spacer between the title and the buttons
                     },
                     confirmButton = {
                         Button(
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                            border = BorderStroke(1.dp, Teal),
                             onClick = {
                                 setDialogFalse()
                                 logout()
                             }) {
-                            Text("Logout")
+                            Text("Sair")
                         }
                     },
                     dismissButton = {
                         Button(
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                            border = BorderStroke(1.dp, Teal),
                             onClick = {
                                 setDialogFalse()
                             }) {
-                            Text("Cancel")
+                            Text("Cancelar")
                         }
                     }
                 )
@@ -329,6 +337,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
         else MaterialTheme.colors.surface
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+
             Log.d("Imagens", "${item.first.imageLocation}")
             if (item.first.imageLocation != null) {
                 val painter = rememberImagePainter(data = item.first.imageLocation)
@@ -354,6 +363,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
             Column(modifier = Modifier.width(160.dp)) {
                 Text(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
+                    color = if(isSystemInDarkTheme()) Gray else Color.DarkGray,
                     fontSize = 18.sp,
                     maxLines = 1,
                     fontWeight = FontWeight.W600,
@@ -372,7 +382,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
             Button(modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Teal200),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
                 onClick = {
                     onDetailsAndConfirmButtonClick(
                         item = item,
@@ -508,6 +518,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                     )
                 }) {
                     Text(
+                        color = Teal,
                         text = if (!prescriptionIsOverdue.value)
                             "VER DETALHES"
                         else
@@ -526,7 +537,7 @@ private fun onDetailsAndConfirmButtonClick(
     navController: NavHostController,
     seeDetailsViewModel: SeeDetailsViewModel
 ) {
-    if (item.first.acquiredAt == null) {
+    if (item.first.acquiredAt == null || item.first.intakesTakenCount == 0) {
         onConfirmAcquisitionClick(
             pair = item,
             confirmViewModel = confirmViewModel,
@@ -565,6 +576,15 @@ fun onConfirmDoseClick(
 
 }
 
+fun onConfirmAcquisitionClick(
+    pair: Pair<PrescriptionItem, Drug?>,
+    confirmViewModel: ConfirmAcquisitionViewModel,
+    navController: NavHostController
+) {
+
+    navController.navigate("confirmAcquisitionScreen/${pair.first!!.id}/${pair.second!!.id}")
+}
+
 //private fun setAlarm(context: Context) {
 //    val timeSec = System.currentTimeMillis() + 1000
 //    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
@@ -585,7 +605,6 @@ fun onAlarmClick(
     val alarmState = !prescriptionItem.alarm
     viewModel.setAlarm(alarmState, prescriptionItem.id)
 
-
     val nM = NotificationsManager()
     if (drug == null) return
     if (alarmState) {
@@ -597,17 +616,6 @@ fun onAlarmClick(
         )
     }
 
-}
-
-
-fun onConfirmAcquisitionClick(
-    pair: Pair<PrescriptionItem, Drug?>,
-    confirmViewModel: ConfirmAcquisitionViewModel,
-    navController: NavHostController
-) {
-
-    confirmViewModel.setPrescriptionItemDrugPair(pair)
-    navController.navigate("confirmAcquisitionScreen")
 }
 
 private fun createNotificationChannel(context: Context) {

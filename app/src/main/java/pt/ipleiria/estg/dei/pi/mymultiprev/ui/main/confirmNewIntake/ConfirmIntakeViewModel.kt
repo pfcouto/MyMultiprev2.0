@@ -1,5 +1,8 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -21,6 +24,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.IntakeRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
+import java.util.*
 import javax.inject.Inject
 
 
@@ -82,6 +86,23 @@ class ConfirmIntakeViewModel @Inject constructor(
         Log.i(TAG, "Clearing Response")
         _response.value = null
         _registrationIntakeDateTime.value = Clock.System.now().toLocalDateTime(Constants.TIME_ZONE)
+    }
+
+    fun selectDateTime(context: Context) {
+        val currentDateTime = Calendar.getInstance()
+        val startYear = currentDateTime.get(Calendar.YEAR)
+        val startMonth = currentDateTime.get(Calendar.MONTH)
+        val startDay = currentDateTime.get(Calendar.DAY_OF_MONTH)
+        val startHour = currentDateTime.get(Calendar.HOUR_OF_DAY)
+        val startMinute = currentDateTime.get(Calendar.MINUTE)
+
+        DatePickerDialog(context, { _, year, month, day ->
+            TimePickerDialog(context, { _, hour, minute ->
+                Log.d("ConfirmAcquisitionScreen", "Mes -> $month")
+                setTime(year, month + 1, day, hour, minute)
+            }, startHour, startMinute, false).show()
+        }, startYear, startMonth, startDay).show()
+
     }
 
     fun setTime(year: Int, month: Int, dayOfMonth: Int, hourOfDay: Int, minute: Int) {
