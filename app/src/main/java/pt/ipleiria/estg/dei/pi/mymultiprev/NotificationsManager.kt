@@ -73,12 +73,12 @@ class NotificationsManager() {
         val sharedPreferences = SharedPreferencesRepository(context)
 
         var intakesTakenCount = prescriptionItem.intakesTakenCount!!
-        var predictIntakes = prescriptionItem.intakesTakenCount!! + 1
+        val predictIntakes = prescriptionItem.intakesTakenCount!!
 
         var instant = prescriptionItem.nextIntake!!.toInstant(Constants.TIME_ZONE)
 
 //        while (intakesTakenCount <= prescriptionItem.expectedIntakeCount!!) {
-        Log.d("NOTIFICATIONS", "WHILE:  $intakesTakenCount to $predictIntakes")
+//        Log.d("NOTIFICATIONS", "WHILE:  $intakesTakenCount to $predictIntakes")
         while (intakesTakenCount <= predictIntakes) {
             sharedPreferences.addAlarm("${instant.toEpochMilliseconds()};${prescriptionItem.id};${drug.commercialName}")
             Log.d("NOTIFICATIONS", "alarm set to $instant")
