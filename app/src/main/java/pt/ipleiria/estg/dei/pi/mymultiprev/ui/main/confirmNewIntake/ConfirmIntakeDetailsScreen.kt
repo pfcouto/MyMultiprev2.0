@@ -141,7 +141,7 @@ fun ConfirmIntakeDetailsScreen(
                                     border = BorderStroke(1.dp, Teal),
                                     onClick = {
                                         viewModel.clearResponse(); openDialog.value =
-                                        false; navController.popBackStack()
+                                        false; navController.navigate(BottomBarScreen.Antibioticos.route)
                                     }) {
                                     Text(text = "Não")
                                 }
