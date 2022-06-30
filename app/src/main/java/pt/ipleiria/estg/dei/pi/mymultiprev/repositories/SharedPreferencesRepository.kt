@@ -19,26 +19,33 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
     private val spUserPreferencesEditor = spUserPreferences.edit()
 
     //Alarm
-    fun saveAlarm(nextAlarm: Long) {
-        spAlarmServiceEditor.putLong(Constants.SP_NEXT_ALARM, nextAlarm)
-        spAlarmServiceEditor.apply()
-    }
-
-    fun getAlarm() = spAlarmService.getLong(Constants.SP_NEXT_ALARM, Constants.SP_DEFAULT_LONG)
-
-    fun setNextAlarms(nextAlarms: Set<String>) {
-        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
-    }
-
-    fun removeAlarm() {
-        spAlarmServiceEditor.remove(Constants.SP_NEXT_ALARM)
-        spAlarmServiceEditor.apply()
-    }
+//    fun saveAlarm(nextAlarm: Long) {
+//        spAlarmServiceEditor.putLong(Constants.SP_NEXT_ALARM, nextAlarm)
+//        spAlarmServiceEditor.apply()
+//    }
+//
+//    fun getAlarm() = spAlarmService.getLong(Constants.SP_NEXT_ALARM, Constants.SP_DEFAULT_LONG)
+//
+//
+//    fun removeAlarm() {
+//        spAlarmServiceEditor.remove(Constants.SP_NEXT_ALARM)
+//        spAlarmServiceEditor.apply()
+//    }
 
 
     //Alarms V2
+    fun setNextAlarms(nextAlarms: Set<String>) {
+        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
+        spAlarmServiceEditor.commit()
+    }
+
     fun getNextAlarms(): MutableSet<String>? =
         spAlarmService.getStringSet(Constants.SP_NEXT_ALARMS, null)
+
+    fun clearAlarms() {
+        spAlarmServiceEditor.remove(Constants.SP_NEXT_ALARMS)
+        spAlarmServiceEditor.commit()
+    }
 
     fun removeAlarm(instantAndId: String) {
         val nextAlarms = getNextAlarms() ?: return
@@ -48,7 +55,7 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
         nextAlarms.forEach {
             val instantEach = it.split(";")[0]
             val idEach = it.split(";")[1]
-            if ( "$instantEach;$idEach" == instantAndId) {
+            if ("$instantEach;$idEach" == instantAndId) {
                 alarmToRemove = it
                 return@forEach
             }
