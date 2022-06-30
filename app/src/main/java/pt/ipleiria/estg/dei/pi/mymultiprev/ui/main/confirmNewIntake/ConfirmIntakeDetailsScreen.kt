@@ -79,7 +79,6 @@ fun ConfirmIntakeDetailsScreen(
         }
     } else {
 
-        var buttonEnabled by remember { mutableStateOf(false) }
         var showError by remember { mutableStateOf(false) }
         var estadoMessage by remember { mutableStateOf("") }
         var estadoColorVerde by remember { mutableStateOf(true) }
@@ -91,16 +90,13 @@ fun ConfirmIntakeDetailsScreen(
 
         val registrationIntake = viewModel.registrationIntakeDateTime.observeAsState()
 
-        if (registrationIntake != null) {
-            buttonEnabled = viewModel.verifyRegistrationDateTime()
-            showError = !buttonEnabled
-            if (viewModel.verifyRange()) {
-                estadoMessage = "Dentro da recomendação"
-                estadoColorVerde = true
-            } else {
-                estadoMessage = "Fora da recomendação"
-                estadoColorVerde = false
-            }
+        showError = !viewModel.verifyRegistrationDateTime()
+        if (viewModel.verifyRange()) {
+            estadoMessage = "Dentro da recomendação"
+            estadoColorVerde = true
+        } else {
+            estadoMessage = "Fora da recomendação"
+            estadoColorVerde = false
         }
 
 
@@ -207,6 +203,8 @@ fun ConfirmIntakeDetailsScreen(
                 Text(
                     modifier = Modifier.padding(start = 32.dp, top = 32.dp, end = 32.dp),
                     fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.myColors.darkRed,
                     text = "Ultima Toma"
                 )
             }
@@ -299,28 +297,33 @@ fun ConfirmIntakeDetailsScreen(
                 }
             }
 
+
+
+//            Spacer(modifier = Modifier.height(270.dp))
+            Spacer(modifier = Modifier.weight(1f))
+
             if (showError) {
                 Text(
-                    modifier = Modifier.padding(start = 32.dp, top = 24.dp, end = 32.dp),
-                    fontSize = 16.sp,
-                    color = Color.Red,
+                    modifier = Modifier.padding(start = 32.dp, top = 32.dp, end = 32.dp, bottom = 8.dp),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.myColors.darkRed,
                     text = "A hora selecionada é inválida"
                 )
             }
 
-            Spacer(modifier = Modifier.height(270.dp))
-
             Column(
                 modifier = Modifier
-                    .padding(start = 32.dp, end = 32.dp, bottom = 8.dp)
+                    .padding(start = 32.dp, end = 32.dp, bottom = 32.dp)
                     .fillMaxWidth()
+
             ) {
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
                     border = BorderStroke(1.dp, Teal),
+//                    enabled = !showError,
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = prescriptionItem!!.nextIntake!!.toInstant(Constants.TIME_ZONE)
-                        .toEpochMilliseconds() < Clock.System.now().toEpochMilliseconds(),
+                    enabled = !showError,
                     onClick = {
                         openDialog.value = true
                         viewModel.registerIntake()
@@ -343,7 +346,6 @@ fun ConfirmIntakeDetailsScreen(
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Teal),
                     border = BorderStroke(1.dp, Teal),
                     modifier = Modifier
-                        .padding(bottom = 8.dp)
                         .fillMaxWidth(),
                     onClick = { navController.popBackStack() }) {
                     Text(

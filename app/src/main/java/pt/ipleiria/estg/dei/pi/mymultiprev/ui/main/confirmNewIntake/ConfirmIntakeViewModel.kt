@@ -96,13 +96,18 @@ class ConfirmIntakeViewModel @Inject constructor(
         val startHour = currentDateTime.get(Calendar.HOUR_OF_DAY)
         val startMinute = currentDateTime.get(Calendar.MINUTE)
 
-        DatePickerDialog(context, { _, year, month, day ->
+        val datePickerDialog = DatePickerDialog(context, { _, year, month, day ->
             TimePickerDialog(context, { _, hour, minute ->
                 Log.d("ConfirmAcquisitionScreen", "Mes -> $month")
                 setTime(year, month + 1, day, hour, minute)
-            }, startHour, startMinute, false).show()
-        }, startYear, startMonth, startDay).show()
+            }, startHour, startMinute, true).show()
+        }, startYear, startMonth, startDay)
 
+        datePickerDialog.datePicker.minDate = _prescriptionItem.value?.nextIntake?.toInstant(Constants.TIME_ZONE)!!
+            .toEpochMilliseconds()
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+
+        datePickerDialog.show()
     }
 
     fun setTime(year: Int, month: Int, dayOfMonth: Int, hourOfDay: Int, minute: Int) {

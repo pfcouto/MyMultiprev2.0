@@ -117,7 +117,7 @@ class ConfirmAcquisitionViewModel @Inject constructor(
                 Log.d("ConfirmAcquisitionScreen", "Mes -> $month")
                 setTime(year, month + 1, day, hour, minute)
                 recalculatePredictionDates(frequency)
-            }, startHour, startMinute, false).show()
+            }, startHour, startMinute, true).show()
         }, startYear, startMonth, startDay).show()
 
     }
