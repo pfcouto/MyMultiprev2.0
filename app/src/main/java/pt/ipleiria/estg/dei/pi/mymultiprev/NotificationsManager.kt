@@ -50,6 +50,13 @@ class NotificationsManager() {
 //        updateNext(context)
     }
 
+    fun removeAll(context: Context) {
+        val sharedPreferences = SharedPreferencesRepository(context)
+        sharedPreferences.clearAlarms()
+        Log.d("NOTIFICATIONS", "WARNING!!! - ALL ALARMS CLEARED")
+//        updateNext(context)
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun removeAlarm(context: Context, instant: String, id: String) {
         Log.d("NOTIFICATIONS", "REMOVING ALARM $instant;$id")
@@ -84,7 +91,8 @@ class NotificationsManager() {
         var newAlarmsCount = 0
         while (intakesTakenCount <= predictIntakes) {
             if (instant >= nowInstant) {
-                val alarmToAdd = "${instant.toEpochMilliseconds()};${prescriptionItem.id};${drug.commercialName}"
+                val alarmToAdd =
+                    "${instant.toEpochMilliseconds()};${prescriptionItem.id};${drug.commercialName}"
                 sharedPreferences.addAlarm(alarmToAdd)
                 Log.d("NOTIFICATIONS", "$alarmToAdd ADDED TO SHARED PREFERENCES")
                 newAlarmsCount++
@@ -96,6 +104,14 @@ class NotificationsManager() {
         }
 
         Log.d("NOTIFICATIONS", "LEAVING ADD ALARMS - $newAlarmsCount NEW ALARMS ADDED")
+        Log.d(
+            "NOTIFICATIONS",
+            "LEAVING ADD ALARMS - ${sharedPreferences.getNextAlarms()?.size} TOTAL"
+        )
+        Log.d(
+            "NOTIFICATIONS",
+            "LEAVING ADD ALARMS - ${sharedPreferences.getNextAlarms()}"
+        )
         if (newAlarmsCount > 0) updateNext(context)
     }
 
@@ -175,8 +191,9 @@ class NotificationsManager() {
         intent.putExtra(Constants.NOTIFICATIONS_ALARM_ID, id)
         intent.putExtra(Constants.NOTIFICATIONS_ALARM_INSTANT, instant.toString())
 
+
         val pendingIntent =
             PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, instant, pendingIntent)
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, instant, pendingIntent)
     }
 }
