@@ -40,8 +40,7 @@ class AlarmReceiverN : BroadcastReceiver() {
                     alarmID
                 )
             }
-            Log.d("NOTIFICATIONS", "Calling update next")
-            notificationsManager.updateNext(context)
+
         } catch (ex: Exception) {
             Log.d("Receive Ex", "onReceive: ${ex.printStackTrace()}")
         }

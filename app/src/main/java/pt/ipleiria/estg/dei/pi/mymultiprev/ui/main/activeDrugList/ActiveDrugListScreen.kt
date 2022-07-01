@@ -87,13 +87,14 @@ fun ActiveDrugListScreen(
     if (!listOfPairs.isNullOrEmpty()) {
         DisposableEffect(key1 = Unit) {
             val nM = NotificationsManager()
-            nM.removeExpired(context)
+//            nM.removeExpired(context)
             nM.removeAll(context)
             listOfPairs!!.forEach {
                 if (it.first.alarm) {
                     nM.addAlarms(context, it.first, it.second!!)
                 } else {
                     nM.removeAlarms(context, it.first.id)
+//                    nM.updateNext(context)
                 }
             }
             onDispose { }
@@ -607,7 +608,6 @@ fun onAlarmClick(
     val nM = NotificationsManager()
     if (drug == null) return
     if (alarmState) {
-        Log.d("NOTIFICATIONS", "2")
         nM.addAlarms(context, prescriptionItem, drug)
     } else {
         nM.removeAlarms(

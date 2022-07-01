@@ -47,14 +47,14 @@ class NotificationsManager() {
     fun removeAlarms(context: Context, prescId: String) {
         val sharedPreferences = SharedPreferencesRepository(context)
         sharedPreferences.removeAllAlarm(prescId)
-//        updateNext(context)
+        updateNext(context)
     }
 
     fun removeAll(context: Context) {
         val sharedPreferences = SharedPreferencesRepository(context)
         sharedPreferences.clearAlarms()
+        removeAlarmSet(context)
         Log.d("NOTIFICATIONS", "WARNING!!! - ALL ALARMS CLEARED")
-//        updateNext(context)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -63,6 +63,9 @@ class NotificationsManager() {
 
         val sharedPreferences = SharedPreferencesRepository(context)
         sharedPreferences.removeAlarm("$instant;$id")
+
+        Log.d("NOTIFICATIONS", "Calling update next")
+        updateNext(context)
     }
 
     @OptIn(ExperimentalTime::class)
@@ -173,9 +176,26 @@ class NotificationsManager() {
         if (alarmID.isNotEmpty() && nextAlarmName.isNotEmpty()) {
             setAlarm(context, nextAlarmTime, alarmID, nextAlarmName)
             Log.d("NOTIFICATIONS", "next alarm set - $nextAlarmTime;$alarmID;$nextAlarmName")
+        } else {
+            removeAlarmSet(context)
         }
     }
 
+    private fun removeAlarmSet(context: Context) {
+
+        val sharedPreferences = SharedPreferencesRepository(context)
+        val nextAlarms = sharedPreferences.getNextAlarms()
+        if (nextAlarms == null || nextAlarms.size < 1) {
+            return
+        }
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, AlarmReceiverN::class.java)
+
+        val pendingIntent =
+            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        alarmManager.cancel(pendingIntent)
+    }
 
     private fun setAlarm(context: Context, instant: Long, id: String, drugName: String) {
 
@@ -194,6 +214,7 @@ class NotificationsManager() {
 
         val pendingIntent =
             PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        alarmManager.cancel(pendingIntent)
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, instant, pendingIntent)
     }
 }
