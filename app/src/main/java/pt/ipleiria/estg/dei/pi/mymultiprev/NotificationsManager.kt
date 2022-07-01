@@ -1,17 +1,12 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Environment
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.plus
@@ -236,27 +231,31 @@ class NotificationsManager() {
             val filename = "NotificationsLog.txt"
             val outputFile = File(context.filesDir, filename)
             Log.d("TESTE", outputFile.absolutePath)
-            outputFile.createNewFile()
-            outputFile.appendText("$code:\t$text\n")
-            Log.d("TESTE", "Permission: ${checkPermission(context)}")
-            Log.d("TESTE", "Success: ${outputFile.path}")
+            val created = outputFile.createNewFile()
+            if (!created) {
+                Log.d("TESTE", "FILE: ${outputFile.readText()}")
+            }
+            outputFile.appendText("${Clock.System.now()}\t| $code:\t$text\n")
+//            Log.d("TESTE", "Created: $created")
+//            Log.d("TESTE", "Permission: ${checkPermission(context)}")
+//            Log.d("TESTE", "Success: ${outputFile.path}")
         } catch (e: Exception) {
             Log.d("TESTE", "ERROR: $e")
         }
     }
 
 
-    private fun checkPermission(context: Context): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
-        } else {
-            val readCheck =
-                ContextCompat.checkSelfPermission(context, READ_EXTERNAL_STORAGE)
-            val writeCheck =
-                ContextCompat.checkSelfPermission(context, WRITE_EXTERNAL_STORAGE)
-            readCheck == PackageManager.PERMISSION_GRANTED && writeCheck == PackageManager.PERMISSION_GRANTED
-        }
-    }
+//    private fun checkPermission(context: Context): Boolean {
+//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            Environment.isExternalStorageManager()
+//        } else {
+//            val readCheck =
+//                ContextCompat.checkSelfPermission(context, READ_EXTERNAL_STORAGE)
+//            val writeCheck =
+//                ContextCompat.checkSelfPermission(context, WRITE_EXTERNAL_STORAGE)
+//            readCheck == PackageManager.PERMISSION_GRANTED && writeCheck == PackageManager.PERMISSION_GRANTED
+//        }
+//    }
 
 }
 
