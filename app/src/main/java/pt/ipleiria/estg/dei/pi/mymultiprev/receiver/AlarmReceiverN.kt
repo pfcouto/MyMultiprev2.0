@@ -16,7 +16,6 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.MainActivity
 import pt.ipleiria.estg.dei.pi.mymultiprev.NotificationsManager
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
-import java.time.Instant.now
 
 @AndroidEntryPoint
 class AlarmReceiverN : BroadcastReceiver() {
@@ -33,6 +32,16 @@ class AlarmReceiverN : BroadcastReceiver() {
 
             showNotification(context, "MultiPrev - $drugName", drugName.toString())
             val notificationsManager = NotificationsManager()
+            notificationsManager.writeLog(
+                context,
+                "RECEIVING NOTIFICATIONS",
+                "RECEIVING ALARM BY ${Clock.System.now()}"
+            )
+            notificationsManager.writeLog(
+                context,
+                "RECEIVING NOTIFICATIONS",
+                "RECEIVING ALARM $alarmInstant;$alarmID;$drugName"
+            )
             if (alarmID != null && alarmInstant != null) {
                 notificationsManager.removeAlarm(
                     context,
@@ -76,3 +85,4 @@ private fun showNotification(context: Context, title: String, desc: String) {
     manager.notify(requestID, notification)
 
 }
+

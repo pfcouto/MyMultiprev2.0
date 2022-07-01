@@ -1,12 +1,22 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
+import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -33,6 +43,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
@@ -51,6 +63,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.concurrent.TimeUnit
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
@@ -153,7 +166,7 @@ fun ActiveDrugListScreen(
                     var timeTextText by remember { mutableStateOf("") }
 
 
-                    if (item.first.acquiredAt ==  null ||item.first.intakesTakenCount == 0) {
+                    if (item.first.acquiredAt == null || item.first.intakesTakenCount == 0) {
                         prescriptionAcquisitionConfirmed.value = false
                         timeTextText = "Confirmar Aquisição"
 
@@ -253,7 +266,7 @@ fun AlertDialogLogout(openDialog: Boolean, setDialogFalse: () -> Unit, logout: (
                         Text(text = "Tem a certeza de que pretende sair?")
                     },
                     text = {
-                           // Just to create a spacer between the title and the buttons
+                        // Just to create a spacer between the title and the buttons
                     },
                     confirmButton = {
                         Button(
@@ -363,7 +376,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
             Column(modifier = Modifier.width(160.dp)) {
                 Text(
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp),
-                    color = if(isSystemInDarkTheme()) Gray else Color.DarkGray,
+                    color = if (isSystemInDarkTheme()) Gray else Color.DarkGray,
                     fontSize = 18.sp,
                     maxLines = 1,
                     fontWeight = FontWeight.W600,
