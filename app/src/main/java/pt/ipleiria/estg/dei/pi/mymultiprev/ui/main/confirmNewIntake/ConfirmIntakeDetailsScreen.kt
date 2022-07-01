@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
@@ -31,7 +29,6 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
-import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 import java.util.*
 
@@ -121,21 +118,31 @@ fun ConfirmIntakeDetailsScreen(
                                 Text(text = "Sentiu algum sintoma secundário durante a toma?")
                             },
                             confirmButton = {
-                                OutlinedButton(onClick = {
+                                OutlinedButton(
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        contentColor = Teal
+                                    ),
+                                    border = BorderStroke(1.dp, Teal),
+                                    onClick = {
 
-                                    viewModel.clearResponse()
-                                    openDialog.value = false;
+                                        viewModel.clearResponse()
+                                        openDialog.value = false;
 
-                                    navController.navigate(BottomBarScreen.Sintomas.route + "/$prescriptionItemId")
-                                }) {
+                                        navController.navigate(BottomBarScreen.Sintomas.route + "/$prescriptionItemId")
+                                    }) {
                                     Text(text = "Sim")
                                 }
                             },
                             dismissButton = {
-                                OutlinedButton(onClick = {
-                                    viewModel.clearResponse(); openDialog.value =
-                                    false; navController.popBackStack()
-                                }) {
+                                OutlinedButton(
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        contentColor = Teal
+                                    ),
+                                    border = BorderStroke(1.dp, Teal),
+                                    onClick = {
+                                        viewModel.clearResponse(); openDialog.value =
+                                        false; navController.navigate(BottomBarScreen.Antibioticos.route)
+                                    }) {
                                     Text(text = "Não")
                                 }
                             }
@@ -152,42 +159,6 @@ fun ConfirmIntakeDetailsScreen(
                 }
             }
         }
-
-//        // Declaring integer values
-//        // for year, month and day
-//        val mYear: Int
-//        val mMonth: Int
-//        val mDay: Int
-//
-//        // Initializing a Calendar
-//        val mCalendar = Calendar.getInstance()
-//        // Fetching current year, month and day
-//        mYear = mCalendar.get(Calendar.YEAR)
-//        mMonth = mCalendar.get(Calendar.MONTH)
-//        mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
-//
-//
-//        // Declaring a string value to
-//        // store date in string format
-//        val mDate = remember { mutableStateOf("") }
-//        val fillDate = "$mDay/${mMonth + 1}/$mYear"
-//
-//        // Declaring DatePickerDialog and setting
-//        // initial values as current values (present year, month and day)
-//        val mDatePickerDialog = DatePickerDialog(
-//            mContext,
-//            { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-//                mDate.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
-//
-//            }, mYear, mMonth, mDay
-//        )
-//        // TODO Ainda tentar fazer
-////    mDatePickerDialog.datePicker.apply {
-////        minDate = prescriptionItem?.nextIntake?.toInstant(
-////            Constants.TIME_ZONE
-////        )?.toEpochMilliseconds()
-////        maxDate = System.currentTimeMillis()
-////    }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -298,13 +269,16 @@ fun ConfirmIntakeDetailsScreen(
             }
 
 
-
-//            Spacer(modifier = Modifier.height(270.dp))
             Spacer(modifier = Modifier.weight(1f))
 
             if (showError) {
                 Text(
-                    modifier = Modifier.padding(start = 32.dp, top = 32.dp, end = 32.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(
+                        start = 32.dp,
+                        top = 32.dp,
+                        end = 32.dp,
+                        bottom = 8.dp
+                    ),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.myColors.darkRed,
@@ -356,27 +330,7 @@ fun ConfirmIntakeDetailsScreen(
                     )
                 }
             }
-
-//            if (showDatePicker) {
-//                mDatePickerDialog.show()
-//            }
-//
-//            // TODO Funciona mas talvez seja melhor procurar alternativ aahhaah
-//            // serve para voltar poder a selecionar uma data
-//            showDatePicker = false
-//
-//            if (showTimePicker) {
-//                mTimePickerDialog.show()
-//            }
-//
-//            // TODO Funciona mas talvez seja melhor procurar alternativ aahhaah
-//            // serve para voltar poder a selecionar uma data
-//            showTimePicker = false
-//
-//            viewModel.setTime(mYear, mMonth + 1, mDay, mHour, mMinute)
-
         }
-
     }
 }
 

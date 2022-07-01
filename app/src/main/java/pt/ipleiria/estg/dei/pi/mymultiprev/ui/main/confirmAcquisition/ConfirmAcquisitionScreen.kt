@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import com.chargemap.compose.numberpicker.NumberPicker
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.dtos.PrescriptionItemDTO
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.BottomBarScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Util
 
@@ -196,6 +197,7 @@ fun ConfirmAcquisitionScreen(
                                 patology,
                                 pickerValue
                             )
+                            navController.navigate(BottomBarScreen.Antibioticos.route)
                         }) {
                         Text(
                             fontSize = 18.sp,
