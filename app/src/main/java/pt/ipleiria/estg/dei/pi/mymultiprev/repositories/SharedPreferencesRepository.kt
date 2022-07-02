@@ -25,10 +25,10 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext val co
             val filename = "NotificationsLog.txt"
             val outputFile = File(context.filesDir, filename)
             Log.d("TESTE", outputFile.absolutePath)
-            val created = outputFile.createNewFile()
-            if (!created) {
-                Log.d("TESTE", "FILE: ${outputFile.readText()}")
-            }
+//            val created = outputFile.createNewFile()
+//            if (!created) {
+//                Log.d("TESTE", "FILE: ${outputFile.readText()}")
+//            }
             outputFile.appendText("${Clock.System.now()}\t| $code:\t$text\n")
         } catch (e: Exception) {
             Log.d("TESTE", "ERROR: $e")

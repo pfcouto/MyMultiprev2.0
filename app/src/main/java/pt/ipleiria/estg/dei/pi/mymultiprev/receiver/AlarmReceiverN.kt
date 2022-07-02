@@ -35,12 +35,23 @@ class AlarmReceiverN : BroadcastReceiver() {
                 "RECEIVING NOTIFICATIONS",
                 "RECEIVING ALARM $alarmInstant;$alarmID;$drugName AT ${Clock.System.now()}"
             )
+            notificationsManager.writeLog(
+                "RECEIVING NOTIFICATIONS",
+                "NOTIFICATION ID (HASH) : ${(alarmInstant + alarmID).hashCode()}"
+            )
             notificationsManager.writeLog("RECEIVING NOTIFICATIONS", "Context: $context")
             if (alarmID != null && alarmInstant != null) {
-                showNotification(context, "MultiPrev - $drugName", drugName.toString())
+                showNotification(
+                    context,
+                    alarmID,
+                    alarmInstant,
+                    "MultiPrev - $drugName",
+                    drugName.toString()
+                )
                 notificationsManager.removeAlarm(
                     alarmInstant,
-                    alarmID
+                    alarmID,
+                    true
                 )
             }
 
@@ -51,7 +62,13 @@ class AlarmReceiverN : BroadcastReceiver() {
 }
 
 
-private fun showNotification(context: Context, title: String, desc: String) {
+private fun showNotification(
+    context: Context,
+    instant: String,
+    id: String,
+    title: String,
+    desc: String
+) {
     val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val channelId = Constants.NOTIFICATIONS_CHANNEL_ID
     val channelName = Constants.NOTIFICATIONS_CHANNEL_NAME
@@ -75,8 +92,9 @@ private fun showNotification(context: Context, title: String, desc: String) {
         .setAutoCancel(true)
         .build()
 
-    val requestID = System.currentTimeMillis().toInt()
-    manager.notify(requestID, notification)
+//    val requestID = System.currentTimeMillis().toInt()
+    val notificationID = (instant + id).hashCode()
+    manager.notify(notificationID, notification)
 
 }
 

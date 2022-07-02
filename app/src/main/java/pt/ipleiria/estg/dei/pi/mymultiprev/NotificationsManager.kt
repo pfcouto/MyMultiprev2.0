@@ -57,13 +57,13 @@ class NotificationsManager(context: Context) {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun removeAlarm(instant: String, id: String) {
+    fun removeAlarm(instant: String, id: String, removeExpired: Boolean = false) {
         writeLog("NOTIFICATIONS", "REMOVING ALARM $instant;$id")
 
         sharedPreferences.removeAlarm("$instant;$id")
 
         writeLog("NOTIFICATIONS", "Calling update next")
-        updateNext()
+        if (removeExpired) removeExpired(instant.toLong(), true) else updateNext()
     }
 
     @OptIn(ExperimentalTime::class)
@@ -116,21 +116,19 @@ class NotificationsManager(context: Context) {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun removeExpired() {
-        writeLog("NOTIFICATIONS", "removing expired")
-
+    fun removeExpired(timeLimit: Long = Instant.now().toEpochMilli(), updateNext: Boolean = false) {
+        writeLog("NOTIFICATIONS", "removing expired - before $timeLimit")
 
         val alarms = sharedPreferences.getNextAlarms() ?: return
         val newAlarmList = mutableListOf<String>()
         alarms.forEach {
             val instant = it.split(";")[0].toLong()
-//            val id = it.split(";")[1]
-//            val drugName = it.split(";")[2]
-            if (instant > Instant.now().toEpochMilli()) {
+            if (instant >= timeLimit) {
                 newAlarmList.add(it)
             }
         }
         sharedPreferences.setNextAlarms(newAlarmList.toSet())
+        if (updateNext) updateNext()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -220,10 +218,10 @@ class NotificationsManager(context: Context) {
             val filename = "NotificationsLog.txt"
             val outputFile = File(context.filesDir, filename)
             Log.d("TESTE", outputFile.absolutePath)
-            val created = outputFile.createNewFile()
-            if (!created) {
-                Log.d("TESTE", "FILE: ${outputFile.readText()}")
-            }
+//            val created = outputFile.createNewFile()
+//            if (!created) {
+//                Log.d("TESTE", "FILE: ${outputFile.readText()}")
+//            }
             outputFile.appendText("${Clock.System.now()}\t| $code:\t$text\n")
         } catch (e: Exception) {
             Log.d("TESTE", "ERROR: $e")
