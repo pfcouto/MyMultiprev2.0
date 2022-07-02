@@ -134,7 +134,6 @@ class NotificationsManager(context: Context) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateNext() {
         writeLog("NOTIFICATIONS", "Updating alarms")
-//        removeExpired(context)
         val nextAlarms = sharedPreferences.getNextAlarms()?.toList()
         if (nextAlarms.isNullOrEmpty()) {
             writeLog("NOTIFICATIONS", "no alarms found")
@@ -152,13 +151,6 @@ class NotificationsManager(context: Context) {
             val id = alarmParts[1]
             val drugName = alarmParts[2]
 
-//            if (instant < Instant.now().toEpochMilli()) {
-//                writeLog("NOTIFICATIONS", "alarm outdated")
-//                writeLog("NOTIFICATIONS", "now: ${Instant.now()}")
-//                writeLog("NOTIFICATIONS", "alarm: ${Instant.ofEpochMilli(instant)}")
-////                sharedPreferences.removeAllAlarm(id)
-//                sharedPreferences.removeAlarm(id)
-//            } else {
             if (instant < nextAlarmTime) {
                 writeLog("NOTIFICATIONS", "alarm newer then the previous")
                 nextAlarmTime = instant

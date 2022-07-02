@@ -11,7 +11,7 @@ import javax.inject.Inject
 class SharedPreferencesRepository @Inject constructor(@ApplicationContext val context: Context) {
     private val spAlarmService =
         context.getSharedPreferences(Constants.MY_PREFS, Context.MODE_PRIVATE)
-    private val spAlarmServiceEditor = spAlarmService.edit()
+    private var spAlarmServiceEditor = spAlarmService.edit()
 
     private val spAuth = context.getSharedPreferences(Constants.AUTH_SP, Context.MODE_PRIVATE)
     private val spAuthEditor = spAuth.edit()
@@ -37,14 +37,17 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext val co
 
     //Alarms V2
     fun setNextAlarms(nextAlarms: Set<String>) {
-        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms).commit()
+        spAlarmServiceEditor =
+            spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
+        spAlarmServiceEditor.commit()
     }
 
     fun getNextAlarms(): MutableSet<String>? =
         spAlarmService.getStringSet(Constants.SP_NEXT_ALARMS, null)
 
     fun clearAlarms() {
-        spAlarmServiceEditor.remove(Constants.SP_NEXT_ALARMS).commit()
+        spAlarmServiceEditor = spAlarmServiceEditor.remove(Constants.SP_NEXT_ALARMS)
+        spAlarmServiceEditor.commit()
     }
 
     fun removeAlarm(instantAndId: String) {
@@ -70,7 +73,9 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext val co
                     "AN ERROR OCCURRED WHILE TRYING TO REMOVE THE ALARM"
                 )
             }
-            spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms).commit()
+            spAlarmServiceEditor =
+                spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
+            spAlarmServiceEditor.commit()
         }
         writeLog("NOTIFICATIONS", "removeAlarm after remove alarms - $nextAlarms")
     }
@@ -86,8 +91,9 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext val co
                 nextAlarmsClean.add(it)
             }
         }
-        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarmsClean.toSet())
-            .commit()
+        spAlarmServiceEditor =
+            spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarmsClean.toSet())
+        spAlarmServiceEditor.commit()
         writeLog("NOTIFICATIONS", "removeAlarm after remove alarms - $nextAlarmsClean")
     }
 
@@ -114,7 +120,9 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext val co
         writeLog("NOTIFICATIONS", "equals not found - newAlarm being added")
         newSet.add(newAlarm)
 
-        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, newSet.toSet()).commit()
+        spAlarmServiceEditor =
+            spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, newSet.toSet())
+        spAlarmServiceEditor.commit()
         writeLog("NOTIFICATIONS", "Shared preferences - Alarm added '$newAlarm'")
     }
 

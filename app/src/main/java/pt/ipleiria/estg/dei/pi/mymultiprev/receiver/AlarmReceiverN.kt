@@ -51,7 +51,7 @@ class AlarmReceiverN : BroadcastReceiver() {
                 notificationsManager.removeAlarm(
                     alarmInstant,
                     alarmID,
-                    true
+                    false //should be true
                 )
             }
 
