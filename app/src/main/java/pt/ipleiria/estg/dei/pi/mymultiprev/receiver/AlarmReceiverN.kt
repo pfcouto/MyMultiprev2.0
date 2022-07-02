@@ -30,21 +30,15 @@ class AlarmReceiverN : BroadcastReceiver() {
 
             Log.d("RECEIVING NOTIFICATIONS", "RECEIVING ALARM $alarmInstant;$alarmID;$drugName")
 
-            showNotification(context, "MultiPrev - $drugName", drugName.toString())
-            val notificationsManager = NotificationsManager()
+            val notificationsManager = NotificationsManager(context)
             notificationsManager.writeLog(
-                context,
                 "RECEIVING NOTIFICATIONS",
-                "RECEIVING ALARM BY ${Clock.System.now()}"
+                "RECEIVING ALARM $alarmInstant;$alarmID;$drugName AT ${Clock.System.now()}"
             )
-            notificationsManager.writeLog(
-                context,
-                "RECEIVING NOTIFICATIONS",
-                "RECEIVING ALARM $alarmInstant;$alarmID;$drugName"
-            )
+            notificationsManager.writeLog("RECEIVING NOTIFICATIONS", "Context: $context")
             if (alarmID != null && alarmInstant != null) {
+                showNotification(context, "MultiPrev - $drugName", drugName.toString())
                 notificationsManager.removeAlarm(
-                    context,
                     alarmInstant,
                     alarmID
                 )

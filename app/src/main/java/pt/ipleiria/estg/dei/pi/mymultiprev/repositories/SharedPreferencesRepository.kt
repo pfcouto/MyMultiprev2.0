@@ -3,10 +3,12 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.repositories
 import android.content.Context
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.datetime.Clock
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
+import java.io.File
 import javax.inject.Inject
 
-class SharedPreferencesRepository @Inject constructor(@ApplicationContext context: Context) {
+class SharedPreferencesRepository @Inject constructor(@ApplicationContext val context: Context) {
     private val spAlarmService =
         context.getSharedPreferences(Constants.MY_PREFS, Context.MODE_PRIVATE)
     private val spAlarmServiceEditor = spAlarmService.edit()
@@ -18,39 +20,37 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
         context.getSharedPreferences(Constants.USER_PREFERENCES, Context.MODE_PRIVATE)
     private val spUserPreferencesEditor = spUserPreferences.edit()
 
-    //Alarm
-//    fun saveAlarm(nextAlarm: Long) {
-//        spAlarmServiceEditor.putLong(Constants.SP_NEXT_ALARM, nextAlarm)
-//        spAlarmServiceEditor.apply()
-//    }
-//
-//    fun getAlarm() = spAlarmService.getLong(Constants.SP_NEXT_ALARM, Constants.SP_DEFAULT_LONG)
-//
-//
-//    fun removeAlarm() {
-//        spAlarmServiceEditor.remove(Constants.SP_NEXT_ALARM)
-//        spAlarmServiceEditor.apply()
-//    }
-
+    private fun writeLog(code: String, text: String) {
+        try {
+            val filename = "NotificationsLog.txt"
+            val outputFile = File(context.filesDir, filename)
+            Log.d("TESTE", outputFile.absolutePath)
+            val created = outputFile.createNewFile()
+            if (!created) {
+                Log.d("TESTE", "FILE: ${outputFile.readText()}")
+            }
+            outputFile.appendText("${Clock.System.now()}\t| $code:\t$text\n")
+        } catch (e: Exception) {
+            Log.d("TESTE", "ERROR: $e")
+        }
+    }
 
     //Alarms V2
     fun setNextAlarms(nextAlarms: Set<String>) {
-        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
-        spAlarmServiceEditor.commit()
+        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms).commit()
     }
 
     fun getNextAlarms(): MutableSet<String>? =
         spAlarmService.getStringSet(Constants.SP_NEXT_ALARMS, null)
 
     fun clearAlarms() {
-        spAlarmServiceEditor.remove(Constants.SP_NEXT_ALARMS)
-        spAlarmServiceEditor.commit()
+        spAlarmServiceEditor.remove(Constants.SP_NEXT_ALARMS).commit()
     }
 
     fun removeAlarm(instantAndId: String) {
         val nextAlarms = getNextAlarms() ?: return
-        Log.d("NOTIFICATIONS", "removeAlarm - $instantAndId")
-        Log.d("NOTIFICATIONS", "removeAlarm before remove  alarms - $nextAlarms")
+        writeLog("NOTIFICATIONS", "removeAlarm - $instantAndId")
+        writeLog("NOTIFICATIONS", "removeAlarm before remove  alarms - $nextAlarms")
         var alarmToRemove: String? = null
         nextAlarms.forEach {
             val instantEach = it.split(";")[0]
@@ -61,17 +61,24 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
             }
         }
         if (alarmToRemove != null) {
-            nextAlarms.remove(alarmToRemove)
-            spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms)
-            spAlarmServiceEditor.commit()
+            val removed = nextAlarms.remove(alarmToRemove)
+            if (removed) {
+                writeLog("NOTIFICATIONS", "alarm removed")
+            } else {
+                writeLog(
+                    "NOTIFICATIONS",
+                    "AN ERROR OCCURRED WHILE TRYING TO REMOVE THE ALARM"
+                )
+            }
+            spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarms).commit()
         }
-        Log.d("NOTIFICATIONS", "removeAlarm after remove alarms - $nextAlarms")
+        writeLog("NOTIFICATIONS", "removeAlarm after remove alarms - $nextAlarms")
     }
 
     fun removeAllAlarm(id: String) {
         val nextAlarms = getNextAlarms() ?: return
-        Log.d("NOTIFICATIONS", "removeAlarm - $id")
-        Log.d("NOTIFICATIONS", "removeAlarm before remove  alarms - $nextAlarms")
+        writeLog("NOTIFICATIONS", "removeAlarm - $id")
+        writeLog("NOTIFICATIONS", "removeAlarm before remove  alarms - $nextAlarms")
 
         var nextAlarmsClean = mutableListOf<String>()
         nextAlarms.forEach {
@@ -80,36 +87,35 @@ class SharedPreferencesRepository @Inject constructor(@ApplicationContext contex
             }
         }
         spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, nextAlarmsClean.toSet())
-        spAlarmServiceEditor.commit()
-        Log.d("NOTIFICATIONS", "removeAlarm after remove alarms - $nextAlarmsClean")
+            .commit()
+        writeLog("NOTIFICATIONS", "removeAlarm after remove alarms - $nextAlarmsClean")
     }
 
     fun addAlarm(newAlarm: String) {
-        Log.d("NOTIFICATIONS", "Shared preferences - add alarm")
+        writeLog("NOTIFICATIONS", "Shared preferences - add alarm")
 
         val stringSet = spAlarmService.getStringSet(Constants.SP_NEXT_ALARMS, null)
 
         val newSet = mutableSetOf<String>()
         if (stringSet != null) {
-            Log.d("NOTIFICATIONS", "Shared preferences - adding previous alarms")
+            writeLog("NOTIFICATIONS", "Shared preferences - adding previous alarms")
             newSet.addAll(stringSet)
         }
 
         newSet.forEach {
-            Log.d("NOTIFICATIONS", "Adding - Verifying Duplicated alarms")
-            Log.d("NOTIFICATIONS", "$it - $newAlarm")
+            writeLog("NOTIFICATIONS", "Adding - Verifying Duplicated alarms")
+            writeLog("NOTIFICATIONS", "$it - $newAlarm")
             if (it == newAlarm) {
-                Log.d("NOTIFICATIONS", "equals found - newAlarm not being added")
+                writeLog("NOTIFICATIONS", "equals found - newAlarm not being added")
                 return
             }
         }
 
-        Log.d("NOTIFICATIONS", "equals not found - newAlarm being added")
+        writeLog("NOTIFICATIONS", "equals not found - newAlarm being added")
         newSet.add(newAlarm)
 
-        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, newSet.toSet())
-        spAlarmServiceEditor.commit()
-        Log.d("NOTIFICATIONS", "Shared preferences - Alarm added '$newAlarm'")
+        spAlarmServiceEditor.putStringSet(Constants.SP_NEXT_ALARMS, newSet.toSet()).commit()
+        writeLog("NOTIFICATIONS", "Shared preferences - Alarm added '$newAlarm'")
     }
 
     //Auth

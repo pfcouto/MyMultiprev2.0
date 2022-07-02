@@ -1,22 +1,12 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
-import android.Manifest
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
-import android.os.Environment
-import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -43,8 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
@@ -99,14 +87,14 @@ fun ActiveDrugListScreen(
 
     if (!listOfPairs.isNullOrEmpty()) {
         DisposableEffect(key1 = Unit) {
-            val nM = NotificationsManager()
+            val nM = NotificationsManager(context)
 //            nM.removeExpired(context)
-            nM.removeAll(context)
+            nM.removeAll()
             listOfPairs!!.forEach {
                 if (it.first.alarm) {
-                    nM.addAlarms(context, it.first, it.second!!)
+                    nM.addAlarms(it.first, it.second!!)
                 } else {
-                    nM.removeAlarms(context, it.first.id)
+                    nM.removeAlarms(it.first.id)
 //                    nM.updateNext(context)
                 }
             }
@@ -618,13 +606,13 @@ fun onAlarmClick(
     val alarmState = !prescriptionItem.alarm
     viewModel.setAlarm(alarmState, prescriptionItem.id)
 
-    val nM = NotificationsManager()
+    val nM = NotificationsManager(context)
     if (drug == null) return
     if (alarmState) {
-        nM.addAlarms(context, prescriptionItem, drug)
+        nM.addAlarms(prescriptionItem, drug)
     } else {
         nM.removeAlarms(
-            context, prescriptionItem.id
+            prescriptionItem.id
         )
     }
 

@@ -22,68 +22,63 @@ import java.util.*
 import kotlin.time.ExperimentalTime
 
 
-class NotificationsManager() {
-
+class NotificationsManager(context: Context) {
+    private val context = context
+    private val sharedPreferences = SharedPreferencesRepository(context)
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun addAlarm(context: Context, na_instant: String, na_id: String, na_drugName: String) {
-        writeLog(context, "NOTIFICATIONS", "addAlarm")
-
-        val sharedPreferences = SharedPreferencesRepository(context)
+    fun addAlarm(na_instant: String, na_id: String, na_drugName: String) {
+        writeLog("NOTIFICATIONS", "addAlarm")
 
 //        sharedPreferences.getNextAlarms()?.forEach {
 //            val instant = it.split(";")[0].toLong()
 //            val id = it.split(";")[1]
 //            val drugName = it.split(";")[2]
 //            if (instant == na_instant.toLong() && id == na_id && drugName == na_drugName) {
-//                writeLog(context,"NOTIFICATIONS", "Alarm already exists")
+//                writeLog("NOTIFICATIONS", "Alarm already exists")
 //                return
 //            }
 //        }
         sharedPreferences.addAlarm("$na_instant;$na_id;$na_drugName")
-        writeLog(context, "NOTIFICATIONS", "Calling update next")
-        updateNext(context)
+        writeLog("NOTIFICATIONS", "Calling update next")
+        updateNext()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun removeAlarms(context: Context, prescId: String) {
-        val sharedPreferences = SharedPreferencesRepository(context)
+    fun removeAlarms(prescId: String) {
         sharedPreferences.removeAllAlarm(prescId)
-        updateNext(context)
+        updateNext()
     }
 
-    fun removeAll(context: Context) {
-        val sharedPreferences = SharedPreferencesRepository(context)
+    fun removeAll() {
         sharedPreferences.clearAlarms()
-        removeAlarmSet(context)
-        writeLog(context, "NOTIFICATIONS", "WARNING!!! - ALL ALARMS CLEARED")
+        removeAlarmSet()
+        writeLog("NOTIFICATIONS", "WARNING!!! - ALL ALARMS CLEARED")
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun removeAlarm(context: Context, instant: String, id: String) {
-        writeLog(context, "NOTIFICATIONS", "REMOVING ALARM $instant;$id")
+    fun removeAlarm(instant: String, id: String) {
+        writeLog("NOTIFICATIONS", "REMOVING ALARM $instant;$id")
 
-        val sharedPreferences = SharedPreferencesRepository(context)
         sharedPreferences.removeAlarm("$instant;$id")
 
-        writeLog(context, "NOTIFICATIONS", "Calling update next")
-        updateNext(context)
+        writeLog("NOTIFICATIONS", "Calling update next")
+        updateNext()
     }
 
     @OptIn(ExperimentalTime::class)
     @RequiresApi(Build.VERSION_CODES.O)
-    fun addAlarms(context: Context, prescriptionItem: PrescriptionItem, drug: Drug) {
-        writeLog(context, "NOTIFICATIONS", "INSIDE ADD ALARMS")
+    fun addAlarms(prescriptionItem: PrescriptionItem, drug: Drug) {
+        writeLog("NOTIFICATIONS", "INSIDE ADD ALARMS")
 
         if (prescriptionItem.drug != drug.id ||
             prescriptionItem.nextIntake == null ||
             prescriptionItem.intakesTakenCount == null ||
             prescriptionItem.expectedIntakeCount == null
         ) {
-            writeLog(context, "NOTIFICATIONS", "ERROR")
+            writeLog("NOTIFICATIONS", "ERROR")
             return
         }
-        val sharedPreferences = SharedPreferencesRepository(context)
 
         var intakesTakenCount = prescriptionItem.intakesTakenCount!!
         val predictIntakes = prescriptionItem.intakesTakenCount!!
@@ -91,7 +86,7 @@ class NotificationsManager() {
         var instant = prescriptionItem.nextIntake!!.toInstant(Constants.TIME_ZONE)
 
 //        while (intakesTakenCount <= prescriptionItem.expectedIntakeCount!!) {
-//        writeLog(context,"NOTIFICATIONS", "WHILE:  $intakesTakenCount to $predictIntakes")
+//        writeLog("NOTIFICATIONS", "WHILE:  $intakesTakenCount to $predictIntakes")
         val nowInstant = Clock.System.now()
         var newAlarmsCount = 0
         while (intakesTakenCount <= predictIntakes) {
@@ -99,7 +94,7 @@ class NotificationsManager() {
                 val alarmToAdd =
                     "${instant.toEpochMilliseconds()};${prescriptionItem.id};${drug.commercialName}"
                 sharedPreferences.addAlarm(alarmToAdd)
-                writeLog(context, "NOTIFICATIONS", "$alarmToAdd ADDED TO SHARED PREFERENCES")
+                writeLog("NOTIFICATIONS", "$alarmToAdd ADDED TO SHARED PREFERENCES")
                 newAlarmsCount++
             }
 //            instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.HOUR)
@@ -108,25 +103,23 @@ class NotificationsManager() {
             intakesTakenCount++
         }
 
-        writeLog(context, "NOTIFICATIONS", "LEAVING ADD ALARMS - $newAlarmsCount NEW ALARMS ADDED")
+        writeLog("NOTIFICATIONS", "LEAVING ADD ALARMS - $newAlarmsCount NEW ALARMS ADDED")
         writeLog(
-            context,
             "NOTIFICATIONS",
             "LEAVING ADD ALARMS - ${sharedPreferences.getNextAlarms()?.size} TOTAL"
         )
         writeLog(
-            context,
             "NOTIFICATIONS",
             "LEAVING ADD ALARMS - ${sharedPreferences.getNextAlarms()}"
         )
-        if (newAlarmsCount > 0) updateNext(context)
+        if (newAlarmsCount > 0) updateNext()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun removeExpired(context: Context) {
-        writeLog(context, "NOTIFICATIONS", "removing expired")
+    fun removeExpired() {
+        writeLog("NOTIFICATIONS", "removing expired")
 
-        val sharedPreferences = SharedPreferencesRepository(context)
+
         val alarms = sharedPreferences.getNextAlarms() ?: return
         val newAlarmList = mutableListOf<String>()
         alarms.forEach {
@@ -141,36 +134,35 @@ class NotificationsManager() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun updateNext(context: Context) {
-        writeLog(context, "NOTIFICATIONS", "Updating alarms")
+    fun updateNext() {
+        writeLog("NOTIFICATIONS", "Updating alarms")
 //        removeExpired(context)
-        val sharedPreferences = SharedPreferencesRepository(context)
         val nextAlarms = sharedPreferences.getNextAlarms()?.toList()
         if (nextAlarms.isNullOrEmpty()) {
-            writeLog(context, "NOTIFICATIONS", "no alarms found")
+            writeLog("NOTIFICATIONS", "no alarms found")
             return
         }
         var alarmID = ""
         var nextAlarmName = ""
         var nextAlarmTime = Long.MAX_VALUE
-        writeLog(context, "NOTIFICATIONS", nextAlarms.toString())
+        writeLog("NOTIFICATIONS", nextAlarms.toString())
         nextAlarms.forEach {
             val alarmParts = it.split(";")
-            writeLog(context, "NOTIFICATIONS", "foreach - $alarmParts")
+            writeLog("NOTIFICATIONS", "foreach - $alarmParts")
 
             val instant = alarmParts[0].toLong()
             val id = alarmParts[1]
             val drugName = alarmParts[2]
 
 //            if (instant < Instant.now().toEpochMilli()) {
-//                writeLog(context,"NOTIFICATIONS", "alarm outdated")
-//                writeLog(context,"NOTIFICATIONS", "now: ${Instant.now()}")
-//                writeLog(context,"NOTIFICATIONS", "alarm: ${Instant.ofEpochMilli(instant)}")
+//                writeLog("NOTIFICATIONS", "alarm outdated")
+//                writeLog("NOTIFICATIONS", "now: ${Instant.now()}")
+//                writeLog("NOTIFICATIONS", "alarm: ${Instant.ofEpochMilli(instant)}")
 ////                sharedPreferences.removeAllAlarm(id)
 //                sharedPreferences.removeAlarm(id)
 //            } else {
             if (instant < nextAlarmTime) {
-                writeLog(context, "NOTIFICATIONS", "alarm newer then the previous")
+                writeLog("NOTIFICATIONS", "alarm newer then the previous")
                 nextAlarmTime = instant
                 alarmID = id
                 nextAlarmName = drugName
@@ -178,20 +170,17 @@ class NotificationsManager() {
 //            }
         }
         if (alarmID.isNotEmpty() && nextAlarmName.isNotEmpty()) {
-            setAlarm(context, nextAlarmTime, alarmID, nextAlarmName)
+            setAlarm(nextAlarmTime, alarmID, nextAlarmName)
             writeLog(
-                context,
                 "NOTIFICATIONS",
                 "next alarm set - $nextAlarmTime;$alarmID;$nextAlarmName"
             )
         } else {
-            removeAlarmSet(context)
+            removeAlarmSet()
         }
     }
 
-    private fun removeAlarmSet(context: Context) {
-
-        val sharedPreferences = SharedPreferencesRepository(context)
+    private fun removeAlarmSet() {
         val nextAlarms = sharedPreferences.getNextAlarms()
         if (nextAlarms == null || nextAlarms.size < 1) {
             return
@@ -205,12 +194,12 @@ class NotificationsManager() {
         alarmManager.cancel(pendingIntent)
     }
 
-    private fun setAlarm(context: Context, instant: Long, id: String, drugName: String) {
+    private fun setAlarm(instant: Long, id: String, drugName: String) {
 
 //        val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
         val timeSec = System.currentTimeMillis()
-        writeLog(context, "NOTIFICATIONS", "currentTime: $timeSec : ${Date(timeSec)}")
-        writeLog(context, "NOTIFICATIONS", "nextAlarmTime: $instant : ${Date(instant)}")
+        writeLog("NOTIFICATIONS", "currentTime: $timeSec : ${Date(timeSec)}")
+        writeLog("NOTIFICATIONS", "nextAlarmTime: $instant : ${Date(instant)}")
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -226,7 +215,7 @@ class NotificationsManager() {
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, instant, pendingIntent)
     }
 
-    fun writeLog(context: Context, code: String, text: String) {
+    fun writeLog(code: String, text: String) {
         try {
             val filename = "NotificationsLog.txt"
             val outputFile = File(context.filesDir, filename)
@@ -236,9 +225,6 @@ class NotificationsManager() {
                 Log.d("TESTE", "FILE: ${outputFile.readText()}")
             }
             outputFile.appendText("${Clock.System.now()}\t| $code:\t$text\n")
-//            Log.d("TESTE", "Created: $created")
-//            Log.d("TESTE", "Permission: ${checkPermission(context)}")
-//            Log.d("TESTE", "Success: ${outputFile.path}")
         } catch (e: Exception) {
             Log.d("TESTE", "ERROR: $e")
         }
