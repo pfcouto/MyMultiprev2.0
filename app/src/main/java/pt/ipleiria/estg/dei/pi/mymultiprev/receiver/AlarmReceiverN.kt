@@ -6,11 +6,8 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
-import android.net.Uri
-import android.os.*
+import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.datetime.Clock
@@ -23,7 +20,6 @@ import java.io.File
 
 @AndroidEntryPoint
 class AlarmReceiverN : BroadcastReceiver() {
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
         fun writeLog(code: String, text: String) {
             try {
@@ -99,11 +95,14 @@ private fun showNotification(
 
 
     val resultIntent = Intent(context, MainActivity::class.java)
-    val pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    val pendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        resultIntent,
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+    )
 
-
-    val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
+//    val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
     val notification = NotificationCompat.Builder(context, channelId)
         .setContentTitle(title)
@@ -111,14 +110,13 @@ private fun showNotification(
         .setSmallIcon(R.drawable.ic_baseline_notifications_24)
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
-        .setSound(alarmSound)
-        .setVibrate(longArrayOf(100,100))
+//        .setSound(alarmSound)
+//        .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
         .build()
 
 
 //    val requestID = System.currentTimeMillis().toInt()
     val notificationID = (instant + id).hashCode()
     manager.notify(notificationID, notification)
-
 }
 

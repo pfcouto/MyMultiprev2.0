@@ -4,9 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.plus
@@ -17,16 +15,12 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiverN
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.io.File
-import java.time.Instant
 import java.util.*
-import kotlin.time.ExperimentalTime
 
 
-class NotificationsManager(context: Context) {
-    private val context = context
+class NotificationsManager(private val context: Context) {
     private val sharedPreferences = SharedPreferencesRepository(context)
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun addAlarm(na_instant: String, na_id: String, na_drugName: String) {
         writeLog("NOTIFICATIONS", "addAlarm")
 
@@ -44,7 +38,6 @@ class NotificationsManager(context: Context) {
         updateNext()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun removeAlarms(prescId: String) {
         sharedPreferences.removeAllAlarm(prescId)
         updateNext()
@@ -56,7 +49,6 @@ class NotificationsManager(context: Context) {
         writeLog("NOTIFICATIONS", "WARNING!!! - ALL ALARMS CLEARED")
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun removeAlarm(instant: String, id: String, removeExpired: Boolean = false) {
         writeLog("NOTIFICATIONS", "REMOVING ALARM $instant;$id")
 
@@ -66,8 +58,6 @@ class NotificationsManager(context: Context) {
         if (removeExpired) removeExpired(instant.toLong(), true) else updateNext()
     }
 
-    @OptIn(ExperimentalTime::class)
-    @RequiresApi(Build.VERSION_CODES.O)
     fun addAlarms(prescriptionItem: PrescriptionItem, drug: Drug) {
         writeLog("NOTIFICATIONS", "INSIDE ADD ALARMS")
 
@@ -115,8 +105,10 @@ class NotificationsManager(context: Context) {
         if (newAlarmsCount > 0) updateNext()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun removeExpired(timeLimit: Long = Instant.now().toEpochMilli(), updateNext: Boolean = false) {
+    fun removeExpired(
+        timeLimit: Long = Clock.System.now().toEpochMilliseconds(),
+        updateNext: Boolean = false
+    ) {
         writeLog("NOTIFICATIONS", "removing expired - before $timeLimit")
 
         val alarms = sharedPreferences.getNextAlarms() ?: return
@@ -131,7 +123,6 @@ class NotificationsManager(context: Context) {
         if (updateNext) updateNext()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun updateNext() {
         writeLog("NOTIFICATIONS", "Updating alarms")
         val nextAlarms = sharedPreferences.getNextAlarms()?.toList()
@@ -157,7 +148,6 @@ class NotificationsManager(context: Context) {
                 alarmID = id
                 nextAlarmName = drugName
             }
-//            }
         }
         if (alarmID.isNotEmpty() && nextAlarmName.isNotEmpty()) {
             setAlarm(nextAlarmTime, alarmID, nextAlarmName)
@@ -170,7 +160,6 @@ class NotificationsManager(context: Context) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun removeAlarmSet() {
         val nextAlarms = sharedPreferences.getNextAlarms()
         if (nextAlarms == null || nextAlarms.size < 1) {
@@ -190,7 +179,7 @@ class NotificationsManager(context: Context) {
         alarmManager.cancel(pendingIntent)
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
+
     private fun setAlarm(instant: Long, id: String, drugName: String) {
 
 //        val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
@@ -221,7 +210,7 @@ class NotificationsManager(context: Context) {
         )
     }
 
-    fun writeLog(code: String, text: String) {
+    private fun writeLog(code: String, text: String) {
         try {
             val filename = "NotificationsLog.txt"
             val outputFile = File(context.filesDir, filename)
