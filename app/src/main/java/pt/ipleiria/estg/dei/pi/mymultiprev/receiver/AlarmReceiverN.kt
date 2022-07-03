@@ -6,7 +6,9 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.*
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -17,6 +19,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.NotificationsManager
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.io.File
+
 
 @AndroidEntryPoint
 class AlarmReceiverN : BroadcastReceiver() {
@@ -99,13 +102,19 @@ private fun showNotification(
     val pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
 
+    val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+
     val notification = NotificationCompat.Builder(context, channelId)
         .setContentTitle(title)
         .setContentText("Hey! It is time for you to take your $desc")
         .setSmallIcon(R.drawable.ic_baseline_notifications_24)
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
+        .setSound(alarmSound)
+        .setVibrate(longArrayOf(100,100))
         .build()
+
 
 //    val requestID = System.currentTimeMillis().toInt()
     val notificationID = (instant + id).hashCode()
