@@ -170,6 +170,7 @@ class NotificationsManager(context: Context) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun removeAlarmSet() {
         val nextAlarms = sharedPreferences.getNextAlarms()
         if (nextAlarms == null || nextAlarms.size < 1) {
@@ -180,10 +181,16 @@ class NotificationsManager(context: Context) {
         val intent = Intent(context, AlarmReceiverN::class.java)
 
         val pendingIntent =
-            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getBroadcast(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
         alarmManager.cancel(pendingIntent)
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun setAlarm(instant: Long, id: String, drugName: String) {
 
 //        val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
@@ -200,9 +207,18 @@ class NotificationsManager(context: Context) {
 
 
         val pendingIntent =
-            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getBroadcast(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
         alarmManager.cancel(pendingIntent)
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, instant, pendingIntent)
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            instant,
+            pendingIntent
+        )
     }
 
     fun writeLog(code: String, text: String) {

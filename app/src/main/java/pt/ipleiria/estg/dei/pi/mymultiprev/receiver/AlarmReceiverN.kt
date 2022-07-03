@@ -16,11 +16,23 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.MainActivity
 import pt.ipleiria.estg.dei.pi.mymultiprev.NotificationsManager
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
+import java.io.File
 
 @AndroidEntryPoint
 class AlarmReceiverN : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
+        fun writeLog(code: String, text: String) {
+            try {
+                val filename = "NotificationsLog.txt"
+                val outputFile = File(context.filesDir, filename)
+                Log.d("TESTE", outputFile.absolutePath)
+                outputFile.appendText("${Clock.System.now()}\t| $code:\t$text\n")
+            } catch (e: Exception) {
+                Log.d("TESTE", "ERROR: $e")
+            }
+        }
+
         try {
             Log.d("RECEIVING NOTIFICATIONS", "RECEIVING ALARM BY ${Clock.System.now()}")
 
@@ -30,16 +42,17 @@ class AlarmReceiverN : BroadcastReceiver() {
 
             Log.d("RECEIVING NOTIFICATIONS", "RECEIVING ALARM $alarmInstant;$alarmID;$drugName")
 
-            val notificationsManager = NotificationsManager(context)
-            notificationsManager.writeLog(
+            writeLog(
                 "RECEIVING NOTIFICATIONS",
                 "RECEIVING ALARM $alarmInstant;$alarmID;$drugName AT ${Clock.System.now()}"
             )
-            notificationsManager.writeLog(
+            writeLog(
                 "RECEIVING NOTIFICATIONS",
                 "NOTIFICATION ID (HASH) : ${(alarmInstant + alarmID).hashCode()}"
             )
-            notificationsManager.writeLog("RECEIVING NOTIFICATIONS", "Context: $context")
+            writeLog("RECEIVING NOTIFICATIONS", "Context: $context")
+
+            val notificationsManager = NotificationsManager(context)
             if (alarmID != null && alarmInstant != null) {
                 showNotification(
                     context,
@@ -51,12 +64,14 @@ class AlarmReceiverN : BroadcastReceiver() {
                 notificationsManager.removeAlarm(
                     alarmInstant,
                     alarmID,
-                    false //should be true
+                    true
                 )
             }
 
         } catch (ex: Exception) {
             Log.d("Receive Ex", "onReceive: ${ex.printStackTrace()}")
+            writeLog("EXCEPTION", "onReceive: ${ex.message}")
+            writeLog("EXCEPTION", "onReceive: ${ex.printStackTrace()}")
         }
     }
 }
@@ -81,7 +96,7 @@ private fun showNotification(
 
 
     val resultIntent = Intent(context, MainActivity::class.java)
-    val pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, 0)
+    val pendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
 
     val notification = NotificationCompat.Builder(context, channelId)
