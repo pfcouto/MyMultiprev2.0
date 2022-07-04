@@ -18,7 +18,7 @@ fun darkColors(
     secondary: Color = Color(0xFF03DAC6),
     secondaryVariant: Color = secondary,
     background: Color = Color(0xFF121212),
-    surface: Color = Color(0xFF121212),
+    surface: Color = Color(0xFF474747),
     error: Color = Color(0xFFCF6679),
     onPrimary: Color = Color.Black,
     onSecondary: Color = Color.Black,
@@ -73,7 +73,7 @@ private val LightColorPalette = MyColors(
 )
 
 private val DarkColorPalette = MyColors(
-    material = darkColors(),
+    material = darkColors(background = Color(0xFF1D1D1D)),
     darkRed = DarkRed,
     darkGreen = DarkGreen,
     messageOverdue = MessageOverdue,

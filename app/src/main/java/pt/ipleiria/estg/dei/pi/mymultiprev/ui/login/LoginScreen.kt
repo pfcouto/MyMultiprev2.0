@@ -3,6 +3,7 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui.login
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -28,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.responses.LoginResponse
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 
@@ -54,144 +56,154 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val response = viewModel.loginResponse.observeAsState()
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.myColors.background)
+    ) {
 
-    Text(
-        text = "Bem-Vindo",
-        modifier = Modifier.padding(start = 32.dp, top = 32.dp),
-        fontSize = 32.sp,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colors.onSurface
-    )
+        Text(
+            text = "Bem-Vindo",
+            modifier = Modifier.padding(start = 32.dp,end = 32.dp, top = 32.dp),
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colors.onSurface
+        )
 //    Text(
 //        text = test,
 //        modifier = Modifier.padding(start = 32.dp, top = 96.dp),
 //        fontSize = 32.sp,
 //        fontWeight = FontWeight.Bold
 //    )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(horizontal = 32.dp)
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(horizontal = 32.dp)
-    ) {
+        ) {
+            if (!isLoading) {
 
-        if (!isLoading) {
+                val customTextSelectionColors = TextSelectionColors(
+                    handleColor = Teal,
+                    backgroundColor = Teal
+                )
 
-            val customTextSelectionColors = TextSelectionColors(
-                handleColor = Teal,
-                backgroundColor = Teal
-            )
+                CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+                    OutlinedTextField(
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Teal,
+                            cursorColor = Teal,
+                            focusedLabelColor = Teal
+                        ),
+                        value = username,
+                        onValueChange = {
+                            username = it
+                            isErrorUsername = it.isEmpty()
+                        },
+                        isError = isErrorUsername,
+                        singleLine = true,
+                        label = {
+                            Text(text = "Nome de Utilizador")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester)
+                    )
+                    OutlinedTextField(
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Teal,
+                            cursorColor = Teal,
+                            focusedLabelColor = Teal
+                        ),
+                        isError = isErrorPassword,
+                        value = password,
+                        onValueChange = {
+                            password = it
+                            isErrorPassword = it.isEmpty()
+                        },
+                        label = {
+                            Text(text = "Palavra-Passe")
+                        },
+                        singleLine = true,
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
 
-            CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-                OutlinedTextField(
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Teal,
-                        cursorColor = Teal,
-                        focusedLabelColor = Teal
-                    ),
-                    value = username,
-                    onValueChange = {
-                        username = it
-                        isErrorUsername = it.isEmpty()
-                    },
-                    isError = isErrorUsername,
-                    singleLine = true,
-                    label = {
-                        Text(text = "Nome de Utilizador")
-                    },
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    imageVector = if (passwordVisible)
+                                        Icons.Filled.Visibility
+                                    else Icons.Filled.VisibilityOff,
+                                    if (passwordVisible) "Hide password" else "Show password"
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester)
+                    )
+                }
+
+                Button(
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                    border = BorderStroke(1.dp, Teal),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester)
-                )
-                OutlinedTextField(
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Teal,
-                        cursorColor = Teal,
-                        focusedLabelColor = Teal
-                    ),
-                    isError = isErrorPassword,
-                    value = password,
-                    onValueChange = {
-                        password = it
-                        isErrorPassword = it.isEmpty()
-                    },
-                    label = {
-                        Text(text = "Palavra-Passe")
-                    },
-                    singleLine = true,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-
-                    trailingIcon = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                imageVector = if (passwordVisible)
-                                    Icons.Filled.Visibility
-                                else Icons.Filled.VisibilityOff,
-                                if (passwordVisible) "Hide password" else "Show password"
-                            )
+                        .padding(top = 16.dp), onClick = {
+                        Log.i(TAG, "Button Login Clicked: $username / $password")
+                        if (isLoading) {
+                            return@Button
                         }
-                    },
+
+                        if (username.isEmpty() and password.isNotEmpty()) {
+                            Toast.makeText(
+                                context,
+                                "Nome de Utilizador está vazio!",
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
+                            isErrorUsername = true
+                        }
+                        if (password.isEmpty() and username.isNotEmpty()) {
+                            Toast.makeText(context, "Palavra-Passe está vazia!", Toast.LENGTH_LONG)
+                                .show()
+                            isErrorPassword = true
+                        }
+                        if (username.isEmpty() and password.isEmpty()) {
+                            Toast.makeText(
+                                context,
+                                "Nome de Utilizador e Palavra-Passe estão Vazios!",
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
+                            isErrorUsername = true
+                            isErrorPassword = true
+
+                        }
+                        if (username.isNotEmpty() and password.isNotEmpty()) {
+                            isErrorUsername = false
+                            isErrorPassword = false
+                            isLoading = true
+                            focusManager.clearFocus()
+                            viewModel.login(username, password)
+                        }
+                    }) {
+                    Text(
+                        "LOGIN",
+                        fontSize = 20.sp,
+                        color = MaterialTheme.myColors.onBackground
+                    )
+                }
+            } else {
+                CircularProgressIndicator(
+                    color = Teal,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester)
+                        .size(68.dp)
+                        .fillMaxSize()
                 )
             }
-
-            Button(
-                colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
-                border = BorderStroke(1.dp, Teal),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp), onClick = {
-                    Log.i(TAG, "Button Login Clicked: $username / $password")
-                    if (isLoading) {
-                        return@Button
-                    }
-
-                    if (username.isEmpty() and password.isNotEmpty()) {
-                        Toast.makeText(context, "Nome de Utilizador está vazio!", Toast.LENGTH_LONG)
-                            .show()
-                        isErrorUsername = true
-                    }
-                    if (password.isEmpty() and username.isNotEmpty()) {
-                        Toast.makeText(context, "Palavra-Passe está vazia!", Toast.LENGTH_LONG)
-                            .show()
-                        isErrorPassword = true
-                    }
-                    if (username.isEmpty() and password.isEmpty()) {
-                        Toast.makeText(
-                            context,
-                            "Nome de Utilizador e Palavra-Passe estão Vazios!",
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
-                        isErrorUsername = true
-                        isErrorPassword = true
-
-                    }
-                    if (username.isNotEmpty() and password.isNotEmpty()) {
-                        isErrorUsername = false
-                        isErrorPassword = false
-                        isLoading = true
-                        focusManager.clearFocus()
-                        viewModel.login(username, password)
-                    }
-                }) {
-                Text(
-                    "LOGIN",
-                    fontSize = 20.sp
-                )
-            }
-        } else {
-            CircularProgressIndicator(
-                color = Teal,
-                modifier = Modifier
-                    .size(68.dp)
-                    .fillMaxSize()
-            )
         }
     }
 

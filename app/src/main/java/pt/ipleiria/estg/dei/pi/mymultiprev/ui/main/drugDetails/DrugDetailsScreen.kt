@@ -2,10 +2,8 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
 import android.Manifest
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -503,7 +501,12 @@ fun Tomas(
 fun Toma(intake: Intake, nIntake: Int) {
     Card(
         modifier = Modifier
-            .padding(top = if (nIntake == 1) 16.dp else 0.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
+            .padding(
+                top = if (nIntake == 1) 16.dp else 0.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp
+            )
             .fillMaxWidth(),
         elevation = 10.dp
     ) {
@@ -604,10 +607,14 @@ fun InputDialog(
 
 @Composable
 fun MoreDetails(drug: State<Drug?>) {
+
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .verticalScroll(scrollState)
     ) {
         Text(
             modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),

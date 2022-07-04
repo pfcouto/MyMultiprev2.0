@@ -145,8 +145,8 @@ fun PrescriptionItemsHistoryScreen(
                 ),
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Teal,
-                    backgroundColor = MaterialTheme.colors.surface,
-                    textColor = MaterialTheme.colors.onSurface,
+                    backgroundColor = MaterialTheme.colors.background,
+                    textColor = MaterialTheme.colors.onBackground,
                     cursorColor = Teal,
                     focusedLabelColor = Teal
                 )
