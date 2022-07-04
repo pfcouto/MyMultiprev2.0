@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -229,7 +231,7 @@ fun AppBar(
                         ) {
                             Text(
                                 maxLines = 1,
-                                color = Color.Black,
+                                color = MaterialTheme.colors.onBackground,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 text = drugState.value!!.name,
@@ -563,14 +565,24 @@ fun InputDialog(
         text = {
             Column() {
                 Text("Inserira uma nova alcunha para o antibiótico:")
-                TextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = MaterialTheme.colors.surface,
-                        textColor = MaterialTheme.colors.onSurface
-                    )
+
+                val customTextSelectionColors = TextSelectionColors(
+                    handleColor = Teal,
+                    backgroundColor = Teal
                 )
+
+                CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+                    TextField(
+                        value = text,
+                        onValueChange = { text = it },
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = MaterialTheme.colors.surface,
+                            textColor = MaterialTheme.colors.onSurface,
+                            cursorColor = Teal,
+                            focusedIndicatorColor = Teal
+                        )
+                    )
+                }
             }
         },
         buttons = {

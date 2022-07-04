@@ -96,7 +96,8 @@ fun LoginScreen(
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Teal,
                             cursorColor = Teal,
-                            focusedLabelColor = Teal
+                            focusedLabelColor = Teal,
+                            textColor = MaterialTheme.colors.onBackground
                         ),
                         value = username,
                         onValueChange = {
@@ -116,7 +117,8 @@ fun LoginScreen(
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Teal,
                             cursorColor = Teal,
-                            focusedLabelColor = Teal
+                            focusedLabelColor = Teal,
+                            textColor = MaterialTheme.colors.onBackground
                         ),
                         isError = isErrorPassword,
                         value = password,
