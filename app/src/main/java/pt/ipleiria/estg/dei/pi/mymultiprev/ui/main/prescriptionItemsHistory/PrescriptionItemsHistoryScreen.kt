@@ -44,7 +44,7 @@ fun PrescriptionItemsHistoryScreen(
     val TAG = "PrescriptionItemsHistoryScreen"
 
     val drugs = viewModel.drugs.observeAsState()
-    val pairs = viewModel.pairs.value
+    val pairs by remember { viewModel.pairs }
     val prescriptionItems = viewModel.prescriptionItems.observeAsState()
 
     var resourceSuccessNoItems by remember { mutableStateOf(false) }
