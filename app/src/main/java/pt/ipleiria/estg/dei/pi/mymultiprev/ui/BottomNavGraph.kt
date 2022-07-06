@@ -3,10 +3,20 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -20,6 +30,7 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.confirmNewIntake.ConfirmIntak
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails.DrugDetailsScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory.PrescriptionItemsHistoryScreen
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms.RegisterSymptomsScreen
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -43,8 +54,18 @@ fun BottomNavGraph(
             route = BottomBarScreen.Sintomas.route
         ) {
             if (!mainViewModel.isNetworkAvailable()) {
-                Snackbar() {
-                    Text(text = "No Internet Connection! Please, reconnect and try again")
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Snackbar(
+                        modifier = Modifier.border(1.dp, Teal),
+                        backgroundColor = MaterialTheme.colors.background,
+                    ) {
+
+                        Text(fontSize = 18.sp, fontWeight = FontWeight.SemiBold, text = "Sem conexão à Internet, por favor conecte-se à mesma e tente novamente!")
+                    }
                 }
             } else {
                 RegisterSymptomsScreen(navHostController = navController)

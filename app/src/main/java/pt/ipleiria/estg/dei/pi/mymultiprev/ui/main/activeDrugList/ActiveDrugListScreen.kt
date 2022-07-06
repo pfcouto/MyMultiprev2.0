@@ -490,8 +490,9 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                     }
                 }
 
-                if (item.first.imageLocation != null) {
-                    val painter = rememberImagePainter(data = item.first.imageLocation)
+                val imageLocation = item.first.imageLocation
+                if (imageLocation != null) {
+                    val painter = rememberImagePainter(data = imageLocation)
                     Image(
                         modifier = Modifier
                             .fillMaxWidth()
