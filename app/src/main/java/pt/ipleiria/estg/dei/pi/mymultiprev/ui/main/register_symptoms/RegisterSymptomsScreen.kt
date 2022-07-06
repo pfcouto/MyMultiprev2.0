@@ -216,8 +216,13 @@ fun RegisterSymptomsScreen(
                 }
                 6 -> {
                     taskComplete()
+//                    navHostController.graph.clear()
                     SuccessRegisterScreen {
-                        navHostController.navigate(BottomBarScreen.Sintomas.route)
+                        navHostController.navigate(BottomBarScreen.Antibioticos.route) {
+                            popUpTo(0) {
+                                inclusive = true
+                            }
+                        }
                     }
                 }
             }

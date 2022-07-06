@@ -93,7 +93,6 @@ private fun showNotification(
         manager.createNotificationChannel(channel)
     }
 
-
     val resultIntent = Intent(context, MainActivity::class.java)
     val pendingIntent = PendingIntent.getActivity(
         context,
@@ -106,7 +105,7 @@ private fun showNotification(
 
     val notification = NotificationCompat.Builder(context, channelId)
         .setContentTitle(title)
-        .setContentText("Hey! It is time for you to take your $desc")
+        .setContentText("Hey! Está na hora de tomar $desc")
         .setSmallIcon(R.drawable.ic_baseline_notifications_24)
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)

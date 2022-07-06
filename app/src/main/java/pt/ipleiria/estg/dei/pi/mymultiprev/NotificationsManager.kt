@@ -71,7 +71,12 @@ class NotificationsManager(private val context: Context) {
         }
 
         var intakesTakenCount = prescriptionItem.intakesTakenCount!!
-        val predictIntakes = prescriptionItem.intakesTakenCount!!
+        val predictIntakes =
+            if (prescriptionItem.expectedIntakeCount == null || prescriptionItem.expectedIntakeCount == 0) {
+                prescriptionItem.intakesTakenCount!!
+            } else {
+                prescriptionItem.expectedIntakeCount!!
+            }
 
         var instant = prescriptionItem.nextIntake!!.toInstant(Constants.TIME_ZONE)
 
