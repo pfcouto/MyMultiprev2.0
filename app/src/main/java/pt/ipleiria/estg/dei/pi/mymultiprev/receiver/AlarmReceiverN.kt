@@ -114,7 +114,6 @@ private fun showNotification(
         .build()
 
 
-//    val requestID = System.currentTimeMillis().toInt()
     val notificationID = (instant + id).hashCode()
     manager.notify(notificationID, notification)
 }

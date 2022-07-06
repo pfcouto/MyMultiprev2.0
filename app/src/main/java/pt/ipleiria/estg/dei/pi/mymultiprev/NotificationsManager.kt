@@ -80,8 +80,6 @@ class NotificationsManager(private val context: Context) {
 
         var instant = prescriptionItem.nextIntake!!.toInstant(Constants.TIME_ZONE)
 
-//        while (intakesTakenCount <= prescriptionItem.expectedIntakeCount!!) {
-//        writeLog("NOTIFICATIONS", "WHILE:  $intakesTakenCount to $predictIntakes")
         val nowInstant = Clock.System.now()
         var newAlarmsCount = 0
         while (intakesTakenCount <= predictIntakes) {
@@ -92,9 +90,7 @@ class NotificationsManager(private val context: Context) {
                 writeLog("NOTIFICATIONS", "$alarmToAdd ADDED TO SHARED PREFERENCES")
                 newAlarmsCount++
             }
-//            instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.HOUR)
             instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.HOUR)
-//            instant = instant.plus(prescriptionItem.frequency, DateTimeUnit.MINUTE)
             intakesTakenCount++
         }
 
@@ -186,8 +182,6 @@ class NotificationsManager(private val context: Context) {
 
 
     private fun setAlarm(instant: Long, id: String, drugName: String) {
-
-//        val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
         val timeSec = System.currentTimeMillis()
         writeLog("NOTIFICATIONS", "currentTime: $timeSec : ${Date(timeSec)}")
         writeLog("NOTIFICATIONS", "nextAlarmTime: $instant : ${Date(instant)}")
@@ -198,7 +192,6 @@ class NotificationsManager(private val context: Context) {
         intent.putExtra(Constants.NOTIFICATIONS_DRUG_NAME, drugName)
         intent.putExtra(Constants.NOTIFICATIONS_ALARM_ID, id)
         intent.putExtra(Constants.NOTIFICATIONS_ALARM_INSTANT, instant.toString())
-
 
         val pendingIntent =
             PendingIntent.getBroadcast(
@@ -220,28 +213,10 @@ class NotificationsManager(private val context: Context) {
             val filename = "NotificationsLog.txt"
             val outputFile = File(context.filesDir, filename)
             Log.d("TESTE", outputFile.absolutePath)
-//            val created = outputFile.createNewFile()
-//            if (!created) {
-//                Log.d("TESTE", "FILE: ${outputFile.readText()}")
-//            }
             outputFile.appendText("${Clock.System.now()}\t| $code:\t$text\n")
         } catch (e: Exception) {
             Log.d("TESTE", "ERROR: $e")
         }
     }
-
-
-//    private fun checkPermission(context: Context): Boolean {
-//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            Environment.isExternalStorageManager()
-//        } else {
-//            val readCheck =
-//                ContextCompat.checkSelfPermission(context, READ_EXTERNAL_STORAGE)
-//            val writeCheck =
-//                ContextCompat.checkSelfPermission(context, WRITE_EXTERNAL_STORAGE)
-//            readCheck == PackageManager.PERMISSION_GRANTED && writeCheck == PackageManager.PERMISSION_GRANTED
-//        }
-//    }
-
 }
 
