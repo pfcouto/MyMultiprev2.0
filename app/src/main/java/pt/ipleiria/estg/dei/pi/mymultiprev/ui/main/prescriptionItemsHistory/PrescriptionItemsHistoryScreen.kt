@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.prescriptionItemsHistory
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +23,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -29,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import com.skydoves.landscapist.glide.GlideImage
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
@@ -209,20 +212,28 @@ fun HistoryCard(pair: Pair<PrescriptionItem, Drug?>, navController: NavHostContr
                 )
             }
 
-            GlideImage(
-                modifier = Modifier
-                    .padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
-                    .width(60.dp)
-                    .height(60.dp)
-                    .weight(0.4f),
-                imageModel = pair.first.imageLocation,
-                // Crop, Fit, Inside, FillHeight, FillWidth, None
-                contentScale = ContentScale.FillBounds,
-                // shows a placeholder while loading the image.
-//                placeHolder = ImageBitmap.imageResource(R.drawable.loading),
-                // shows an error ImageBitmap when the request failed.
-                error = ImageBitmap.imageResource(R.drawable.default_img),
-            )
+            val imageLocation = pair.first.imageLocation
+            if (imageLocation != null) {
+                val painter = rememberImagePainter(data = imageLocation)
+                Image(
+                    modifier = Modifier.padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
+                        .width(60.dp)
+                        .height(60.dp)
+                        .weight(0.4f),
+                    painter = painter, contentDescription = "",
+                    contentScale = ContentScale.FillBounds
+                )
+            } else {
+                Image(
+                    modifier = Modifier.padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
+                        .width(60.dp)
+                        .height(60.dp)
+                        .weight(0.4f),
+                    painter = painterResource(id = R.drawable.default_img),
+                    contentDescription = "",
+                    contentScale = ContentScale.FillBounds
+                )
+            }
         }
     }
 }
