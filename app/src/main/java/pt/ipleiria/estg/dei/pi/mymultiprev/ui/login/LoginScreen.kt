@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.responses.LoginResponse
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.DarkRed
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import retrofit2.HttpException
@@ -64,7 +66,7 @@ fun LoginScreen(
 
         Text(
             text = "Bem-Vindo",
-            modifier = Modifier.padding(start = 32.dp,end = 32.dp, top = 32.dp),
+            modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 32.dp),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colors.onSurface
@@ -146,6 +148,19 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .focusRequester(focusRequester)
                     )
+                    if (isErrorUsername and isErrorPassword and username.isNotEmpty() and password.isNotEmpty()) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(top = 8.dp),
+                                color = MaterialTheme.colors.error,
+                                text = "Nome de Utilizador / Palavra-Passe inválidos",
+                                maxLines = 1
+                            )
+                        }
+                    }
                 }
 
                 Button(
@@ -189,11 +204,11 @@ fun LoginScreen(
                             isErrorPassword = false
                             isLoading = true
                             focusManager.clearFocus()
-                            viewModel.login(username, password)
+                            viewModel.login(username.trim(), password.trim())
                         }
                     }) {
                     Text(
-                        "LOGIN",
+                        "ENTRAR",
                         fontSize = 20.sp,
                         color = MaterialTheme.myColors.onBackground
                     )
@@ -214,12 +229,6 @@ fun LoginScreen(
         Log.i(TAG, "HTTP Exception - $errorCode")
         when (errorCode) {
             HttpURLConnection.HTTP_UNAUTHORIZED -> {
-//                test = getString(R.string.login_invalid_credentials)
-                Toast.makeText(
-                    context,
-                    "Nome de Utilizador ou Palavra-Passe incorretos",
-                    Toast.LENGTH_LONG
-                ).show()
                 isErrorUsername = true
                 isErrorPassword = true
             }
@@ -247,12 +256,6 @@ fun LoginScreen(
                 onLoginSuccess("")
             }
             is Resource.Error -> {
-//                test = if (response.isNetworkError) {
-//                    "NETWORK ERROR"
-//                } else {
-//                    "USERNAME/PASSWORD SEEM WRONG"
-//                }
-
                 if (response.error is HttpException) treatHTTPException(
                     response.error.code()
                 ) else treatErrorResponse()
