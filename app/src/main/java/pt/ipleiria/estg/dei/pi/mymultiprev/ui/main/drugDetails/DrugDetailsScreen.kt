@@ -290,7 +290,6 @@ fun Pager(
         prescription: LiveData<PrescriptionItem>,
         intakes: LiveData<List<Intake>>
 ) {
-
     val drugState = drug.observeAsState()
     val prescriptionState = prescription.observeAsState()
     val intakesState = intakes.observeAsState()

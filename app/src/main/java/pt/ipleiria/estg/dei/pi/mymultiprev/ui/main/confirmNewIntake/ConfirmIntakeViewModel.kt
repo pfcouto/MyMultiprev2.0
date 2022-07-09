@@ -157,7 +157,7 @@ class ConfirmIntakeViewModel @Inject constructor(
                     prescriptionItemId = prescriptionItem.value?.id!!,
                     expectedAt = prescriptionItem.value?.nextIntake.toString(),
                     patientId = sharedPreferencesRepository.getCurrentPatientId(),
-                    intakeDate = registrationIntakeDateTime.value.toString(),
+                    intakeDate = _registrationIntakeDateTime.value.toString(),
                     took = true
                 )
             )
