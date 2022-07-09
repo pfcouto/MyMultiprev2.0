@@ -8,8 +8,8 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 data class MyColors(
@@ -43,7 +43,8 @@ private val LightColorPalette = MyColors(
 )
 private val DarkColorPalette = MyColors(
     material = darkColors(
-        background = Color(0xFF1D1D1D)),
+        background = Color(0xFF1D1D1D)
+    ),
     darkRed = DarkRed,
     darkGreen = DarkGreen,
     messageOverdue = MessageOverdue,
@@ -58,7 +59,6 @@ val MaterialTheme.myColors: MyColors
 val LocalColors = compositionLocalOf<MyColors> { error("No colors found!") }
 
 
-
 @Composable
 fun MyMultiPrevTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val systemUiController = rememberSystemUiController()
@@ -71,7 +71,8 @@ fun MyMultiPrevTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compo
         LightColorPalette
     }
     CompositionLocalProvider(
-        LocalColors provides colors) {
+        LocalColors provides colors
+    ) {
         MaterialTheme(
             colors = colors.material,
             typography = Typography,

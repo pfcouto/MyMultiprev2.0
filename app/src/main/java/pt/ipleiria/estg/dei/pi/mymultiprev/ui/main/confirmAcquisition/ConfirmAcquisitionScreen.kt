@@ -77,7 +77,7 @@ fun ConfirmAcquisitionScreen(
 
         var pickerValue by remember { mutableStateOf(prescriptionItem!!.frequency) }
 
-        var activateLaunch: Int by remember { mutableStateOf(-1)}
+        var activateLaunch: Int by remember { mutableStateOf(-1) }
 
         LaunchedEffect(key1 = activateLaunch) {
             viewModel.recalculatePredictionDates(pickerValue)

@@ -18,11 +18,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -32,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.skydoves.landscapist.glide.GlideImage
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
@@ -132,7 +129,10 @@ fun PrescriptionItemsHistoryScreen(
                                 focusManager.clearFocus()
                             }) {
 
-                            Icon(Icons.Filled.Close, contentDescription = "Botão para apagar o texto")
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = "Botão para apagar o texto"
+                            )
                         }
                     }
                 },
@@ -216,7 +216,8 @@ fun HistoryCard(pair: Pair<PrescriptionItem, Drug?>, navController: NavHostContr
             if (imageLocation != null) {
                 val painter = rememberImagePainter(data = imageLocation)
                 Image(
-                    modifier = Modifier.padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
+                    modifier = Modifier
+                        .padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
                         .width(60.dp)
                         .height(60.dp)
                         .weight(0.4f),
@@ -225,7 +226,8 @@ fun HistoryCard(pair: Pair<PrescriptionItem, Drug?>, navController: NavHostContr
                 )
             } else {
                 Image(
-                    modifier = Modifier.padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
+                    modifier = Modifier
+                        .padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
                         .width(60.dp)
                         .height(60.dp)
                         .weight(0.4f),
@@ -237,10 +239,3 @@ fun HistoryCard(pair: Pair<PrescriptionItem, Drug?>, navController: NavHostContr
         }
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PrescriptionItemsHistoryScreenPreview() {
-//    HistoryCard()
-//}

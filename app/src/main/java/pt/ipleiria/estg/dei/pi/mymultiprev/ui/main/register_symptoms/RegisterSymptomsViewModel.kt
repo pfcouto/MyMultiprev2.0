@@ -2,19 +2,15 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.register_symptoms
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Patient
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Symptom
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.ServiceBuilder
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.services.SymptomsService
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.AuthRepository

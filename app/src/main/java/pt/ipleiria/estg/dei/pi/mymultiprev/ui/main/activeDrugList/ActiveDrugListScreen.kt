@@ -1,7 +1,5 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.activeDrugList
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -36,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.google.accompanist.pager.ExperimentalPagerApi
 import pt.ipleiria.estg.dei.pi.mymultiprev.NotificationsManager
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
@@ -49,7 +46,6 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.seeDetails.SeeDetailsViewMode
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Gray
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
-import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.concurrent.TimeUnit
 
 
@@ -175,24 +171,27 @@ fun ActiveDrugListScreen(
                                     )
                                 if (dayDiff == 0L) {
                                     if (hourDiff == 0L) {
-                                        if (minDiff == 0L){
+                                        if (minDiff == 0L) {
                                             timeTextTextShortItem = "Menos de 1 minuto"
                                             timeTextTextFullItem = "Menos de 1 minuto"
 
-                                        } else{
+                                        } else {
                                             timeTextTextShortItem = "${minDiff}min"
-                                            timeTextTextFullItem = "$minDiff minutos para a próxima toma"
+                                            timeTextTextFullItem =
+                                                "$minDiff minutos para a próxima toma"
 
                                         }
                                     } else {
                                         timeTextTextShortItem = "${hourDiff}h e ${minDiff}min"
-                                        timeTextTextFullItem = "$hourDiff hora(s) e $minDiff minuto(s) para a próxima toma"
+                                        timeTextTextFullItem =
+                                            "$hourDiff hora(s) e $minDiff minuto(s) para a próxima toma"
 
                                     }
                                 } else {
 
                                     timeTextTextShortItem = "${dayDiff}d e ${hourDiff}h"
-                                    timeTextTextFullItem = "$dayDiff dia(s) e $hourDiff hora(s) para a próxima toma"
+                                    timeTextTextFullItem =
+                                        "$dayDiff dia(s) e $hourDiff hora(s) para a próxima toma"
                                 }
                             }
                         }

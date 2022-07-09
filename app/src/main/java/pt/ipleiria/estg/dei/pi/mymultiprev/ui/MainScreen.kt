@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
@@ -11,9 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
@@ -57,8 +54,9 @@ fun BottomBar(listOfPrescriptions: List<PrescriptionItem>?, navController: NavHo
         screens.forEach { screen ->
             if (screen.route == "antibioticos") {
                 if (listOfPrescriptions != null) {
-                    val prescriptionsNotAcquired: (PrescriptionItem) -> Boolean = {it.isOverdue || it.acquiredAt == null || it.intakesTakenCount == 0}
-                    screen.badgeCount = listOfPrescriptions.count ( prescriptionsNotAcquired )
+                    val prescriptionsNotAcquired: (PrescriptionItem) -> Boolean =
+                        { it.isOverdue || it.acquiredAt == null || it.intakesTakenCount == 0 }
+                    screen.badgeCount = listOfPrescriptions.count(prescriptionsNotAcquired)
                 }
             }
             AddItem(
@@ -84,7 +82,11 @@ fun RowScope.AddItem(
                 if (screen.badgeCount > 0) {
                     BadgedBox(badge = {
                         Badge {
-                            Text(text = screen.badgeCount.toString(), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = screen.badgeCount.toString(),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }) {
                         Icon(imageVector = screen.icon, contentDescription = "NavigationIcon")

@@ -1,9 +1,8 @@
-    package pt.ipleiria.estg.dei.pi.mymultiprev
+package pt.ipleiria.estg.dei.pi.mymultiprev
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel

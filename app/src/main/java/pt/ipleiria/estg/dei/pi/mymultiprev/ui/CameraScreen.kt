@@ -108,6 +108,7 @@ fun CameraScreen(
                     this.onError(exc)
                     Log.i("ERROR", "Photo capture failed: ${exc.message}", exc)
                 }
+
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
 
                     val savedUri = Uri.fromFile(photoFile)
@@ -193,7 +194,8 @@ fun CameraScreen(
                         navController.popBackStack()
                         Toast.makeText(
                             context,
-                            "Terá de ir às definições do telemóvel para dar permissão. Obrigado.", Toast.LENGTH_LONG
+                            "Terá de ir às definições do telemóvel para dar permissão. Obrigado.",
+                            Toast.LENGTH_LONG
                         ).show()
                     }
 

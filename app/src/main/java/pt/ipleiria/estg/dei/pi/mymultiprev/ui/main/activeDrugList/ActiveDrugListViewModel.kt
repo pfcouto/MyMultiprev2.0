@@ -4,10 +4,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.datetime.*
-import kotlinx.datetime.TimeZone
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.daos.AlarmDao
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Alarm
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.enums.LayoutPreferences
@@ -15,7 +12,6 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.DrugRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.service.AlarmService
-import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.util.*
 import javax.inject.Inject
 
@@ -23,7 +19,6 @@ import javax.inject.Inject
 class ActiveDrugListViewModel @Inject constructor(
     prescriptionItemsRepository: PrescriptionItemsRepository,
     drugRepository: DrugRepository,
-    private val alarmService: AlarmService,
     private val sharedPreferencesRepository: SharedPreferencesRepository,
     private val alarmDao: AlarmDao
 ) : ViewModel() {

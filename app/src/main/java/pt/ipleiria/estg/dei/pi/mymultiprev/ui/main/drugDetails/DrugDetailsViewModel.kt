@@ -2,16 +2,16 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui.main.drugDetails
 
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
-import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.DrugRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.IntakeRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository

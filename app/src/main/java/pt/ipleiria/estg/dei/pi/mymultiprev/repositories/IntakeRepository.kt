@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.repositories
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.toLocalDateTime

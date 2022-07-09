@@ -96,8 +96,9 @@ class ConfirmIntakeViewModel @Inject constructor(
             }, startHour, startMinute, true).show()
         }, startYear, startMonth, startDay)
 
-        datePickerDialog.datePicker.minDate = _prescriptionItem.value?.nextIntake?.toInstant(Constants.TIME_ZONE)!!
-            .toEpochMilliseconds()
+        datePickerDialog.datePicker.minDate =
+            _prescriptionItem.value?.nextIntake?.toInstant(Constants.TIME_ZONE)!!
+                .toEpochMilliseconds()
         datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
 
         datePickerDialog.show()

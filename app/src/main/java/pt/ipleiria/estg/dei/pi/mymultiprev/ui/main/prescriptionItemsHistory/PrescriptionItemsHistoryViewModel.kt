@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,12 +38,6 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
     private var _allPairs: MutableState<List<Pair<PrescriptionItem, Drug?>>> =
         mutableStateOf(ArrayList())
 
-//    private var _pairs: MutableLiveData<List<Pair<PrescriptionItem, Drug?>>> = MutableLiveData(
-//        listOf()
-//    )
-//    val pairs: LiveData<List<Pair<PrescriptionItem, Drug?>>>
-//        get() = _pairs
-
     private var _pairs: MutableState<List<Pair<PrescriptionItem, Drug?>>> =
         mutableStateOf(ArrayList())
     val pairs: State<List<Pair<PrescriptionItem, Drug?>>> = _pairs
@@ -60,7 +52,6 @@ class PrescriptionItemsHistoryViewModel @Inject constructor(
                 list.add(prescription to drug)
             }
             _allPairs.value = Collections.unmodifiableList(list)
-//            _pairs.value = _allPairs.value
             filterPairs(searchQuery.value)
         }
     }

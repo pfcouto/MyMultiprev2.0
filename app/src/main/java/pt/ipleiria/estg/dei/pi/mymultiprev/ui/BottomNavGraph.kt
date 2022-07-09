@@ -64,7 +64,11 @@ fun BottomNavGraph(
                         backgroundColor = MaterialTheme.colors.background,
                     ) {
 
-                        Text(fontSize = 18.sp, fontWeight = FontWeight.SemiBold, text = "Sem conexão à Internet, por favor conecte-se à mesma e tente novamente!")
+                        Text(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            text = "Sem conexão à Internet, por favor conecte-se à mesma e tente novamente!"
+                        )
                     }
                 }
             } else {
