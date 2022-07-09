@@ -212,10 +212,10 @@ class NotificationsManager(private val context: Context) {
         try {
             val filename = "NotificationsLog.txt"
             val outputFile = File(context.filesDir, filename)
-            Log.d("TESTE", outputFile.absolutePath)
+            Log.d("NotificationsManager", outputFile.absolutePath)
             outputFile.appendText("${Clock.System.now()}\t| $code:\t$text\n")
         } catch (e: Exception) {
-            Log.d("TESTE", "ERROR: $e")
+            Log.d("NotificationsManager", "ERROR: $e")
         }
     }
 }

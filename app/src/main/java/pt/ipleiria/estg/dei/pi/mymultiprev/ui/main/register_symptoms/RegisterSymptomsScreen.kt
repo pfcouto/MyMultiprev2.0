@@ -32,8 +32,6 @@ fun RegisterSymptomsScreen(
     viewModel: RegisterSymptomsViewModel = hiltViewModel()
 ) {
     var surveyScreenNumber by rememberSaveable { mutableStateOf(0) }
-    Log.i("RegisterSymptomsScreen", prescriptionItemId.toString())
-
 
     val prescriptionItems = viewModel.prescriptionItems.observeAsState()
 
@@ -47,7 +45,6 @@ fun RegisterSymptomsScreen(
 
 
     fun clearSurvey() {
-//        surveyScreenNumber = if (prescriptionItemId.isNullOrEmpty()) 0 else 1
         surveyScreenNumber = 0
         activeEvolutionType.value = -1
         activeResponse.value = -1

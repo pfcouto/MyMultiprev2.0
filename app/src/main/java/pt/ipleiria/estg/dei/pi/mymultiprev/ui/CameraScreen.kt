@@ -107,10 +107,8 @@ fun CameraScreen(
                 override fun onError(exc: ImageCaptureException) {
 //                    setResult(CameraResult.RESULT_ERROR)
                     this.onError(exc)
-//                    scaffoldState.snackbarHostState.showSnackbar("An error occurred while trying to take a picture")
                     Log.i("ERROR", "Photo capture failed: ${exc.message}", exc)
                 }
-
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
 
                     val savedUri = Uri.fromFile(photoFile)
@@ -119,8 +117,6 @@ fun CameraScreen(
                         viewModel.prescriptionItemId.value!!,
                         savedUri
                     )
-
-//                    navController.navigate("descricaoAntibiotico/$prescriptionId/$drugId")
                     navController.popBackStack()
                 }
             })
