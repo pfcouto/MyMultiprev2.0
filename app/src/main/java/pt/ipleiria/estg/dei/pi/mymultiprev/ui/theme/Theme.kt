@@ -12,36 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.compositionLocalOf
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-fun darkColors(
-    primary: Color = Color(0xFFBB86FC),
-    primaryVariant: Color = Color(0xFF3700B3),
-    secondary: Color = Color(0xFF03DAC6),
-    secondaryVariant: Color = secondary,
-    background: Color = Color(0xFF121212),
-    surface: Color = Color(0xFF474747),
-    error: Color = Color(0xFFCF6679),
-    onPrimary: Color = Color.Black,
-    onSecondary: Color = Color.Black,
-    onBackground: Color = Color.White,
-    onSurface: Color = Color.White,
-    onError: Color = Color.Black
-): Colors = Colors(
-    primary,
-    primaryVariant,
-    secondary,
-    secondaryVariant,
-    background,
-    surface,
-    error,
-    onPrimary,
-    onSecondary,
-    onBackground,
-    onSurface,
-    onError,
-    false
-)
-
-
 data class MyColors(
     val material: Colors,
     val darkRed: Color,
@@ -71,9 +41,9 @@ private val LightColorPalette = MyColors(
     messageOverdue = MessageOverdue,
     gray = Gray
 )
-
 private val DarkColorPalette = MyColors(
-    material = darkColors(background = Color(0xFF1D1D1D)),
+    material = darkColors(
+        background = Color(0xFF1D1D1D)),
     darkRed = DarkRed,
     darkGreen = DarkGreen,
     messageOverdue = MessageOverdue,
@@ -117,14 +87,13 @@ fun MyMultiPrevTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compo
     systemUiController.setSystemBarsColor(
         color = Teal
     )
-
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
         LightColorPalette
     }
-
-    CompositionLocalProvider(LocalColors provides colors) {
+    CompositionLocalProvider(
+        LocalColors provides colors) {
         MaterialTheme(
             colors = colors.material,
             typography = Typography,

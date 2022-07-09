@@ -38,7 +38,7 @@ fun ConfirmAcquisitionScreen(
 
     val TAG = "ConfirmAcquisitionScreen"
 
-    DisposableEffect(key1 = Unit) {
+    LaunchedEffect(key1 = true) {
         if (drugId.isNotBlank()) {
 
             viewModel.getDrug(drugId)
@@ -48,7 +48,6 @@ fun ConfirmAcquisitionScreen(
 
             viewModel.getPrescriptionItem(prescriptionItemId)
         }
-        onDispose { }
     }
 
     val drug by remember { viewModel.drug }
@@ -74,13 +73,14 @@ fun ConfirmAcquisitionScreen(
         var response = viewModel.response.observeAsState()
         val predictDates = viewModel.predictDates.observeAsState()
         var patology by remember { mutableStateOf("") }
-        var pickerValue by remember { mutableStateOf(prescriptionItem!!.frequency) }
         val context = LocalContext.current
 
-        DisposableEffect(key1 = Unit) {
-            Log.d(TAG, "Esteve aqui !!!!")
+        var pickerValue by remember { mutableStateOf(prescriptionItem!!.frequency) }
+
+        var activateLaunch: Int by remember { mutableStateOf(-1)}
+
+        LaunchedEffect(key1 = activateLaunch) {
             viewModel.recalculatePredictionDates(pickerValue)
-            onDispose { }
         }
 
         Column(
@@ -148,7 +148,7 @@ fun ConfirmAcquisitionScreen(
                         value = pickerValue,
                         onValueChange = {
                             pickerValue = it;
-                            viewModel.recalculatePredictionDates(pickerValue)
+                            activateLaunch = it
                         },
                         range = prescriptionItem!!.frequency - 2..prescriptionItem!!.frequency + 2
                     )

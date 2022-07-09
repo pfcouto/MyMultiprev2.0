@@ -151,19 +151,22 @@ fun ActiveDrugListScreen(
                     var prescriptionAcquisitionConfirmed = remember { mutableStateOf(false) }
                     val prescriptionIsOverdue = remember { mutableStateOf(false) }
 
-                    var timeTextText by remember { mutableStateOf("") }
+                    var timeTextTextShortItem by remember { mutableStateOf("") }
+                    var timeTextTextFullItem by remember { mutableStateOf("") }
 
 
                     if (item.first.acquiredAt == null || item.first.intakesTakenCount == 0) {
                         prescriptionAcquisitionConfirmed.value = false
-                        timeTextText = "Confirmar Aquisição"
+                        timeTextTextShortItem = "Confirmar Aquisição"
+                        timeTextTextFullItem = "Confirmar Aquisição"
 
                     } else {
                         prescriptionAcquisitionConfirmed.value = true
                         if (item.first.nextIntake != null) {
                             if (item.first.isOverdue) {
                                 prescriptionIsOverdue.value = true
-                                timeTextText = "Toma em Atraso"
+                                timeTextTextShortItem = "Toma em Atraso"
+                                timeTextTextFullItem = "Toma em Atraso"
                             } else {
                                 val diffMillis = item.first.timeUntil()
                                 val dayDiff = TimeUnit.MILLISECONDS.toDays(diffMillis!!)
@@ -177,14 +180,25 @@ fun ActiveDrugListScreen(
                                     )
                                 if (dayDiff == 0L) {
                                     if (hourDiff == 0L) {
-                                        if (minDiff == 0L)
-                                            timeTextText = "Menos de um minuto"
-                                        else
-                                            timeTextText = "${minDiff}min"
-                                    } else
-                                        timeTextText = "${hourDiff}h e ${minDiff}min"
-                                } else
-                                    timeTextText = "${dayDiff}d e ${hourDiff}h"
+                                        if (minDiff == 0L){
+                                            timeTextTextShortItem = "Menos de 1 minuto"
+                                            timeTextTextFullItem = "Menos de 1 minuto"
+
+                                        } else{
+                                            timeTextTextShortItem = "${minDiff}min"
+                                            timeTextTextFullItem = "$minDiff minutos para a próxima toma"
+
+                                        }
+                                    } else {
+                                        timeTextTextShortItem = "${hourDiff}h e ${minDiff}min"
+                                        timeTextTextFullItem = "$hourDiff hora(s) e $minDiff minuto(s) para a próxima toma"
+
+                                    }
+                                } else {
+
+                                    timeTextTextShortItem = "${dayDiff}d e ${hourDiff}h"
+                                    timeTextTextFullItem = "$dayDiff dia(s) e $hourDiff hora(s) para a próxima toma"
+                                }
                             }
                         }
                     }
@@ -198,7 +212,7 @@ fun ActiveDrugListScreen(
                             confirmViewModel = confirmViewModel,
                             prescriptionAcquisitionConfirmed = prescriptionAcquisitionConfirmed,
                             prescriptionIsOverdue = prescriptionIsOverdue,
-                            timeTextText = timeTextText
+                            timeTextText = timeTextTextShortItem
                         )
                     } else {
                         AntibioticCard_Prescription_Item_Full_Item(
@@ -210,7 +224,7 @@ fun ActiveDrugListScreen(
                             confirmViewModel = confirmViewModel,
                             prescriptionAcquisitionConfirmed = prescriptionAcquisitionConfirmed,
                             prescriptionIsOverdue = prescriptionIsOverdue,
-                            timeTextText = timeTextText
+                            timeTextText = timeTextTextFullItem
                         )
                     }
                 }
@@ -289,7 +303,7 @@ fun Logout(
 ) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
         IconButton(
-            modifier = Modifier.padding(end = 11.dp),
+            modifier = Modifier.padding(end = 7.dp),
             onClick = onClick
         ) {
             Icon(imageVector = Icons.Outlined.Logout, contentDescription = "Loggout")
@@ -307,7 +321,7 @@ fun ListIcon(showByColumnList: MutableState<Boolean>) {
 
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
         IconButton(
-            modifier = Modifier.padding(end = 11.dp),
+            modifier = Modifier.padding(end = 7.dp),
             onClick = { showByColumnList.value = !showByColumnList.value }) {
             Icon(imageVector = icon, contentDescription = "Loggout")
         }
@@ -329,46 +343,48 @@ fun AntibioticCard_Prescription_Item_Short_Item(
 
     Card(
         modifier = Modifier
-            .padding(start = 24.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)
+            .padding(start = 20.dp, top = 12.dp, end = 20.dp, bottom = 12.dp)
             .fillMaxWidth()
             .clickable {
                 navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id)
             },
         elevation = 8.dp,
-        border = if (!prescriptionAcquisitionConfirmed.value) BorderStroke(1.dp, Teal) else null
+        border = if (!prescriptionAcquisitionConfirmed.value) BorderStroke(2.dp, Teal) else null
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
             Log.d("Imagens", "${item.first.imageLocation}")
-            if (item.first.imageLocation != null) {
-                val painter = rememberImagePainter(data = item.first.imageLocation)
-                Image(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
-                    painter = painter,
-                    contentDescription = "",
-                    contentScale = ContentScale.FillBounds
-                )
-            } else {
-                Image(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
-                    painter = painterResource(id = R.drawable.default_img),
-                    contentDescription = "",
-                    contentScale = ContentScale.FillBounds
-                )
+            Column(Modifier.weight(0.4f)) {
+                if (item.first.imageLocation != null) {
+                    val painter = rememberImagePainter(data = item.first.imageLocation)
+                    Image(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .padding(start = 10.dp, top = 16.dp, bottom = 16.dp),
+                        painter = painter,
+                        contentDescription = "",
+                        contentScale = ContentScale.FillBounds
+                    )
+                } else {
+                    Image(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .padding(start = 10.dp, top = 16.dp, bottom = 16.dp),
+                        painter = painterResource(id = R.drawable.default_img),
+                        contentDescription = "",
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
             }
 
-            Column(modifier = Modifier.width(160.dp)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp),
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
                     color = if (isSystemInDarkTheme()) Gray else Color.DarkGray,
-                    fontSize = 18.sp,
+                    fontSize = 17.sp,
                     maxLines = 1,
-                    fontWeight = FontWeight.W600,
-                    text = "${if (item.second?.alias.isNullOrEmpty()) item.second?.name else item.second?.alias}"
+                    fontWeight = FontWeight.W400,
+                    text = "${item.second?.alias}"
                 )
                 Spacer(modifier = Modifier.height(1.dp))
                 Text(
@@ -380,20 +396,21 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                 )
             }
 
-            Button(modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
-                onClick = {
-                    onDetailsAndConfirmButtonClick(
-                        item = item,
-                        confirmIntakeViewModel = confirmIntakeViewModel,
-                        confirmViewModel = confirmViewModel,
-                        navController = navController,
-                        seeDetailsViewModel = seeDetailsViewModel
-                    )
-                }) {
-                Text(text = "VER")
+            Column(Modifier.weight(0.35f)) {
+                Button(modifier = Modifier
+                    .padding(end = 8.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
+                    onClick = {
+                        onDetailsAndConfirmButtonClick(
+                            item = item,
+                            confirmIntakeViewModel = confirmIntakeViewModel,
+                            confirmViewModel = confirmViewModel,
+                            navController = navController,
+                            seeDetailsViewModel = seeDetailsViewModel
+                        )
+                    }) {
+                    Text(text = "VER")
+                }
             }
         }
     }
@@ -426,9 +443,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                 .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
                 .clickable { navController.navigate("descricaoAntibiotico/" + item.first.id + "/" + item.second!!.id) },
             elevation = 10.dp,
-            backgroundColor = if (!prescriptionAcquisitionConfirmed.value)
-                Color.LightGray
-            else MaterialTheme.colors.surface
+            border = if (!prescriptionAcquisitionConfirmed.value) BorderStroke(2.dp, Teal) else null
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -447,7 +462,7 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.W600,
                             maxLines = 2,
-                            text = "${if (item.second?.alias.isNullOrEmpty()) item.second?.name else item.second?.alias}"
+                            text = "${item.second?.alias}"
                         )
                         Spacer(modifier = Modifier.height(1.dp))
                         Text(

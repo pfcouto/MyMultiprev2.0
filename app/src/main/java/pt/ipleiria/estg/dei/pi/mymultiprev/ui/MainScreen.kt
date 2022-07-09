@@ -57,7 +57,8 @@ fun BottomBar(listOfPrescriptions: List<PrescriptionItem>?, navController: NavHo
         screens.forEach { screen ->
             if (screen.route == "antibioticos") {
                 if (listOfPrescriptions != null) {
-                    screen.badgeCount = listOfPrescriptions.size
+                    val prescriptionsNotAcquired: (PrescriptionItem) -> Boolean = {it.isOverdue || it.acquiredAt == null || it.intakesTakenCount == 0}
+                    screen.badgeCount = listOfPrescriptions.count ( prescriptionsNotAcquired )
                 }
             }
             AddItem(

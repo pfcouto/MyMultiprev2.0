@@ -117,7 +117,6 @@ fun BottomNavGraph(
             var prescriptionId = remember {
                 it.arguments?.getString("prescription")
             }
-//            Log.i("BottomNavGraph", prescriptionId.toString())
             DrugDetailsScreen(
                 drugId = drugId!!,
                 prescriptionId = prescriptionId!!,

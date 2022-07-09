@@ -85,7 +85,6 @@ fun ConfirmIntakeDetailsScreen(
             ultimaTomaVisible = true
         }
 
-        val registrationIntake = viewModel.registrationIntakeDateTime.observeAsState()
 
         showError = !viewModel.verifyRegistrationDateTime()
         if (viewModel.verifyRange()) {
