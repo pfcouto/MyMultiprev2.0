@@ -87,11 +87,6 @@ fun DrugDetailsScreen(
 
     val intakes = remember { viewModel.intakes }
 
-//    val handler = Handler(Looper.getMainLooper())
-//    handler.postDelayed({
-//        Log.i("HERE2", viewModel.intakes.value.toString())
-//    }, 5000)
-
     Column() {
         Column(Modifier.weight(1.3f)){
             AppBar(
@@ -173,7 +168,6 @@ fun AppBar(
                             onClick = {
                                 val mutex = Mutex()
                                 Log.d("OLA", "CLICOU")
-//                        navController.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id + "/" + drugState.value!!.id)
                                 cameraPermissionState.launchPermissionRequest()
                                 navControllerOutsideLoginScope.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id)
 
@@ -601,7 +595,6 @@ fun InputDialog(
                             onClick = {
                                 onSuccess(text.trim())
                                 showInputDialog.value = false
-//                            setNewAlias(text)
                             }
                     ) {
                         Text("Confirmar")

@@ -42,8 +42,6 @@ class DrugDetailsViewModel @Inject constructor(
     val intakes: LiveData<List<Intake>>
         get() = _intakes
 
-//    lateinit var intakes: LiveData<Resource<List<Intake>>>
-
     fun getPrescriptionItemPhoto(id: String) {
         viewModelScope.launch {
             _photoUri.value = prescriptionItemsRepository.getPrescriptionItemPhoto(id)
@@ -63,18 +61,6 @@ class DrugDetailsViewModel @Inject constructor(
                         Log.i("LIVEDATATEST", "+1")
                         _intakes.value = it.data!!
                     }
-
-
-//                val liveData =
-//                    intakeRepository.getIntakesByPrescriptionItemId(_prescriptionItem.value!!.id)
-//                        .asLiveData()
-//                when (liveData.value) {
-//                    is Resource.Success -> {
-//                        _intakes.value = (liveData.value as Resource.Success<List<Intake>>).data!!
-//                    }
-//
-//                    else -> {Log.i("LIVEDATATEST", "NOT SUCCESS")}
-//                }
             } catch (e: Exception) {
                 Log.i(TAG, "EXCEPTION ${e.message}")
             }

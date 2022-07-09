@@ -71,12 +71,7 @@ fun LoginScreen(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colors.onSurface
         )
-//    Text(
-//        text = test,
-//        modifier = Modifier.padding(start = 32.dp, top = 96.dp),
-//        fontSize = 32.sp,
-//        fontWeight = FontWeight.Bold
-//    )
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,

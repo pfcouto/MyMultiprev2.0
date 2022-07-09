@@ -82,7 +82,6 @@ class RegisterSymptomsViewModel @Inject constructor(
     val drug: MutableLiveData<Drug?>
         get() = _drug
 
-    //    val drugs = drugRepository.getDrugs(patientId).asLiveData()
     val prescriptionItems =
         prescriptionItemsRepository.getActivePrescriptionItems(patientId)
             .asLiveData()

@@ -54,7 +54,6 @@ import java.util.concurrent.TimeUnit
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ActiveDrugListScreen(
     navController: NavHostController,
@@ -67,8 +66,6 @@ fun ActiveDrugListScreen(
 ) {
 
     val TAG = "ActiveDrugListScreen"
-
-    createNotificationChannel(LocalContext.current)
 
     val showByColumnList = rememberSaveable { mutableStateOf(true) }
 
@@ -88,14 +85,12 @@ fun ActiveDrugListScreen(
     if (!listOfPairs.isNullOrEmpty()) {
         DisposableEffect(key1 = Unit) {
             val nM = NotificationsManager(context)
-//            nM.removeExpired(context)
             nM.removeAll()
             listOfPairs!!.forEach {
                 if (it.first.alarm) {
                     nM.addAlarms(it.first, it.second!!)
                 } else {
                     nM.removeAlarms(it.first.id)
-//                    nM.updateNext(context)
                 }
             }
             onDispose { }
@@ -602,15 +597,6 @@ fun onConfirmAcquisitionClick(
     navController.navigate("confirmAcquisitionScreen/${pair.first!!.id}/${pair.second!!.id}")
 }
 
-//private fun setAlarm(context: Context) {
-//    val timeSec = System.currentTimeMillis() + 1000
-//    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
-//    val intent = Intent(context, AlarmReceiver::class.java)
-//    val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-//    alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
-//}
-
-
 @RequiresApi(Build.VERSION_CODES.O)
 fun onAlarmClick(
     context: Context,
@@ -632,25 +618,4 @@ fun onAlarmClick(
         )
     }
 
-}
-
-private fun createNotificationChannel(context: Context) {
-    Log.d("Aqui2", "Canal criado")
-    // Create the NotificationChannel, but only on API 26+ because
-    // the NotificationChannel class is new and not in the support library
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        //val name = getString(R.string.channel_name)
-        val name = "notifications_channel"
-        //val descriptionText = getString(R.string.channel_description)
-        val descriptionText = "Channel for Alarm notifications"
-        val importance = NotificationManager.IMPORTANCE_HIGH
-        val channel =
-            NotificationChannel(Constants.NOTIFICATIONS_CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-        // Register the channel with the system
-        val notificationManager: NotificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
-    }
 }

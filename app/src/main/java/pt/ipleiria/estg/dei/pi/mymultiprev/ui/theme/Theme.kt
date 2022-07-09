@@ -50,28 +50,6 @@ private val DarkColorPalette = MyColors(
     gray = Gray
 )
 
-//private val DarkColorPalette = darkColors(
-//    primary = Purple200,
-//    primaryVariant = Purple700,
-//    secondary = Teal,
-//)
-//
-//private val LightColorPalette = lightColors(
-//    primary = Purple500,
-//    primaryVariant = Purple700,
-//    secondary = Teal
-//
-//    /* Other default colors to override
-//    background = Color.White,
-//    surface = Color.White,
-//    onPrimary = Color.White,
-//    onSecondary = Color.Black,
-//    onBackground = Color.Black,
-//    onSurface = Color.Black,
-//    */
-//)
-
-
 val MaterialTheme.myColors: MyColors
     @Composable
     @ReadOnlyComposable

@@ -105,7 +105,6 @@ fun CameraScreen(
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-//                    setResult(CameraResult.RESULT_ERROR)
                     this.onError(exc)
                     Log.i("ERROR", "Photo capture failed: ${exc.message}", exc)
                 }

@@ -61,12 +61,8 @@ fun MyMultiPrev(
             var prescriptionId = remember {
                 it.arguments?.getString("prescriptionId")
             }
-//            var drugId = remember {
-//                it.arguments?.getString("drugId")
-//            }
             CameraScreen(
                 prescriptionId = prescriptionId!!,
-//                drugId = drugId!!,
                 navController = navController
             )
         }

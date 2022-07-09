@@ -294,17 +294,12 @@ fun ConfirmIntakeDetailsScreen(
                 Button(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Teal),
                     border = BorderStroke(1.dp, Teal),
-//                    enabled = !showError,
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !showError,
                     onClick = {
                         openDialog.value = true
                         viewModel.registerIntake()
                         Log.d("Alarmes", "${prescriptionItem!!.alarm}")
-//                        if (prescriptionItem!!.alarm) {
-//
-//                            setAlarm(context, drug!!.name, prescriptionItem!!)
-//                        }
                     }) {
 
                     Text(
@@ -331,19 +326,4 @@ fun ConfirmIntakeDetailsScreen(
             }
         }
     }
-}
-
-private fun setAlarm(context: Context, drugName: String, prescriptionItem: PrescriptionItem) {
-    val uniqueId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
-//    val timeSec = System.currentTimeMillis() + 10000
-    val timeSec = prescriptionItem.nextIntake!!.toInstant(TimeZone.UTC).toEpochMilliseconds()
-    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
-    val intent = Intent(context, AlarmReceiver::class.java)
-    intent.putExtra("title", "Toma de Medicamentos")
-    intent.putExtra("message", "Tomar o medicamento: $drugName")
-    intent.putExtra("uniqueId", uniqueId)
-    Log.d("Alarmes", "$drugName")
-    val pendingIntent = PendingIntent.getBroadcast(context, uniqueId, intent, 0)
-    alarmManager.set(AlarmManager.RTC_WAKEUP, timeSec, pendingIntent)
-    Log.d("Alarmes", "Passou aqui")
 }

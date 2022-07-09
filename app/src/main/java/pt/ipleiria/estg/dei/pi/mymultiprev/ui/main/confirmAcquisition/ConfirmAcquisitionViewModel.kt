@@ -39,11 +39,6 @@ class ConfirmAcquisitionViewModel @Inject constructor(
     private val _prescriptionItem: MutableState<PrescriptionItem?> = mutableStateOf(null)
     val prescriptionItem: State<PrescriptionItem?> = _prescriptionItem
 
-//    lateinit var prescriptionItem: PrescriptionItem
-//    lateinit var drug: Drug
-//    lateinit var scheduleIntakeDate: LocalDate
-//    private lateinit var scheduleIntakeDateTime: LocalDateTime
-
     private var _scheduleIntakeDateTime: MutableLiveData<LocalDateTime> =
         MutableLiveData(Clock.System.now().toLocalDateTime(Constants.TIME_ZONE))
     val scheduleIntakeDateTime: LiveData<LocalDateTime> get() = _scheduleIntakeDateTime
