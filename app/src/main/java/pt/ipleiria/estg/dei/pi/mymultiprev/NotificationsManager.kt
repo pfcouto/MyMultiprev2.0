@@ -11,7 +11,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.PrescriptionItem
-import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiverN
+import pt.ipleiria.estg.dei.pi.mymultiprev.receiver.AlarmReceiver
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.util.Constants
 import java.io.File
@@ -168,7 +168,7 @@ class NotificationsManager(private val context: Context) {
         }
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, AlarmReceiverN::class.java)
+        val intent = Intent(context, AlarmReceiver::class.java)
 
         val pendingIntent =
             PendingIntent.getBroadcast(
@@ -188,7 +188,7 @@ class NotificationsManager(private val context: Context) {
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val intent = Intent(context, AlarmReceiverN::class.java)
+        val intent = Intent(context, AlarmReceiver::class.java)
         intent.putExtra(Constants.NOTIFICATIONS_DRUG_NAME, drugName)
         intent.putExtra(Constants.NOTIFICATIONS_ALARM_ID, id)
         intent.putExtra(Constants.NOTIFICATIONS_ALARM_INSTANT, instant.toString())

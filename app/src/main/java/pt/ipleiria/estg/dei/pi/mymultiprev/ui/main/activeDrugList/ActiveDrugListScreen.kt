@@ -354,7 +354,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                     Image(
                         modifier = Modifier
                             .size(80.dp)
-                            .padding(start = 10.dp, top = 16.dp, bottom = 16.dp),
+                            .padding(start = 10.dp, top = 12.dp, bottom = 12.dp),
                         painter = painter,
                         contentDescription = "",
                         contentScale = ContentScale.FillBounds
@@ -363,7 +363,7 @@ fun AntibioticCard_Prescription_Item_Short_Item(
                     Image(
                         modifier = Modifier
                             .size(80.dp)
-                            .padding(start = 10.dp, top = 16.dp, bottom = 16.dp),
+                            .padding(start = 10.dp, top = 12.dp, bottom = 12.dp),
                         painter = painterResource(id = R.drawable.default_img),
                         contentDescription = "",
                         contentScale = ContentScale.FillBounds

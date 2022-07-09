@@ -11,7 +11,6 @@ import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.enums.LayoutPreferences
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.DrugRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.PrescriptionItemsRepository
 import pt.ipleiria.estg.dei.pi.mymultiprev.repositories.SharedPreferencesRepository
-import pt.ipleiria.estg.dei.pi.mymultiprev.service.AlarmService
 import java.util.*
 import javax.inject.Inject
 
