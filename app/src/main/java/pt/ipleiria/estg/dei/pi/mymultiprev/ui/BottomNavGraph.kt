@@ -3,10 +3,15 @@ package pt.ipleiria.estg.dei.pi.mymultiprev.ui
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
@@ -15,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,21 +61,29 @@ fun BottomNavGraph(
         ) {
             if (!mainViewModel.isNetworkAvailable()) {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Snackbar(
-                        modifier = Modifier.border(1.dp, Teal),
-                        backgroundColor = MaterialTheme.colors.background,
+                    Column(
+//                        shape = RoundedCornerShape(25),
+                        modifier = Modifier
+                            .background(MaterialTheme.colors.background).border(BorderStroke(1.dp, Teal), RoundedCornerShape(25))
+                        ,
                     ) {
-
                         Text(
+                            modifier = Modifier
+                                .padding(8.dp),
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colors.onSurface,
+                            textAlign = TextAlign.Center,
                             text = "Sem conexão à Internet, por favor conecte-se à mesma e tente novamente!"
                         )
                     }
+
                 }
             } else {
                 RegisterSymptomsScreen(navHostController = navController)
