@@ -58,15 +58,16 @@ class NotificationsManager(private val context: Context) {
         if (removeExpired) removeExpired(instant.toLong(), true) else updateNext()
     }
 
-    fun addAlarms(prescriptionItem: PrescriptionItem, drug: Drug) {
+    fun addAlarms(prescriptionItem: PrescriptionItem, drug: Drug?) {
         writeLog("NOTIFICATIONS", "INSIDE ADD ALARMS")
 
-        if (prescriptionItem.drug != drug.id ||
+        if (drug == null ||
+            prescriptionItem.drug != drug.id ||
             prescriptionItem.nextIntake == null ||
             prescriptionItem.intakesTakenCount == null ||
             prescriptionItem.expectedIntakeCount == null
         ) {
-            writeLog("NOTIFICATIONS", "ERROR")
+            writeLog("NOTIFICATIONS", "ERROR - NullPointerException")
             return
         }
 

@@ -78,13 +78,15 @@ fun ActiveDrugListScreen(
         logout()
     }
 
-    if (!listOfPairs.isNullOrEmpty()) {
+    if (!listOfPairs.isNullOrEmpty() && !listOfDrugs?.data.isNullOrEmpty()) {
+        Log.d("NOTIFICATIONS", "Pairs: ${listOfPairs!!.size}")
+        Log.d("NOTIFICATIONS", "Drugs: ${listOfDrugs!!.data!!.size}")
         DisposableEffect(key1 = Unit) {
             val nM = NotificationsManager(context)
             nM.removeAll()
             listOfPairs!!.forEach {
                 if (it.first.alarm) {
-                    nM.addAlarms(it.first, it.second!!)
+                    nM.addAlarms(it.first, it.second)
                 } else {
                     nM.removeAlarms(it.first.id)
                 }
