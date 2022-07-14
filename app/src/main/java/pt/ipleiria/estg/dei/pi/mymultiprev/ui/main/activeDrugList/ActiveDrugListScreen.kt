@@ -532,7 +532,9 @@ fun AntibioticCard_Prescription_Item_Full_Item(
                 }) {
                     Text(
                         color = Teal,
-                        text = if (!prescriptionIsOverdue.value)
+                        text = if (item.first.acquiredAt == null || item.first.intakesTakenCount == 0){
+                            "Confirmar Aquisição"
+                        } else if (!prescriptionIsOverdue.value)
                             "VER DETALHES"
                         else
                             "CONFIRMAR TOMA"
