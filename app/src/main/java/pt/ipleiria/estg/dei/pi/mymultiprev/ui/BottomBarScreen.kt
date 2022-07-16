@@ -16,7 +16,7 @@ sealed class BottomBarScreen(
         route = "antibioticos",
         title = "Antibióticos",
         icon = Icons.Outlined.PlaylistAddCheck,
-        badgeCount = 8
+        badgeCount = 0
     )
 
     object Sintomas : BottomBarScreen(

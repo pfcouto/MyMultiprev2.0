@@ -52,6 +52,7 @@ fun BottomBar(listOfPrescriptions: List<PrescriptionItem>?, navController: NavHo
 
     BottomNavigation() {
         screens.forEach { screen ->
+            screen.badgeCount = 0
             if (screen.route == "antibioticos") {
                 if (listOfPrescriptions != null) {
                     val prescriptionsNotAcquired: (PrescriptionItem) -> Boolean =
