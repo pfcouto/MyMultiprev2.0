@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.responses.LoginResponse
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.DarkRed
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import retrofit2.HttpException
@@ -51,7 +52,9 @@ fun LoginScreen(
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
-    var test by remember { mutableStateOf("") }
+    var netWorkIssueMessage by remember { mutableStateOf("") }
+    var isNetworkIssue by remember { mutableStateOf(false) }
+
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val response = viewModel.loginResponse.observeAsState()
@@ -206,6 +209,19 @@ fun LoginScreen(
                         color = MaterialTheme.myColors.onBackground
                     )
                 }
+
+
+                if (isNetworkIssue) {
+                    Text(
+                        modifier = Modifier.padding(top = 70.dp),
+                        color = DarkRed,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        text = netWorkIssueMessage
+                    )
+                }
+
+
             } else {
                 CircularProgressIndicator(
                     color = Teal,
@@ -230,20 +246,23 @@ fun LoginScreen(
 
     fun treatErrorResponse() {
         Log.i(TAG, "Timeout while connecting to API")
-        val errorMsg = if (!viewModel.isNetworkAvailable())
-            test = "No Network"
+        netWorkIssueMessage = if (!viewModel.isNetworkAvailable())
+            "Sem conexão à internet."
         else
-            test = "Network Connection Timeout"
+            "Não foi possível conectar. Tente novamente mais tarde."
+
+        isNetworkIssue = true
 
         Log.i(TAG, "Internet Connection - $viewModel.isNetworkAvailable()")
     }
 
     fun treatLoginResponse(response: Resource<LoginResponse>) {
+        Log.d(TAG, "response: ${response.data}")
         when (response) {
             is Resource.Success -> {
                 viewModel.savePatientId()
                 viewModel.isLoggedIn = true
-                test = "LOGGED SUCCESSFULLY"
+                netWorkIssueMessage = "LOGGED SUCCESSFULLY"
                 isLoading = false
 
                 onLoginSuccess("")
