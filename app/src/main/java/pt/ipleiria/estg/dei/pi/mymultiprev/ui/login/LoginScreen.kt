@@ -115,7 +115,8 @@ fun LoginScreen(
                     Text(
                         text = if (isErrorUsername) "Nome de Utilizador está vazio!" else "",
                         color = MaterialTheme.colors.error,
-                        style = MaterialTheme.typography.caption,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
                     )
 
@@ -156,7 +157,8 @@ fun LoginScreen(
                     Text(
                         text = if (isErrorPassword) "Palavra-Passe está vazia!" else "",
                         color = MaterialTheme.colors.error,
-                        style = MaterialTheme.typography.caption,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
                     )
 
