@@ -1,7 +1,6 @@
 package pt.ipleiria.estg.dei.pi.mymultiprev.ui.login
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,6 +22,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -111,6 +111,14 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .focusRequester(focusRequester)
                     )
+
+                    Text(
+                        text = if (isErrorUsername) "Nome de Utilizador está vazio!" else "",
+                        color = MaterialTheme.colors.error,
+                        style = MaterialTheme.typography.caption,
+                        textAlign = TextAlign.Center
+                    )
+
                     OutlinedTextField(
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Teal,
@@ -144,6 +152,14 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .focusRequester(focusRequester)
                     )
+
+                    Text(
+                        text = if (isErrorPassword) "Palavra-Passe está vazia!" else "",
+                        color = MaterialTheme.colors.error,
+                        style = MaterialTheme.typography.caption,
+                        textAlign = TextAlign.Center
+                    )
+
                     if (isErrorUsername and isErrorPassword and username.isNotEmpty() and password.isNotEmpty()) {
                         Column(
                             verticalArrangement = Arrangement.Center,
@@ -171,26 +187,12 @@ fun LoginScreen(
                         }
 
                         if (username.isEmpty() and password.isNotEmpty()) {
-                            Toast.makeText(
-                                context,
-                                "Nome de Utilizador está vazio!",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
                             isErrorUsername = true
                         }
                         if (password.isEmpty() and username.isNotEmpty()) {
-                            Toast.makeText(context, "Palavra-Passe está vazia!", Toast.LENGTH_LONG)
-                                .show()
                             isErrorPassword = true
                         }
                         if (username.isEmpty() and password.isEmpty()) {
-                            Toast.makeText(
-                                context,
-                                "Nome de Utilizador e Palavra-Passe estão Vazios!",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
                             isErrorUsername = true
                             isErrorPassword = true
 
