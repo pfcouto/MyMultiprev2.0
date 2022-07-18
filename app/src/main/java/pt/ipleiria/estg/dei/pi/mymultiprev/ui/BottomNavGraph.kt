@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
@@ -70,8 +69,8 @@ fun BottomNavGraph(
                     Column(
 //                        shape = RoundedCornerShape(25),
                         modifier = Modifier
-                            .background(MaterialTheme.colors.background).border(BorderStroke(1.dp, Teal), RoundedCornerShape(25))
-                        ,
+                            .background(MaterialTheme.colors.background)
+                            .border(BorderStroke(1.dp, Teal), RoundedCornerShape(25)),
                     ) {
                         Text(
                             modifier = Modifier

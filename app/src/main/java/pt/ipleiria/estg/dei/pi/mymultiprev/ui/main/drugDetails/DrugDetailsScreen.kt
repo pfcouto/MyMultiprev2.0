@@ -37,7 +37,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import pt.ipleiria.estg.dei.pi.mymultiprev.R
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Drug
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.model.entities.Intake
@@ -166,12 +165,8 @@ fun AppBar(
                             .align(Alignment.TopEnd)
                             .padding(top = 4.dp, end = 4.dp),
                         onClick = {
-                            val mutex = Mutex()
-                            Log.d("OLA", "CLICOU")
                             cameraPermissionState.launchPermissionRequest()
                             navControllerOutsideLoginScope.navigate("drugDetailsScreenCamera/" + prescriptionState.value!!.id)
-
-
                         }) {
                         Box(
                             modifier = Modifier
