@@ -120,7 +120,8 @@ fun AppBar(
 
     if (showInputDialog.value) {
         InputDialog(alias = drugState.value!!.alias, showInputDialog = showInputDialog) {
-            viewModel.setPrescriptionItemAlias(drugState.value!!.id, it)
+            if (it.isNotEmpty())
+                viewModel.setPrescriptionItemAlias(drugState.value!!.id, it)
         }
     }
 
@@ -539,7 +540,7 @@ fun InputDialog(
     showInputDialog: MutableState<Boolean>,
     onSuccess: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf(alias) }
+    var text by remember { mutableStateOf("") }
 
 
     AlertDialog(
@@ -561,6 +562,7 @@ fun InputDialog(
                 CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
                     TextField(
                         value = text,
+                        placeholder = { Text(text = alias) },
                         onValueChange = { text = it },
                         colors = TextFieldDefaults.textFieldColors(
                             backgroundColor = MaterialTheme.colors.surface,

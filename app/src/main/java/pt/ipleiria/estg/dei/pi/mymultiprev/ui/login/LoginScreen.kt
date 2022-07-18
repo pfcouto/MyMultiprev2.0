@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import pt.ipleiria.estg.dei.pi.mymultiprev.data.network.Resource
 import pt.ipleiria.estg.dei.pi.mymultiprev.responses.LoginResponse
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.DarkRed
+import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.MessageOverdue
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.Teal
 import pt.ipleiria.estg.dei.pi.mymultiprev.ui.theme.myColors
 import retrofit2.HttpException
@@ -113,7 +114,7 @@ fun LoginScreen(
                     )
 
                     Text(
-                        text = if (isErrorUsername) "Nome de Utilizador está vazio!" else "",
+                        text = if (isErrorUsername and username.isEmpty()) "Nome de Utilizador está vazio!" else "",
                         color = MaterialTheme.colors.error,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -155,7 +156,7 @@ fun LoginScreen(
                     )
 
                     Text(
-                        text = if (isErrorPassword) "Palavra-Passe está vazia!" else "",
+                        text = if (isErrorPassword and password.isEmpty()) "Palavra-Passe está vazia!" else "",
                         color = MaterialTheme.colors.error,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -184,6 +185,7 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .padding(top = 16.dp), onClick = {
                         Log.i(TAG, "Button Login Clicked: $username / $password")
+                        isNetworkIssue = false
                         if (isLoading) {
                             return@Button
                         }
@@ -218,7 +220,7 @@ fun LoginScreen(
                 if (isNetworkIssue) {
                     Text(
                         modifier = Modifier.padding(top = 70.dp),
-                        color = DarkRed,
+                        color = MaterialTheme.colors.error,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         text = netWorkIssueMessage
