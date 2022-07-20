@@ -161,6 +161,7 @@ fun ActiveDrugListScreen(
                                 timeTextTextShortItem = "Toma em Atraso"
                                 timeTextTextFullItem = "Toma em Atraso"
                             } else {
+                                prescriptionIsOverdue.value = false
                                 val diffMillis = item.first.timeUntil()
                                 val dayDiff = TimeUnit.MILLISECONDS.toDays(diffMillis!!)
                                 val hourDiff =
